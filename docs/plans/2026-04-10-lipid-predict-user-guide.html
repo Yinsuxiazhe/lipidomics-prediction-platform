@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>脂质组学预测平台使用说明</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'PingFang SC', 'Microsoft YaHei', 'Helvetica Neue', Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+      padding: 32px 16px;
+    }
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      border-radius: 20px;
+      padding: 40px 36px;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: 1.75rem;
+      margin-bottom: 10px;
+    }
+    .hero p {
+      opacity: 0.9;
+      font-size: 1rem;
+    }
+    .url-box {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      padding: 10px 18px;
+      margin-top: 14px;
+    }
+    .url-box a {
+      color: #fef08a;
+      font-weight: 600;
+      font-size: 1.05rem;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .url-box a:hover { text-decoration: underline; }
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px 26px;
+      margin-bottom: 18px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    }
+    .card h2 {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .card h2 .num {
+      background: var(--primary);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .step {
+      display: flex;
+      gap: 14px;
+      margin-bottom: 16px;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: #eff6ff;
+      color: var(--primary);
+      border: 1px solid #bfdbfe;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-content strong {
+      color: var(--text);
+    }
+    .step-content p {
+      color: var(--text-light);
+      font-size: 0.93rem;
+      margin-top: 2px;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .feature-item {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .feature-item strong {
+      display: block;
+      font-size: 0.92rem;
+      margin-bottom: 4px;
+    }
+    .feature-item span {
+      font-size: 0.84rem;
+      color: var(--text-light);
+    }
+    .tip {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .tip strong { color: #92400e; }
+    .tip p { color: #78350f; margin-top: 4px; }
+    .warn {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+    }
+    .warn strong { color: #991b1b; }
+    .warn p { color: #7f1d1d; margin-top: 4px; }
+    .success-box {
+      background: #ecfdf5;
+      border: 1px solid #6ee7b7;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 0.92rem;
+    }
+    .success-box strong { color: #065f46; }
+    .success-box p { color: #064e3b; margin-top: 4px; }
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 8px 0;
+    }
+    .footer {
+      text-align: center;
+      color: var(--text-light);
+      font-size: 0.84rem;
+      margin-top: 28px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .emoji { font-size: 1.1em; }
+    @media (max-width: 560px) {
+      .feature-grid { grid-template-columns: 1fr; }
+      .hero h1 { font-size: 1.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="hero">
+    <h1><span class="emoji">🔬</span> 脂质组学运动响应预测平台</h1>
+    <p>基于基线脂质组数据，预测儿童在多个临床指标上的运动响应程度</p>
+    <div class="url-box">
+      <span>🔗</span>
+      <a href="https://lipid-predict.medaibox.com" target="_blank">https://lipid-predict.medaibox.com</a>
+    </div>
+  </div>
+
+  <!-- 功能概览 -->
+  <div class="card">
+    <h2><span class="emoji">📋</span> 平台能做什么</h2>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <strong><span class="emoji">🎯</span> 单样本预测</strong>
+        <span>输入一名儿童的脂质组数据，获得高/低响应预测分类及概率</span>
+      </div>
+      <div class="feature-item">
+        <strong><span class="emoji">📁</span> 批量预测</strong>
+        <span>上传 CSV 文件，一次性对多名儿童批量预测并下载结果</span>
+      </div>
+      <div class="feature-item">
+        <strong><span class="emoji">📊</span> 模型性能</strong>
+        <span>查看各指标、各分组模型的 AUC、灵敏度、特异度等指标</span>
+      </div>
+      <div class="feature-item">
+        <strong><span class="emoji">❓</span> 名词解释</strong>
+        <span>脂质类别、临床指标、机器学习术语的中英文对照说明</span>
+      </div>
+    </div>
+    <div class="success-box" style="margin-top:14px;">
+      <strong>✅ 支持中英文切换</strong>
+      <p>页面右上角可切换语言，方便与不同背景的合作者共享。</p>
+    </div>
+  </div>
+
+  <!-- 使用步骤 -->
+  <div class="card">
+    <h2><span class="emoji">📖</span> 如何使用（单样本预测）</h2>
+
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>进入"单样本预测"页面</strong>
+        <p>打开链接后默认进入预测页面，左侧展示模型卡片列表。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>选择一个预测模型</strong>
+        <p>按临床指标（BMI、体脂率、腰围等）和分组方式（四分位 Q / 三分位 T）选择对应的模型。模型卡片上标注了 AUC 值。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>输入脂质组数据</strong>
+        <p>在右侧表单中填写该模型所需的脂质分子浓度值（单位：μmol/L 或对应单位）。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <strong>使用示例数据（可选）</strong>
+        <p>点击"使用示例"按钮可自动填入训练队列均值，您可以此为基础修改个别数值。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-content">
+        <strong>点击"开始预测"</strong>
+        <p>系统返回预测结果：<strong>高响应</strong>（运动效果显著）或<strong>低响应</strong>（运动效果较弱），以及对应的概率值。</p>
+      </div>
+    </div>
+
+    <hr class="divider"/>
+    <p style="font-size:0.88rem; color:var(--text-light); margin-top:4px;">
+      <strong>高响应</strong>：预计该指标在运动干预后变化显著。<br/>
+      <strong>低响应</strong>：预计该指标变化有限，运动效果较弱。
+    </p>
+
+    <div class="tip">
+      <strong>💡 提示</strong>
+      <p>不同指标、不同分组方式对应不同模型，预测结果也不同。建议结合多个指标的预测结果综合判断。</p>
+    </div>
+  </div>
+
+  <!-- 批量预测说明 -->
+  <div class="card">
+    <h2><span class="emoji">📁</span> 批量预测用法</h2>
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <strong>切换到"批量预测"标签页</strong>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <strong>选择模型并上传 CSV</strong>
+        <p>CSV 文件格式：每列对应一个脂质分子名称（需与模型要求一致），每行对应一名儿童。</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <strong>点击"开始批量预测"，下载结果</strong>
+        <p>系统返回所有样本的预测结果，包含分类标签、高/低响应概率，可直接下载为 CSV 文件。</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- 模型性能 -->
+  <div class="card">
+    <h2><span class="emoji">📈</span> 查看模型性能</h2>
+    <p style="margin-bottom:10px;">切换到"模型性能"标签页，可查看每个模型的正式评估指标：</p>
+    <div class="feature-grid">
+      <div class="feature-item">
+        <strong>AUC</strong>
+        <span>区分高/低响应者的能力，0.5=随机，1.0=完美</span>
+      </div>
+      <div class="feature-item">
+        <strong>灵敏度（Sensitivity）</strong>
+        <span>正确识别高响应者的比例</span>
+      </div>
+      <div class="feature-item">
+        <strong>特异度（Specificity）</strong>
+        <span>正确识别低响应者的比例</span>
+      </div>
+      <div class="feature-item">
+        <strong>脂质数（Feature Count）</strong>
+        <span>该模型使用的脂质分子数量</span>
+      </div>
+    </div>
+    <div class="warn" style="margin-top:12px;">
+      <strong>⚠️ 结果解读说明</strong>
+      <p>当前模型的正式泛化性能（AUC）约为 <strong>0.50–0.54</strong>（基于严格嵌套交叉验证的 outer-test 结果）。这说明模型已能观察到一定预测信号，但在新样本上的稳定性仍属中等，请结合临床判断使用，不建议作为独立诊断依据。</p>
+    </div>
+  </div>
+
+  <!-- 技术说明 -->
+  <div class="card">
+    <h2><span class="emoji">🔬</span> 技术说明（供内部参考）</h2>
+    <ul style="padding-left:1.2rem; font-size:0.9rem; color:var(--text-light);">
+      <li style="margin-bottom:6px;"><strong style="color:var(--text);">数据来源：</strong>EXCITING 研究队列（n=281）儿童基线脂质组学数据</li>
+      <li style="margin-bottom:6px;"><strong style="color:var(--text);">脂质分子：</strong>1,608 种脂质分子经特征筛选后纳入建模</li>
+      <li style="margin-bottom:6px;"><strong style="color:var(--text);">预测指标：</strong>BMI、BMI z-score、体脂率、腰围、臀围、腰臀比、肌肉率、体重</li>
+      <li style="margin-bottom:6px;"><strong style="color:var(--text);">分组方式：</strong>四分位（Q1 vs Q4）和三分位（T1 vs T3）</li>
+      <li style="margin-bottom:6px;"><strong style="color:var(--text);">验证方法：</strong>严格嵌套交叉验证（strict nested CV），防止信息泄露</li>
+      <li style="margin-bottom:6px;"><strong style="color:var(--text);">模型算法：</strong>弹性网络逻辑回归、随机森林、XGBoost、逻辑回归（L2 正则化）等</li>
+    </ul>
+  </div>
+
+  <!-- 反馈 -->
+  <div class="card">
+    <h2><span class="emoji">💬</span> 期待您的反馈</h2>
+    <p style="color:var(--text-light); margin-bottom:10px;">
+      请帮忙测试以下方面并提出建议：
+    </p>
+    <ul style="padding-left:1.2rem; font-size:0.9rem; color:var(--text-light);">
+      <li style="margin-bottom:6px;">页面加载和模型显示是否正常？</li>
+      <li style="margin-bottom:6px;">预测功能是否符合您的使用场景？</li>
+      <li style="margin-bottom:6px;">需要增加或调整哪些临床指标、分组方式？</li>
+      <li style="margin-bottom:6px;">术语说明是否清晰？需要补充哪些内容？</li>
+      <li style="margin-bottom:6px;">其他功能需求或改进建议？</li>
+    </ul>
+    <div class="tip" style="margin-top:14px;">
+      <strong>📩 反馈方式</strong>
+      <p>请直接回复此消息，或联系 Chenyu Fan。感谢您的耐心测试！</p>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>脂质组学运动响应预测平台 · 技术支持：Chenyu Fan</p>
+    <p>Powered by Flask + scikit-learn · 部署于 medaibox</p>
+  </div>
+
+</div>
+</body>
+</html>

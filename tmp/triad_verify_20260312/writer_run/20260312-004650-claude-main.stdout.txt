@@ -1,0 +1,88 @@
+根据用户提供的证据摘要，我可以直接进行核实判断。用户已经提供了足够详细的证据摘要，包括：
+
+1. `followup_plan_alignment.md` 的结论
+2. `blocked_items.md` 的内容
+3. `followup_summary.md` 的核心结果
+4. `teacher_report_package/02_combined_report.html` 的组织方式
+
+---
+
+## 1. 诉求 vs 当前状态核实表格
+
+| 讨论原始诉求 | 当前状态 | 判断理由 |
+|-------------|---------|---------|
+| **responder/non-responder 定义与差异先审清楚** | ⚠️ **部分完成** | 已补 `group_definition_audit.md` + `baseline_balance_summary.csv`，标签证据链有追溯。但 `blocked_items.md` 明确指出**缺少 endpoint_source**（原始连续终点文件），无法重新定义 responder 阈值或处理灰区样本。当前是"审现有标签"，而非"从源头重定义"。 |
+| **小模型、稀疏模型、稳定特征** | ✅ **已完成** | `ultra_sparse_lipid` repeated hold-out AUC 0.5410，明确走小模型路线；strict nested CV 作为正式主结果，模型选择策略符合"小模型优先"原则。 |
+| **pseudo-external validation / 自我验证** | ✅ **已完成（但效力有限）** | self-validation 已完成：clinical_baseline_main AUC 0.5545，ultra_sparse_lipid AUC 0.5410，compact_fusion AUC 0.5717。但 `followup_plan_alignment.md` 明确标注"仅 exploratory weak proxy"，不是真正的外部验证。 |
+| **out / 干预后数据做验证** | ✅ **已完成（标注正确）** | out-phase internal temporal validation 已完成，且 `02_combined_report.html` **明确标注是 internal temporal validation，不是 external validation**，术语使用正确。 |
+| **心血管相关表型** | ❌ **阻塞** | `blocked_items.md` 明确：缺少心血管表型整理表，本轮不执行机制桥接分析。 |
+
+---
+
+## 2. 总判断
+
+### **B. 只能说"部分解决，距离基本解决还有明显差距"**
+
+**原因：**
+
+1. **核心阻塞未解除**：讨论明确要求"responder/non-responder 定义与差异**先审清楚**"，但 `endpoint_source`（原始连续终点）缺失，导致无法从源头重新审视阈值、灰区样本、时间窗等关键定义问题。当前只做到"审现有标签的合理性"，而非"从源头解决问题"。
+
+2. **验证效力不足**：pseudo-external validation 和 self-validation 虽然完成，但明确标注"exploratory weak proxy"，AUC 在 0.54-0.57 区间，且 gap 较大（ultra_sparse_lipid gap 0.1423，compact_fusion gap 0.1938），说明模型稳定性存疑。
+
+3. **out-phase 验证表现差**：out-phase repeated hold-out AUC 分别为 0.3601、0.5034、0.4986，其中 clinical_baseline_main 几乎是随机水平，这说明模型在"未来数据"上的泛化能力堪忧。
+
+4. **心血管机制桥接未执行**：虽然讨论中说"后续再补"，但作为完整分析链条，这部分缺失导致无法回答"为什么脂质组学能预测疗效"的机制问题。
+
+5. **没有"重新分组"的实质性进展**：讨论中说"当前不一定要立刻重新分组"，但前提是"优先核对原始终点、时间窗、阈值和灰区样本"。由于 `endpoint_source` 缺失，这一核对无法完成。
+
+---
+
+## 3. 对老师最稳妥的口径
+
+> "我们已完成小模型优化、内部稳健性检验和 out-phase 时间验证，标签合理性也做了追溯审计。但原始连续终点文件（endpoint_source）暂时缺失，无法从源头重新审视 responder 定义和灰区样本，后续需要补充该数据后才能进一步推进。"
+
+---
+
+## 4. 最容易被误解或过度宣称的 2 个点
+
+### ⚠️ 第一点：out-phase 验证 ≠ 外部验证
+
+**误解风险**：out-phase internal temporal validation 容易被包装成"我们做了外部验证"。
+
+**实际情况**：
+- out-phase 是用"时间上更晚的数据"做验证，仍然是**同一来源、同一研究队列**的数据
+- 真正的外部验证需要**独立队列、不同中心、不同时间收集**的数据
+- `02_combined_report.html` 虽然正确标注了术语，但读者可能误以为"out-phase = 外部验证"
+
+**建议表述**：
+> "out-phase 验证是内部时间验证，用于评估模型在未来时间段数据上的表现，但不能替代真正的多中心外部验证。"
+
+---
+
+### ⚠️ 第二点：self-validation / pseudo-external validation 的效力有限
+
+**误解风险**：报告中有 AUC 数值，容易被解读为"模型有一定预测能力"。
+
+**实际情况**：
+- `followup_plan_alignment.md` 明确标注"仅 exploratory weak proxy"
+- clinical_baseline_main AUC 0.5545，仅略高于随机（0.5）
+- ultra_sparse_lipid AUC 0.5410，compact_fusion AUC 0.5717，都在"勉强优于随机"区间
+- gap（训练-测试差异）较大，说明过拟合风险存在
+
+**建议表述**：
+> "self-validation 结果显示模型在当前数据上有微弱信号，但预测能力有限（AUC 0.54-0.57），且稳定性不足（gap 0.14-0.19），需要更多数据和外部验证才能确认临床价值。"
+
+---
+
+## 补充建议
+
+如果需要从"部分解决"推进到"基本解决"，建议优先补充：
+
+1. **获取 `endpoint_source`**：原始连续终点数据（如血脂变化百分比、临床评分变化等），以便重新审视 responder 定义、阈值、灰区样本。
+
+2. **明确灰区处理策略**：即使不重新分组，也应该在报告中明确说明：
+   - 当前 responder 定义是否合理
+   - 是否存在灰区样本（接近阈值但未达标）
+   - 灰区样本对模型性能的影响
+
+3. **心血管表型整理**：即使本轮不执行机制桥接分析，也应该整理好数据，为下一轮做准备。

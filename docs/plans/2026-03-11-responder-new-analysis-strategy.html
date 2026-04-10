@@ -1,0 +1,1419 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Responder/Non-responder 新分析方案</title>
+<meta content="基于 2026-03-11 对接思路整理的后续分析与验证路线" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/plans">🧠 AI 结果展示</a>
+<div class="nav-links"><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/plans/2026-03-11-responder-new-analysis-strategy.md">方案Markdown</a><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/20260311_%E5%AF%B9%E6%8E%A5_%E6%96%B0%E7%9A%84%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF.txt">对接原文</a></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">AI 结果展示</div>
+<h1>Responder/Non-responder 新分析方案</h1>
+<p class="hero-subtitle-compact">基于 2026-03-11 对接思路整理的后续分析与验证路线</p>
+<div class="hero-meta"><span class="meta-pill">主分组优先</span><span class="meta-pill">出组验证</span><span class="meta-pill">小模型路线</span><span class="meta-pill">机制扩展</span></div>
+<div class="doc-toolbar"><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/plans/2026-03-11-responder-new-analysis-strategy.md">打开方案Markdown</a><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/20260311_%E5%AF%B9%E6%8E%A5_%E6%96%B0%E7%9A%84%E5%88%86%E6%9E%90%E6%80%9D%E8%B7%AF.txt">打开对接原文</a></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">一、总原则（从对接内容提炼）</a></li><li><a href="#section-2">二、新分析方案（建议作为后续主路线）</a></li><li><a href="#section-10">三、建议的主次排布（很重要）</a></li><li><a href="#section-13">四、推荐执行顺序（最终版）</a></li><li><a href="#section-14">五、可直接发给师姐的简版表述</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">一、总原则（从对接内容提炼）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-2" href="#section-2">二、新分析方案（建议作为后续主路线）</a><a class="sidebar-toc-link sub-item" data-target="section-3" href="#section-3">模块 A：当前 responder / non-responder 主分组口径固化 + 证据化说明</a><a class="sidebar-toc-link sub-item" data-target="section-4" href="#section-4">模块 B：备选 responder 分组的敏感性分析（不是替代主口径，而是补充）</a><a class="sidebar-toc-link sub-item" data-target="section-5" href="#section-5">模块 C：用“出组数据”做验证（当前对接中的新增重点）</a><a class="sidebar-toc-link sub-item" data-target="section-6" href="#section-6">模块 D：随机抽样 / 留出法自我验证（self-validation）</a><a class="sidebar-toc-link sub-item" data-target="section-7" href="#section-7">模块 E：模型优化只走“小模型 / 稀疏模型 / 稳定特征”路线</a><a class="sidebar-toc-link sub-item" data-target="section-8" href="#section-8">模块 F：机制部分新增“心血管相关表型”桥接分析</a><a class="sidebar-toc-link sub-item" data-target="section-9" href="#section-9">模块 G：外部验证与合作队列放到第二阶段</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-10" href="#section-10">三、建议的主次排布（很重要）</a><a class="sidebar-toc-link sub-item" data-target="section-11" href="#section-11">适合放主文章/主结果的</a><a class="sidebar-toc-link sub-item" data-target="section-12" href="#section-12">适合放补充材料的</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-13" href="#section-13">四、推荐执行顺序（最终版）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-14" href="#section-14">五、可直接发给师姐的简版表述</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">来源文件：本轮方案 Markdown</div><div class="top-note">本页面样式对齐参考：<code>采用 ai-results-html 技能渲染为 aging-analysis / tutorial 风格结果页。</code></div><h1 id="respondernon-responder-新分析方案-implementation-plan">Responder/Non-responder 新分析方案 Implementation Plan</h1>
+<blockquote>
+<p><strong>For Claude:</strong> REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task.</p>
+</blockquote>
+<p><strong>Goal:</strong> 基于 2026-03-11 对接中新形成的共识，重构后续脂质组学预测分析路线：优先维护“分组可自圆其说且基线尽量平衡”的主口径，同时加入出组/随机抽样自我验证、小模型稳定性优化和机制表型扩展。</p>
+<p><strong>Architecture:</strong> 本轮不再把“继续堆模型、追求更高训练 AUC”作为主线，而是采用“分组口径审查 → 验证设计增强 → 小模型稳健化 → 机制补充”的四段式路线。主分析继续基于基线数据预测 responder / non-responder，但新增两类验证思路：一是用出组数据评估人群异质性是否稳定存在，二是用随机抽样/留出法做自我验证；若缺少真正外部队列，则以 pseudo-external 和 targeted replication 作为替代路径。</p>
+<p><strong>Tech Stack:</strong> Python strict nested CV pipeline、现有 CSV 队列文件、Markdown/HTML 说明文档、补充统计图（瀑布图/直方图/差异分析表）。</p>
+<hr/>
+<h2 id="section-1">一、总原则（从对接内容提炼）</h2>
+<ol type="1">
+<li><p><strong>主口径暂不轻易推翻当前 responder 分组。</strong></p>
+<ul>
+<li>当前分组是“多轮尝试后，能够自圆其说且基线无显著差异”的结果。</li>
+<li>因此不能只为了拉大组间差异而贸然换分组，否则会引入“基线不平”的审稿风险。</li>
+</ul></li>
+<li><p><strong>模型优化不再以“继续堆算法”作为唯一主线。</strong></p>
+<ul>
+<li>训练集 AUC 已可到 0.8+，但 test/outer-test 表现偏低，说明问题更像泛化不足而不是拟合不足。</li>
+<li>后续重点应放在：验证策略增强、标签稳定性、模型压缩、结果可解释性。</li>
+</ul></li>
+<li><p><strong>外部验证不是唯一出路。</strong></p>
+<ul>
+<li>由于儿童脂质组外部队列稀缺、脂质分子不易完全匹配，允许先做更强的内部验证/自我验证。</li>
+<li>真正外部队列可放到文章雏形出来后，再对外寻求合作。</li>
+</ul></li>
+<li><p><strong>机制部分准备扩展到心血管相关表型。</strong></p>
+<ul>
+<li>该部分不作为当前预测主分析的前置条件，但可作为后续机制/临床表型连接的重要补充方向。</li>
+</ul></li>
+</ol>
+<hr/>
+<h2 id="section-2">二、新分析方案（建议作为后续主路线）</h2>
+<h3 id="section-3">模块 A：当前 responder / non-responder 主分组口径固化 + 证据化说明</h3>
+<p><strong>目标：</strong> 不急着改分组，先把“为什么保留当前分组”说清楚。</p>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>回溯当前 responder / non-responder 分组依据。</li>
+<li>整理“当前分组经过多轮尝试后保留”的理由。</li>
+<li>补一套能支撑当前分组合理性的图表和说明：
+<ul>
+<li>ΔBMI（或当前使用的核心响应指标）瀑布图；</li>
+<li>分布直方图/密度图；</li>
+<li>基线平衡性汇总表；</li>
+<li>当前分组与备选分组的对照说明表。</li>
+</ul></li>
+<li>在方法学里明确：
+<ul>
+<li>当前主分组优先考虑<strong>临床可解释性 + 基线平衡性 + 可投稿防守性</strong>；</li>
+<li>而不是单纯为了机器学习可分性最大化。</li>
+</ul></li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>outputs/.../group_definition_audit.md</code></li>
+<li><code>outputs/.../group_definition_comparison.csv</code></li>
+<li>瀑布图、直方图、基线平衡表</li>
+</ul>
+<p><strong>决策门槛：</strong></p>
+<ul>
+<li>如果当前主分组能维持较好基线平衡，则继续作为主分析口径；</li>
+<li>如果发现原始定义存在明显灰区/不一致，再进入模块 B 的分层敏感性分析。</li>
+</ul>
+<hr/>
+<h3 id="section-4">模块 B：备选 responder 分组的敏感性分析（不是替代主口径，而是补充）</h3>
+<p><strong>目标：</strong> 回应“是否可以尝试别的 responder 分组”这个问题，但避免直接冲掉当前主分组。</p>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>在当前主分组之外，设计 2–3 套备选分组策略：
+<ul>
+<li>更严格阈值分组；</li>
+<li>排除灰区样本后的二分类；</li>
+<li>连续结局衍生的高/低响应极端组方案。</li>
+</ul></li>
+<li>对每套备选分组，统一比较：
+<ul>
+<li>基线平衡性；</li>
+<li>样本量损失；</li>
+<li>strict nested CV outer-test AUC；</li>
+<li>train-test gap；</li>
+<li>特征稳定性。</li>
+</ul></li>
+<li>明确主次定位：
+<ul>
+<li><strong>主文仍用当前主分组</strong>；</li>
+<li><strong>备选分组只放补充材料/敏感性分析</strong>。</li>
+</ul></li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>alternative_grouping_sensitivity.md</code></li>
+<li><code>alternative_grouping_performance.csv</code></li>
+<li><code>alternative_grouping_baseline_balance.csv</code></li>
+</ul>
+<p><strong>决策门槛：</strong></p>
+<ul>
+<li>如果某套备选分组显著提升泛化且基线仍可接受，可作为 Discussion 中的“更严格定义下结果更稳”的补充论据；</li>
+<li>如果只是提高可分性但基线明显失衡，则仅保留为 exploratory 结果，不升级为主分析。</li>
+</ul>
+<hr/>
+<h3 id="section-5">模块 C：用“出组数据”做验证（当前对接中的新增重点）</h3>
+<p><strong>目标：</strong> 利用出组/干预后数据验证：当前 responder / non-responder 差异是否反映的是较稳定的个体异质性，而非仅仅是运动过程中的偶然变化。</p>
+<p><strong>说明：</strong></p>
+<ul>
+<li>这里的“out 数据”我当前按对接语境理解为<strong>出组/干预后数据</strong>；正式执行前需要先确认对应的数据文件和字段。</li>
+</ul>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>明确出组数据的文件、变量映射与可用样本数。</li>
+<li>设计两类验证问题：
+<ul>
+<li><strong>验证 1：</strong> 用当前分组标签，看出组时这些人群是否仍维持某些稳定差异；</li>
+<li><strong>验证 2：</strong> 用基线模型在出组数据上做迁移/投射，观察区分模式是否仍存在。</li>
+</ul></li>
+<li>重点看：
+<ul>
+<li>差异方向是否一致；</li>
+<li>候选脂质/临床锚点是否仍稳定；</li>
+<li>如果出组也能区分，是否支持“人群固有异质性”这一解释。</li>
+</ul></li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>outcome_phase_validation.md</code></li>
+<li><code>baseline_vs_out_validation.csv</code></li>
+<li>出组阶段差异图/箱线图/森林图</li>
+</ul>
+<p><strong>解释边界：</strong></p>
+<ul>
+<li>若出组数据支持差异延续，可增强“人群异质性稳定存在”的论点；</li>
+<li>但这仍不等于真正外部验证，应明确写成“内部时相验证/出组验证”。</li>
+</ul>
+<hr/>
+<h3 id="section-6">模块 D：随机抽样 / 留出法自我验证（self-validation）</h3>
+<p><strong>目标：</strong> 在缺少真正外部队列时，增加一层更接近真实部署的内部验证证据。</p>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>在 strict nested CV 主结果之外，再设计一套自我验证框架：
+<ul>
+<li>repeated random hold-out；</li>
+<li>train/validation/test 三段式；</li>
+<li>或 Monte Carlo split。</li>
+</ul></li>
+<li>若有批次、时间、来源信息，则优先升级为 pseudo-external：
+<ul>
+<li>leave-one-batch-out；</li>
+<li>leave-one-prefix-out；</li>
+<li>leave-one-time-block-out。</li>
+</ul></li>
+<li>与 strict nested CV 平行汇报：
+<ul>
+<li>strict nested CV 作为正式主口径；</li>
+<li>self-validation / pseudo-external 作为补充稳健性证据。</li>
+</ul></li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>self_validation_report.md</code></li>
+<li><code>pseudo_external_report.md</code></li>
+<li>各验证框架性能对比表</li>
+</ul>
+<p><strong>决策门槛：</strong></p>
+<ul>
+<li>若 self-validation 与 strict nested CV 方向一致，可增强结果可信度；</li>
+<li>若差异很大，优先回头排查分组稳定性和数据异质性。</li>
+</ul>
+<hr/>
+<h3 id="section-7">模块 E：模型优化只走“小模型 / 稀疏模型 / 稳定特征”路线</h3>
+<p><strong>目标：</strong> 不再以扩大变量维度为主，而是优先追求更稳的泛化结果。</p>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>保留当前已证明更合理的方向：
+<ul>
+<li><code>ultra_sparse_lipid</code></li>
+<li><code>compact_fusion</code></li>
+<li>top-k 稳定特征模型</li>
+</ul></li>
+<li>所有新模型比较统一输出：
+<ul>
+<li>mean outer-test AUC</li>
+<li>std AUC</li>
+<li>mean train AUC</li>
+<li>train-test gap</li>
+<li>selected feature count</li>
+<li>selection stability</li>
+</ul></li>
+<li>不再优先做 expanded 类大模型扩展，除非是为机制解释提供特定候选变量。</li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>small_model_comparison_v2.csv</code></li>
+<li><code>feature_stability_summary_v2.csv</code></li>
+<li><code>topk_stability_sweep.csv</code></li>
+</ul>
+<p><strong>判断标准：</strong></p>
+<ul>
+<li>小模型若 AUC 近似、gap 更小、稳定性更高，则优先进入论文主叙述；</li>
+<li>大模型即使训练更高，只要泛化不增益，就只保留为反例/局限性说明。</li>
+</ul>
+<hr/>
+<h3 id="section-8">模块 F：机制部分新增“心血管相关表型”桥接分析</h3>
+<p><strong>目标：</strong> 响应黄老师新思路，在预测主线之外补一条“脂质变化—心血管表型”的机制/临床解释支线。</p>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>等师姐整理完新增表型后，先做字段盘点：
+<ul>
+<li>哪些是心血管相关表型；</li>
+<li>哪些是基线变量；</li>
+<li>哪些有前后变化值。</li>
+</ul></li>
+<li>明确该模块定位：
+<ul>
+<li>是作为机制支持？</li>
+<li>还是作为额外临床锚点/解释变量？</li>
+</ul></li>
+<li>建议先做两层分析：
+<ul>
+<li>responder / non-responder 间的表型差异；</li>
+<li>稳定脂质与这些表型之间的相关/回归关联。</li>
+</ul></li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>cardiovascular_phenotype_bridge_analysis.md</code></li>
+<li><code>lipid_phenotype_association.csv</code></li>
+<li>机制示意图或相关热图</li>
+</ul>
+<p><strong>边界提醒：</strong></p>
+<ul>
+<li>该模块应首先服务于“解释”和“临床落脚点”，不建议一开始就并入高维预测主模型，以免再次加重过拟合。</li>
+</ul>
+<hr/>
+<h3 id="section-9">模块 G：外部验证与合作队列放到第二阶段</h3>
+<p><strong>目标：</strong> 接受“当前很难找到完全匹配外部脂质组队列”的现实，但不放弃后续合作路径。</p>
+<p><strong>核心动作：</strong></p>
+<ol type="1">
+<li>当前阶段先不把“找到外部队列”设为主线阻塞条件。</li>
+<li>文章雏形出来后，再对外展示：
+<ul>
+<li>当前主结果；</li>
+<li>小模型稳定结果；</li>
+<li>可复测的少数脂质候选。</li>
+</ul></li>
+<li>外部合作优先级：
+<ul>
+<li>有共享临床变量的儿童队列；</li>
+<li>能复测少数稳定脂质的小样本血样；</li>
+<li>能提供相关表型而非全量脂质组的平台。</li>
+</ul></li>
+</ol>
+<p><strong>交付物建议：</strong></p>
+<ul>
+<li><code>external_validation_strategy.md</code></li>
+<li><code>candidate_targeted_panel.csv</code></li>
+</ul>
+<hr/>
+<h2 id="section-10">三、建议的主次排布（很重要）</h2>
+<h3 id="section-11">适合放主文章/主结果的</h3>
+<ol type="1">
+<li>当前主 responder 分组口径；</li>
+<li>strict nested CV 主结果；</li>
+<li>小模型/稀疏模型中最稳的一组补充结果；</li>
+<li>出组验证若方向一致，可作为增强论点的重要补充。</li>
+</ol>
+<h3 id="section-12">适合放补充材料的</h3>
+<ol type="1">
+<li>备选 responder 分组敏感性分析；</li>
+<li>随机抽样/自我验证结果；</li>
+<li>pseudo-external 结果；</li>
+<li>大模型对照；</li>
+<li>更大范围的机制探索结果。</li>
+</ol>
+<hr/>
+<h2 id="section-13">四、推荐执行顺序（最终版）</h2>
+<ol type="1">
+<li><p><strong>先固化当前 responder 主分组的证据链</strong></p>
+<ul>
+<li>解释为什么保留当前分组，而不是立即换。</li>
+</ul></li>
+<li><p><strong>再做备选分组敏感性分析</strong></p>
+<ul>
+<li>有尝试，但不冲掉主分析。</li>
+</ul></li>
+<li><p><strong>马上上“出组验证 + 随机抽样自我验证”</strong></p>
+<ul>
+<li>这是本次对接中新增加、也最务实的验证路线。</li>
+</ul></li>
+<li><p><strong>模型优化只保留小模型/稀疏模型路线</strong></p>
+<ul>
+<li>不再盲目扩维。</li>
+</ul></li>
+<li><p><strong>机制部分等待心血管表型整理后接入</strong></p>
+<ul>
+<li>作为机制补充支线推进。</li>
+</ul></li>
+<li><p><strong>外部队列合作放到文章雏形完成后</strong></p>
+<ul>
+<li>不阻塞当前主分析推进。</li>
+</ul></li>
+</ol>
+<hr/>
+<h2 id="section-14">五、可直接发给师姐的简版表述</h2>
+<blockquote>
+<p>根据这次新的对接思路，后续分析不建议再把重点放在继续堆模型或单纯追求更高训练 AUC，而是分成四条主线推进：第一，保留当前 responder / non-responder 主分组，并补充分组合理性与基线平衡的证据链；第二，在不替代主口径的前提下，做备选 responder 分组的敏感性分析；第三，把出组数据验证和随机抽样自我验证作为当前最务实的验证增强路线；第四，模型优化继续优先走小模型、稀疏模型和稳定特征路线。若后续心血管相关表型整理出来，再作为机制补充模块接入；真正外部队列合作则放到文章整体雏形完成后推进。</p>
+</blockquote>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B">项目目录</a><a class="footer-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/plans">plans目录</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">© 2026 AI 结果展示页 | Styled after aging-analysis tutorial</p>
+<div class="footer-note">生成日期：2026-03-11 | 当前目录：/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/docs/plans</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>
