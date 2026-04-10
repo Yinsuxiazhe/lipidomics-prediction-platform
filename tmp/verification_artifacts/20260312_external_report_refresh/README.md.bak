@@ -1,0 +1,6 @@
+# responder sequencing company formal report package
+
+- 优先打开 `01_formal_report.html`：这是面向对外技术沟通的正式报告页。
+- `index.html` 为同一页面的首页入口。
+- `assets/` 目录包含 7 张图对应的 PNG 与 PDF 文件，可用于单独引用或制图留档。
+- 本包聚焦当前交付范围内的主结果、稳健性分析、时相验证与分组审计结果。

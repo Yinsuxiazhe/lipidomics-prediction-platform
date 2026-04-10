@@ -1,0 +1,6 @@
+# responder sequencing company formal report package
+
+- 优先打开 `index.html` 或 `01_formal_report.html`：这是面向对外技术沟通的正式报告页。
+- `assets/` 目录包含 7 张图对应的 PNG 与 PDF 文件，可用于单独引用、归档或插入正式材料。
+- 本包聚焦当前已交付数据支持的正式主结果、补充稳健性证据、post-intervention 时相验证与 response label audit。
+- 术语边界说明：`repeated hold-out`、`leave-one-prefix-out` 与 `post-intervention within-dataset temporal validation` 均属于补充验证路线，不属于 external validation。

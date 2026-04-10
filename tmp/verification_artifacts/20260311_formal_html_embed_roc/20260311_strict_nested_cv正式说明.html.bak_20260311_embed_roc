@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>strict nested CV 正式说明</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; line-height: 1.75; color: #1f2937; max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; background: #ffffff; }
+  a { color: #0f62fe; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3, h4 { color: #111827; line-height: 1.35; }
+  h1 { font-size: 2rem; margin-top: 0; border-bottom: 3px solid #e5e7eb; padding-bottom: 0.7rem; }
+  h2 { margin-top: 2.2rem; padding-top: 0.2rem; border-top: 1px solid #f3f4f6; }
+  p, li { font-size: 1rem; }
+  blockquote { margin: 1rem 0; padding: 0.85rem 1rem; background: #f8fafc; border-left: 4px solid #cbd5e1; color: #334155; }
+  img { max-width: 100%; height: auto; display: block; margin: 1.25rem auto; border-radius: 10px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12); }
+  table { width: 100%; border-collapse: collapse; margin: 1.2rem 0 1.6rem; font-size: 0.95rem; }
+  th, td { border: 1px solid #e5e7eb; padding: 0.7rem 0.75rem; vertical-align: top; }
+  th { background: #f8fafc; }
+  code { background: #f3f4f6; padding: 0.12rem 0.32rem; border-radius: 4px; font-size: 0.92em; }
+  pre code { display: block; padding: 1rem; overflow-x: auto; }
+  #TOC { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem 1.2rem; margin: 1.5rem 0 2rem; }
+  hr { border: 0; border-top: 1px solid #e5e7eb; margin: 2rem 0; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">strict nested CV 正式说明</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#strict-nested-cv-正式说明"
+id="toc-strict-nested-cv-正式说明">strict nested CV 正式说明</a>
+<ul>
+<li><a href="#本次正式结果的核心结论" id="toc-本次正式结果的核心结论">1.
+本次正式结果的核心结论</a></li>
+<li><a href="#为什么正式结果采用-strict-nested-cv"
+id="toc-为什么正式结果采用-strict-nested-cv">2. 为什么正式结果采用
+strict nested CV</a></li>
+<li><a href="#主结果数据与证据链" id="toc-主结果数据与证据链">3.
+主结果数据与证据链</a>
+<ul>
+<li><a href="#对主结果的直接解释" id="toc-对主结果的直接解释">3.1
+对主结果的直接解释</a></li>
+<li><a href="#当前主模型的稳定特征线索"
+id="toc-当前主模型的稳定特征线索">3.2 当前主模型的稳定特征线索</a></li>
+</ul></li>
+<li><a href="#正式结果能够支持的判断边界"
+id="toc-正式结果能够支持的判断边界">4. 正式结果能够支持的判断边界</a>
+<ul>
+<li><a href="#可以正式支持的判断" id="toc-可以正式支持的判断">4.1
+可以正式支持的判断</a></li>
+<li><a href="#当前不宜正式支持的判断"
+id="toc-当前不宜正式支持的判断">4.2 当前不宜正式支持的判断</a></li>
+</ul></li>
+<li><a href="#补充小模型分析带来的新增信息"
+id="toc-补充小模型分析带来的新增信息">5.
+补充小模型分析带来的新增信息</a>
+<ul>
+<li><a href="#补充分析的结论重点" id="toc-补充分析的结论重点">5.1
+补充分析的结论重点</a></li>
+</ul></li>
+<li><a href="#标签与队列审计目前能支持的结论"
+id="toc-标签与队列审计目前能支持的结论">6.
+标签与队列审计目前能支持的结论</a></li>
+<li><a href="#正式材料与补充材料的排布建议"
+id="toc-正式材料与补充材料的排布建议">7.
+正式材料与补充材料的排布建议</a>
+<ul>
+<li><a href="#建议放入主文章正文或主汇报页的内容"
+id="toc-建议放入主文章正文或主汇报页的内容">7.1
+建议放入主文章正文或主汇报页的内容</a></li>
+<li><a href="#建议放入补充材料或方法附件的内容"
+id="toc-建议放入补充材料或方法附件的内容">7.2
+建议放入补充材料或方法附件的内容</a></li>
+</ul></li>
+<li><a href="#文件级阅读与使用建议" id="toc-文件级阅读与使用建议">8.
+文件级阅读与使用建议</a>
+<ul>
+<li><a href="#最值得优先打开的文件" id="toc-最值得优先打开的文件">8.1
+最值得优先打开的文件</a></li>
+<li><a href="#关键代码文件的作用分工"
+id="toc-关键代码文件的作用分工">8.2 关键代码文件的作用分工</a></li>
+</ul></li>
+<li><a href="#当前阶段最稳妥的正式表述"
+id="toc-当前阶段最稳妥的正式表述">9. 当前阶段最稳妥的正式表述</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="strict-nested-cv-正式说明">strict nested CV 正式说明</h1>
+<blockquote>
+<p>本文档为正式版综合说明，采用分点论证方式组织内容，用于结果汇报、协作讨论和项目留档。</p>
+</blockquote>
+<figure>
+<img src="../01_主图与主结果/Figure6-4_Honest_NestedCV.png"
+alt="Figure 6-4：strict nested CV 主图" />
+<figcaption aria-hidden="true">Figure 6-4：strict nested CV
+主图</figcaption>
+</figure>
+<h2 id="本次正式结果的核心结论">1. 本次正式结果的核心结论</h2>
+<ol type="1">
+<li>本次正式主结果应以 <strong>strict nested CV</strong>
+为唯一正式口径。</li>
+<li>在 5 个主模型中，<code>Clinical + lipid fusion</code> 的 mean AUC
+最高，为 <strong>0.5364</strong>，但仅略高于
+<code>Clinical baseline</code>（<strong>0.5297</strong>）和
+<code>Lipid-only</code>（<strong>0.5338</strong>）。</li>
+<li>更高维的 expanded
+模型并未带来更好的外层测试表现，说明单纯增加变量数量并不能稳定提升泛化能力。</li>
+<li>当前结果更适合支持“<strong>存在一定预测信号，但泛化增益有限</strong>”这一表述，而不适合上升为“已经建立高性能稳定预测模型”的表述。</li>
+</ol>
+<h2 id="为什么正式结果采用-strict-nested-cv">2. 为什么正式结果采用
+strict nested CV</h2>
+<ol type="1">
+<li><strong>方法学边界更清楚。</strong>
+特征筛选、标准化、参数调优均限定在训练折内完成，外层测试折仅用于最终评估。</li>
+<li><strong>结果含义更接近真实泛化能力。</strong>
+外层测试折不参与建模决策，因此 AUC
+更接近模型离开当前训练样本后的实际表现。</li>
+<li><strong>可以显著降低乐观偏差。</strong>
+当筛特征和调参提前接触验证信息时，结果往往会被高估；strict nested CV
+的核心价值正是避免这一问题。</li>
+<li><strong>更适合作为论文主图和正式结论。</strong>
+对正式汇报和后续投稿而言，可信度比表面分数更重要。</li>
+</ol>
+<h2 id="主结果数据与证据链">3. 主结果数据与证据链</h2>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">mean AUC</th>
+<th style="text-align: right;">std AUC</th>
+<th style="text-align: right;">mean train AUC</th>
+<th style="text-align: right;">训练-测试差值</th>
+<th style="text-align: right;">每折特征数</th>
+<th>结果解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical baseline</td>
+<td style="text-align: right;">0.5297</td>
+<td style="text-align: right;">0.0640</td>
+<td style="text-align: right;">0.6064</td>
+<td style="text-align: right;">0.0767</td>
+<td style="text-align: right;">5</td>
+<td>固定 5 个临床锚点，作为最稳妥的基线参考。</td>
+</tr>
+<tr>
+<td>Expanded clinical</td>
+<td style="text-align: right;">0.5011</td>
+<td style="text-align: right;">0.0742</td>
+<td style="text-align: right;">0.7437</td>
+<td style="text-align: right;">0.2426</td>
+<td style="text-align: right;">19–27</td>
+<td>扩展临床变量更多，但泛化表现未见改善，提示高维临床变量带来额外不稳定性。</td>
+</tr>
+<tr>
+<td>Lipid-only</td>
+<td style="text-align: right;">0.5338</td>
+<td style="text-align: right;">0.0701</td>
+<td style="text-align: right;">0.7895</td>
+<td style="text-align: right;">0.2556</td>
+<td style="text-align: right;">28–30</td>
+<td>脂质组存在一定预测信号，但训练—测试差值较大，过拟合风险明显。</td>
+</tr>
+<tr>
+<td>Clinical + lipid fusion</td>
+<td style="text-align: right;">0.5364</td>
+<td style="text-align: right;">0.0535</td>
+<td style="text-align: right;">0.8055</td>
+<td style="text-align: right;">0.2691</td>
+<td style="text-align: right;">33–35</td>
+<td>当前 mean AUC
+最高，但仅为有限增益，更适合表述为“略优”而非“明显优于”。</td>
+</tr>
+<tr>
+<td>Expanded fusion</td>
+<td style="text-align: right;">0.5258</td>
+<td style="text-align: right;">0.0450</td>
+<td style="text-align: right;">0.8496</td>
+<td style="text-align: right;">0.3239</td>
+<td style="text-align: right;">49–57</td>
+<td>变量规模最大，训练分数最高，但泛化没有同步提升，过拟合最明显。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="对主结果的直接解释">3.1 对主结果的直接解释</h3>
+<ol type="1">
+<li><code>Clinical baseline</code>
+虽然分数不高，但训练—测试差值最小，是当前最稳妥的参考基线。</li>
+<li><code>Lipid-only</code> 与 <code>Clinical + lipid fusion</code>
+显示出一定增量信号，但两者的训练—测试差值均超过
+<strong>0.25</strong>，提示现阶段仍存在明显过拟合压力。</li>
+<li><code>Expanded clinical</code> 和 <code>Expanded fusion</code>
+在变量数明显增加后，并未换来更高的泛化
+AUC，反而进一步扩大了训练—测试差值。</li>
+<li>因此，本轮结果的重点不应放在“再增加多少变量”，而应放在“怎样缩小训练—测试差值并提高跨折稳定性”。</li>
+</ol>
+<h3 id="当前主模型的稳定特征线索">3.2 当前主模型的稳定特征线索</h3>
+<ol type="1">
+<li><code>Lipid-only</code>
+中跨折更稳定的脂质主要包括：PA(28:0)、PC(38:7e)、Cer(d19:1_24:1)、Hex1Cer(d18:0_20:4)、Hex2Cer(d18:2_16:0)、PC(26:3e)、PC(32:1_22:4)。</li>
+<li><code>Expanded clinical</code>
+中更稳定的扩展临床变量主要包括：whole_blood_LYMPH_count、AV_sub、HAD、HARI、HRI、Inbody_122_BFM._of_Left_Leg、Inbody_207_Growth_Score、SFT。</li>
+<li><code>Expanded fusion</code>
+的高频变量同时混合了扩展临床与脂质特征，代表性变量包括：PA(28:0)、PC(38:7e)、whole_blood_LYMPH_count、AV_sub、Cer(d19:1_24:1)、HAD、HARI、HRI。</li>
+<li>这些稳定特征可作为后续压缩模型或补充生物学解释的候选线索，但在当前阶段仍不应被直接等同于“已定稿的生物标志物集合”。</li>
+</ol>
+<h2 id="正式结果能够支持的判断边界">4. 正式结果能够支持的判断边界</h2>
+<h3 id="可以正式支持的判断">4.1 可以正式支持的判断</h3>
+<ol type="1">
+<li>目前数据中可以检测到一定预测信号。</li>
+<li>脂质组与融合模型相较单纯临床基线存在<strong>有限增量</strong>，但增幅较小。</li>
+<li>模型复杂度继续增大时，泛化性能并未同步提升，且过拟合迹象更明显。</li>
+<li>strict nested CV
+结果比开发阶段结果更适合承担主图、主结论和正式性能声明的角色。</li>
+</ol>
+<h3 id="当前不宜正式支持的判断">4.2 当前不宜正式支持的判断</h3>
+<ol type="1">
+<li>不宜表述为“脂质组显著、大幅、稳定提升了预测性能”。</li>
+<li>不宜表述为“已经得到高性能、可直接临床转化的预测模型”。</li>
+<li>不宜用更早期的较高分结果替代 strict nested CV
+结果充当正式主结果。</li>
+</ol>
+<h2 id="补充小模型分析带来的新增信息">5.
+补充小模型分析带来的新增信息</h2>
+<table>
+<colgroup>
+<col style="width: 11%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 15%" />
+<col style="width: 11%" />
+</colgroup>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">mean AUC</th>
+<th style="text-align: right;">std AUC</th>
+<th style="text-align: right;">mean train AUC</th>
+<th style="text-align: right;">训练-测试差值</th>
+<th style="text-align: right;">平均特征数</th>
+<th>结果解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical baseline（主基线）</td>
+<td style="text-align: right;">0.5297</td>
+<td style="text-align: right;">0.0640</td>
+<td style="text-align: right;">0.6064</td>
+<td style="text-align: right;">0.0767</td>
+<td style="text-align: right;">5.0</td>
+<td>最稳但区分能力有限，是正式结果解释时的重要基线。</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td style="text-align: right;">0.5396</td>
+<td style="text-align: right;">0.0871</td>
+<td style="text-align: right;">0.6949</td>
+<td style="text-align: right;">0.1554</td>
+<td style="text-align: right;">4.6</td>
+<td>脂质特征压缩到约 5 个后，训练—测试差值明显下降，并出现小幅 AUC
+改善。</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td style="text-align: right;">0.5376</td>
+<td style="text-align: right;">0.0506</td>
+<td style="text-align: right;">0.7621</td>
+<td style="text-align: right;">0.2245</td>
+<td style="text-align: right;">19.2</td>
+<td>融合模型缩小后稳定性改善，但 AUC 增益仍非常有限。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="补充分析的结论重点">5.1 补充分析的结论重点</h3>
+<ol type="1">
+<li>将脂质模型压缩到约 <strong>5 个特征</strong>
+后，<code>ultra_sparse_lipid</code> 的 mean AUC 提升到
+<strong>0.5396</strong>，同时训练—测试差值从主脂质模型的
+<strong>0.2556</strong> 降到
+<strong>0.1554</strong>，说明<strong>压缩复杂度有助于提升稳定性</strong>。</li>
+<li><code>compact_fusion</code> 的 mean AUC 为
+<strong>0.5376</strong>，与主融合模型 <strong>0.5364</strong>
+非常接近，但训练—测试差值下降到
+<strong>0.2245</strong>，说明<strong>较小的融合模型更稳，但收益仍然有限</strong>。</li>
+<li>这组补充结果共同支持：当前更值得优先推进的是<strong>模型压缩、稳定特征筛选和标签/队列核查</strong>，而不是继续无边界扩展变量和算法。</li>
+</ol>
+<h2 id="标签与队列审计目前能支持的结论">6.
+标签与队列审计目前能支持的结论</h2>
+<ol type="1">
+<li><code>287 → 281</code>
+的分析样本收敛路径是可追溯的，四张核心表重叠后的最终分析样本量为
+<strong>281</strong>。</li>
+<li>临床表中存在但未进入最终 281 分析队列的 6 个 ID
+为：<code>C115</code>、<code>C316</code>、<code>E217</code>、<code>F249</code>、<code>F298</code>、<code>F303</code>。</li>
+<li>现有本地标签文件仅能支持 <strong>结构级标签审计</strong>，即可以确认
+ID 与 <code>Group</code> 分布，但尚不足以完成 response / noresponse
+原始定义、时间窗和阈值的原始核验。</li>
+<li>因此，当前最稳妥的正式写法是：<strong>已完成结构级标签/队列审计，但结局真值定义仍需进一步核对。</strong></li>
+</ol>
+<h2 id="正式材料与补充材料的排布建议">7.
+正式材料与补充材料的排布建议</h2>
+<h3 id="建议放入主文章正文或主汇报页的内容">7.1
+建议放入主文章正文或主汇报页的内容</h3>
+<ol type="1">
+<li><code>01_主图与主结果/Figure6-4_Honest_NestedCV.png</code> 与对应
+PDF。</li>
+<li><code>01_主图与主结果/performance_summary.csv</code> 对应的 5
+个主模型总体性能结果。</li>
+<li>对主结果的核心表述：
+<ul>
+<li>融合模型数值最高，但领先幅度有限；</li>
+<li>扩展模型未改善泛化；</li>
+<li>strict nested CV 下的结果更可信，应作为正式结论依据。</li>
+</ul></li>
+</ol>
+<h3 id="建议放入补充材料或方法附件的内容">7.2
+建议放入补充材料或方法附件的内容</h3>
+<ol type="1">
+<li><code>02_补充分析与审计/20260310_predefined_small_model_comparison.csv</code>
+及其小模型目录。</li>
+<li><code>02_补充分析与审计/20260310_small_model_label_audit.md</code>
+与对应 CSV。</li>
+<li><code>01_主图与主结果/fold_metrics.csv</code>、<code>feature_stability_summary.csv</code>、<code>feature_frequency.csv</code>、<code>roc_curve_points.csv</code>。</li>
+<li><code>03_关键代码与配置/</code> 中的关键实现脚本与配置文件。</li>
+</ol>
+<h2 id="文件级阅读与使用建议">8. 文件级阅读与使用建议</h2>
+<h3 id="最值得优先打开的文件">8.1 最值得优先打开的文件</h3>
+<ol type="1">
+<li><code>00_正式说明/20260311_strict_nested_cv正式说明.html</code></li>
+<li><code>01_主图与主结果/Figure6-4_Honest_NestedCV.png</code></li>
+<li><code>01_主图与主结果/performance_summary.csv</code></li>
+<li><code>04_方法学说明/20260311_strict_nested_cv结果定位说明.md</code></li>
+</ol>
+<h3 id="关键代码文件的作用分工">8.2 关键代码文件的作用分工</h3>
+<ol type="1">
+<li><code>03_关键代码与配置/run_pipeline.py</code>：主流程入口，负责串联主要分析阶段。</li>
+<li><code>03_关键代码与配置/config/analysis.yaml</code>：输入、标签、CV
+参数和输出目录配置。</li>
+<li><code>03_关键代码与配置/src/models/run_nested_cv.py</code>：strict
+nested CV 的核心实现。</li>
+<li><code>03_关键代码与配置/src/reports/make_tables.py</code>：导出
+performance、fold 与 stability 相关数据表。</li>
+<li><code>03_关键代码与配置/src/reports/make_figures.py</code>：导出 ROC
+点位等绘图支撑数据。</li>
+<li><code>03_关键代码与配置/fig6-4最终.R</code>：读取 strict nested CV
+输出并生成 Figure 6-4。</li>
+</ol>
+<h2 id="当前阶段最稳妥的正式表述">9. 当前阶段最稳妥的正式表述</h2>
+<ol type="1">
+<li><strong>正式结论</strong>：当前 strict nested CV
+结果显示，模型存在一定预测信号，但泛化增益有限；融合模型虽为当前最优，但优势幅度较小。</li>
+<li><strong>方法学结论</strong>：正式结果应以 strict nested CV
+为准，因为该口径更能反映真实泛化能力，并减少乐观偏差。</li>
+<li><strong>工作重点</strong>：后续优先方向应是标签定义核查、稳定特征提炼、模型压缩和外部验证，而不是继续无边界增加变量或更换更复杂算法。</li>
+</ol>
+</body>
+</html>

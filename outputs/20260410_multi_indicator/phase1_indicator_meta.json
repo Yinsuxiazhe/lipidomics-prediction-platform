@@ -1,0 +1,72 @@
+{
+  "indicators": [
+    {
+      "name": "BMI",
+      "enroll_col": "enroll_BMI",
+      "outroll_col": "outroll_BMI",
+      "delta_col": "delta_BMI",
+      "label_q4": "label_q4_BMI",
+      "label_q3": "label_q3_BMI"
+    },
+    {
+      "name": "weight",
+      "enroll_col": "enroll_weight",
+      "outroll_col": "outroll_weight",
+      "delta_col": "delta_weight",
+      "label_q4": "label_q4_weight",
+      "label_q3": "label_q3_weight"
+    },
+    {
+      "name": "bmi_z",
+      "enroll_col": "enroll_bmi_z",
+      "outroll_col": "outroll_bmi_z",
+      "delta_col": "delta_bmi_z",
+      "label_q4": "label_q4_bmi_z",
+      "label_q3": "label_q3_bmi_z"
+    },
+    {
+      "name": "waistline",
+      "enroll_col": "enroll_waistline",
+      "outroll_col": "outroll_waistline",
+      "delta_col": "delta_waistline",
+      "label_q4": "label_q4_waistline",
+      "label_q3": "label_q3_waistline"
+    },
+    {
+      "name": "hipline",
+      "enroll_col": "enroll_hipline",
+      "outroll_col": "outroll_hipline",
+      "delta_col": "delta_hipline",
+      "label_q4": "label_q4_hipline",
+      "label_q3": "label_q3_hipline"
+    },
+    {
+      "name": "WHR",
+      "enroll_col": "enroll_WHR",
+      "outroll_col": "outroll_WHR",
+      "delta_col": "delta_WHR",
+      "label_q4": "label_q4_WHR",
+      "label_q3": "label_q3_WHR"
+    },
+    {
+      "name": "PBF",
+      "enroll_col": "enroll_PBF",
+      "outroll_col": "outroll_PBF",
+      "delta_col": "delta_PBF",
+      "label_q4": "label_q4_PBF",
+      "label_q3": "label_q3_PBF"
+    },
+    {
+      "name": "PSM",
+      "enroll_col": "enroll_PSM",
+      "outroll_col": "outroll_PSM",
+      "delta_col": "delta_PSM",
+      "label_q4": "label_q4_PSM",
+      "label_q3": "label_q3_PSM"
+    }
+  ],
+  "total_samples": 281,
+  "male_n": 97,
+  "female_n": 184,
+  "lipid_feature_count": 1608
+}

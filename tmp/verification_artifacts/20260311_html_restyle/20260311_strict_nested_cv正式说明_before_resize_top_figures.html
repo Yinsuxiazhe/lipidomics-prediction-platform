@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>strict nested CV 正式说明</title>
+<meta content="诚实口径优先的正式结果说明、补充图与方法边界" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+.article-main figure {
+  margin: 1.6rem 0 2rem;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1rem;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.06);
+}
+.article-main figure img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+.article-main figcaption {
+  margin-top: 0.85rem;
+  color: var(--text-light);
+  font-size: 0.92rem;
+  text-align: center;
+}
+.article-main > blockquote:first-of-type {
+  background: linear-gradient(135deg, #eff6ff 0%, #f8fbff 100%);
+  border-left-width: 5px;
+}
+.hero .doc-toolbar {
+  margin-top: 1.5rem;
+}
+.hero .doc-link-btn {
+  backdrop-filter: blur(10px);
+}
+@media (max-width: 640px) {
+  .article-main figure {
+    padding: 0.75rem;
+    border-radius: 14px;
+  }
+}
+</style>
+</head>
+<body id="top">
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="#top">🧬 Strict Nested CV</a>
+<div class="nav-links"><a class="nav-link" href="#section-1">核心结论</a><a class="nav-link" href="#section-3">主结果</a><a class="nav-link" href="#section-5">补充图</a><a class="nav-link" href="#section-19">正式表述</a></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">正式说明包</div>
+<h1>strict nested CV 正式说明</h1>
+<p class="hero-subtitle-compact">诚实口径优先的正式结果说明、补充图与方法边界</p>
+<div class="hero-meta"><span class="meta-pill">Strict nested CV</span><span class="meta-pill">诚实口径优先</span><span class="meta-pill">5个主模型</span><span class="meta-pill">补充图已纳入</span></div>
+<div class="doc-toolbar"><a class="doc-link-btn" href="../01_主图与主结果/Figure6-4_Honest_NestedCV.png">查看 Figure 6-4</a><a class="doc-link-btn" href="../04_方法学说明/20260311_正式说明包代码完整性审计.html">查看代码审计</a><a class="doc-link-btn" href="../05_补充图_训练AUC与泛化差距/20260311_ROC_publication_contact_sheet.png">查看 ROC 总览</a><a class="doc-link-btn" href="../../20260311_strict_nested_cv正式说明包.zip">下载说明包 ZIP</a></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">1. 本次正式结果的核心结论</a></li><li><a href="#section-2">2. 为什么正式结果采用 strict nested CV</a></li><li><a href="#section-3">3. 主结果数据与证据链</a></li><li><a href="#section-7">4. 正式结果能够支持的判断边界</a></li><li><a href="#section-10">5. 补充小模型分析带来的新增信息</a></li><li><a href="#section-12">6. 标签与队列审计目前能支持的结论</a></li><li><a href="#section-13">7. 正式材料与补充材料的排布建议</a></li><li><a href="#section-16">8. 文件级阅读与使用建议</a></li><li><a href="#section-19">9. 当前阶段最稳妥的正式表述</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">1. 本次正式结果的核心结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-2" href="#section-2">2. 为什么正式结果采用 strict nested CV</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-3" href="#section-3">3. 主结果数据与证据链</a><a class="sidebar-toc-link sub-item" data-target="section-4" href="#section-4">3.1 对主结果的直接解释</a><a class="sidebar-toc-link sub-item" data-target="section-5" href="#section-5">3.2 训练 ROC 与泛化差距补充图（方法学辅助，不作正式性能声明）</a><a class="sidebar-toc-link sub-item" data-target="section-6" href="#section-6">3.3 当前主模型的稳定特征线索</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-7" href="#section-7">4. 正式结果能够支持的判断边界</a><a class="sidebar-toc-link sub-item" data-target="section-8" href="#section-8">4.1 可以正式支持的判断</a><a class="sidebar-toc-link sub-item" data-target="section-9" href="#section-9">4.2 当前不宜正式支持的判断</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-10" href="#section-10">5. 补充小模型分析带来的新增信息</a><a class="sidebar-toc-link sub-item" data-target="section-11" href="#section-11">5.1 补充分析的结论重点</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-12" href="#section-12">6. 标签与队列审计目前能支持的结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-13" href="#section-13">7. 正式材料与补充材料的排布建议</a><a class="sidebar-toc-link sub-item" data-target="section-14" href="#section-14">7.1 建议放入主文章正文或主汇报页的内容</a><a class="sidebar-toc-link sub-item" data-target="section-15" href="#section-15">7.2 建议放入补充材料或方法附件的内容</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-16" href="#section-16">8. 文件级阅读与使用建议</a><a class="sidebar-toc-link sub-item" data-target="section-17" href="#section-17">8.1 最值得优先打开的文件</a><a class="sidebar-toc-link sub-item" data-target="section-18" href="#section-18">8.2 关键代码文件的作用分工</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-19" href="#section-19">9. 当前阶段最稳妥的正式表述</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">正式说明页 · aging-analysis 风格版本</div><h1 id="strict-nested-cv-正式说明">strict nested CV 正式说明</h1>
+<blockquote>
+<p>本文档为正式版综合说明，采用分点论证方式组织内容，用于结果汇报、协作讨论和项目留档。</p>
+</blockquote>
+<p><strong>分析者：Chenyu Fan</strong><br/>
+<strong>需求方：Shuxian Zhang</strong></p>
+<p><img alt="Figure 6-4：strict nested CV 主图" src="../01_主图与主结果/Figure6-4_Honest_NestedCV.png"/></p>
+<h2 id="section-1">1. 本次正式结果的核心结论</h2>
+<ol type="1">
+<li>本次正式主结果应以 <strong>strict nested CV</strong> 为唯一正式口径。</li>
+<li>在 5 个主模型中，<code>Clinical + lipid fusion</code> 的 mean AUC 最高，为 <strong>0.5364</strong>，但仅略高于 <code>Clinical baseline</code>（<strong>0.5297</strong>）和 <code>Lipid-only</code>（<strong>0.5338</strong>）。</li>
+<li>更高维的 expanded 模型并未带来更好的外层测试表现，说明单纯增加变量数量并不能稳定提升泛化能力。</li>
+<li>当前结果更适合支持“<strong>存在一定预测信号，但泛化增益有限</strong>”这一表述，而不适合上升为“已经建立高性能稳定预测模型”的表述。</li>
+</ol>
+<h2 id="section-2">2. 为什么正式结果采用 strict nested CV</h2>
+<ol type="1">
+<li><strong>方法学边界更清楚。</strong> 特征筛选、标准化、参数调优均限定在训练折内完成，外层测试折仅用于最终评估。</li>
+<li><strong>结果含义更接近真实泛化能力。</strong> 外层测试折不参与建模决策，因此 AUC 更接近模型离开当前训练样本后的实际表现。</li>
+<li><strong>可以显著降低乐观偏差。</strong> 当筛特征和调参提前接触验证信息时，结果往往会被高估；strict nested CV 的核心价值正是避免这一问题。</li>
+<li><strong>更适合作为论文主图和正式结论。</strong> 对正式汇报和后续投稿而言，可信度比表面分数更重要。</li>
+</ol>
+<h2 id="section-3">3. 主结果数据与证据链</h2>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">mean AUC</th>
+<th style="text-align: right;">std AUC</th>
+<th style="text-align: right;">mean train AUC</th>
+<th style="text-align: right;">训练-测试差值</th>
+<th style="text-align: right;">每折特征数</th>
+<th>结果解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical baseline</td>
+<td style="text-align: right;">0.5297</td>
+<td style="text-align: right;">0.0640</td>
+<td style="text-align: right;">0.6064</td>
+<td style="text-align: right;">0.0767</td>
+<td style="text-align: right;">5</td>
+<td>固定 5 个临床锚点，作为最稳妥的基线参考。</td>
+</tr>
+<tr>
+<td>Expanded clinical</td>
+<td style="text-align: right;">0.5011</td>
+<td style="text-align: right;">0.0742</td>
+<td style="text-align: right;">0.7437</td>
+<td style="text-align: right;">0.2426</td>
+<td style="text-align: right;">19–27</td>
+<td>扩展临床变量更多，但泛化表现未见改善，提示高维临床变量带来额外不稳定性。</td>
+</tr>
+<tr>
+<td>Lipid-only</td>
+<td style="text-align: right;">0.5338</td>
+<td style="text-align: right;">0.0701</td>
+<td style="text-align: right;">0.7895</td>
+<td style="text-align: right;">0.2556</td>
+<td style="text-align: right;">28–30</td>
+<td>脂质组存在一定预测信号，但训练—测试差值较大，过拟合风险明显。</td>
+</tr>
+<tr>
+<td>Clinical + lipid fusion</td>
+<td style="text-align: right;">0.5364</td>
+<td style="text-align: right;">0.0535</td>
+<td style="text-align: right;">0.8055</td>
+<td style="text-align: right;">0.2691</td>
+<td style="text-align: right;">33–35</td>
+<td>当前 mean AUC 最高，但仅为有限增益，更适合表述为“略优”而非“明显优于”。</td>
+</tr>
+<tr>
+<td>Expanded fusion</td>
+<td style="text-align: right;">0.5258</td>
+<td style="text-align: right;">0.0450</td>
+<td style="text-align: right;">0.8496</td>
+<td style="text-align: right;">0.3239</td>
+<td style="text-align: right;">49–57</td>
+<td>变量规模最大，训练分数最高，但泛化没有同步提升，过拟合最明显。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-4">3.1 对主结果的直接解释</h3>
+<ol type="1">
+<li><code>Clinical baseline</code> 虽然分数不高，但训练—测试差值最小，是当前最稳妥的参考基线。</li>
+<li><code>Lipid-only</code> 与 <code>Clinical + lipid fusion</code> 显示出一定增量信号，但两者的训练—测试差值均超过 <strong>0.25</strong>，提示现阶段仍存在明显过拟合压力。</li>
+<li><code>Expanded clinical</code> 和 <code>Expanded fusion</code> 在变量数明显增加后，并未换来更高的泛化 AUC，反而进一步扩大了训练—测试差值。</li>
+<li>因此，本轮结果的重点不应放在“再增加多少变量”，而应放在“怎样缩小训练—测试差值并提高跨折稳定性”。</li>
+</ol>
+<h3 id="section-5">3.2 训练 ROC 与泛化差距补充图（方法学辅助，不作正式性能声明）</h3>
+<blockquote>
+<p>以下图件用于解释“模型在训练阶段已学到一定模式，但外层测试泛化增益有限”这一现象。<strong>正式性能声明仍以上述 strict nested CV outer-test mean AUC 与 Figure 6-4 主图为准</strong>，不以训练 ROC 单独定性模型优劣。</p>
+</blockquote>
+<h4 id="321-训练-auc-vs-外层测试-auc-的整体对照">3.2.1 训练 AUC vs 外层测试 AUC 的整体对照</h4>
+<p><img alt="训练 AUC 与泛化差距组合图" src="../05_补充图_训练AUC与泛化差距/20260311_训练AUC与泛化差距_组合图.png"/></p>
+<ol type="1">
+<li><code>Clinical baseline</code> 的训练—测试差值最小（<strong>0.0767</strong>），虽然绝对 AUC 不高，但说明其作为锚点基线最稳。</li>
+<li><code>Lipid-only</code> 与 <code>Clinical + lipid fusion</code> 的 outer-test AUC 略高于基线，但训练—测试差值都在 <strong>0.25</strong> 左右，提示当前增益仍伴随明显过拟合压力。</li>
+<li><code>Expanded clinical</code> 与 <code>Expanded fusion</code> 的训练 AUC 明显更高，但外层测试表现并未同步改善，支持“增加变量规模不等于提升泛化能力”的判断。</li>
+<li>因此，这组图更适合支撑“<strong>模型学到了模式，但模式尚未稳定转化为强泛化性能</strong>”这一解释，而不是支持更激进的性能表述。</li>
+</ol>
+<h4 id="322-5-个主模型-publication-style-roc-总览">3.2.2 5 个主模型 publication-style ROC 总览</h4>
+<p><img alt="5 个主模型 publication-style ROC 总览" src="../05_补充图_训练AUC与泛化差距/20260311_ROC_publication_contact_sheet.png"/></p>
+<ol type="1">
+<li>该总览图便于横向比较 5 个主模型的训练 ROC 与 outer-test ROC 之间的相对分离程度。</li>
+<li>从排版角度看，当前 legend 统一下置，未见明显文字重叠，可直接作为补充审阅图件。</li>
+<li>但从解释角度看，仍应把它理解为<strong>方法学辅助图</strong>：它说明训练阶段的分离模式与泛化之间存在落差，而不是新的正式主结果。</li>
+<li>本页不单独突出“训练结果最强模型”的训练单图，以避免训练表现被误读为正式性能声明。</li>
+</ol>
+<h4 id="323-5-个主模型单图便于逐张阅读">3.2.3 5 个主模型单图（便于逐张阅读）</h4>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;margin:1.2em 0;">
+<figure style="margin:0;border:1px solid #dddddd;border-radius:8px;padding:14px;background:#ffffff;">
+<img alt="Clinical baseline publication-style ROC" src="../05_补充图_训练AUC与泛化差距/20260311_ROC_clinical_baseline_publication.png"/>
+<figcaption>
+<strong>Clinical baseline</strong><br/>
+      训练 AUC = 0.606；外层测试 AUC = 0.530；差值 = 0.077。<br/>
+      当前最稳妥的锚点基线：分数不高，但训练与外层测试之间的落差最小。<br/>
+<a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_clinical_baseline_publication.png">PNG</a> /
+      <a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_clinical_baseline_publication.pdf">PDF</a>
+</figcaption>
+</figure>
+<figure style="margin:0;border:1px solid #dddddd;border-radius:8px;padding:14px;background:#ffffff;">
+<img alt="Expanded clinical publication-style ROC" src="../05_补充图_训练AUC与泛化差距/20260311_ROC_expanded_clinical_publication.png"/>
+<figcaption>
+<strong>Expanded clinical</strong><br/>
+      训练 AUC = 0.744；外层测试 AUC = 0.501；差值 = 0.243。<br/>
+      扩展临床变量数量增加后，训练分离增强，但泛化没有随之改善。<br/>
+<a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_expanded_clinical_publication.png">PNG</a> /
+      <a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_expanded_clinical_publication.pdf">PDF</a>
+</figcaption>
+</figure>
+<figure style="margin:0;border:1px solid #dddddd;border-radius:8px;padding:14px;background:#ffffff;">
+<img alt="Lipid-only publication-style ROC" src="../05_补充图_训练AUC与泛化差距/20260311_ROC_lipid_only_publication.png"/>
+<figcaption>
+<strong>Lipid-only</strong><br/>
+      训练 AUC = 0.789；外层测试 AUC = 0.534；差值 = 0.256。<br/>
+      说明脂质组中存在一定可学习信号，但过拟合压力仍然明显。<br/>
+<a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_lipid_only_publication.png">PNG</a> /
+      <a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_lipid_only_publication.pdf">PDF</a>
+</figcaption>
+</figure>
+<figure style="margin:0;border:1px solid #dddddd;border-radius:8px;padding:14px;background:#ffffff;">
+<img alt="Clinical plus lipid fusion publication-style ROC" src="../05_补充图_训练AUC与泛化差距/20260311_ROC_clinical_lipid_fusion_publication.png"/>
+<figcaption>
+<strong>Clinical + lipid fusion</strong><br/>
+      训练 AUC = 0.806；外层测试 AUC = 0.536；差值 = 0.269。<br/>
+      当前 5 个主模型中 outer-test mean AUC 最高，但优势幅度有限，不宜夸大为显著提升。<br/>
+<a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_clinical_lipid_fusion_publication.png">PNG</a> /
+      <a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_clinical_lipid_fusion_publication.pdf">PDF</a>
+</figcaption>
+</figure>
+<figure style="margin:0;border:1px solid #dddddd;border-radius:8px;padding:14px;background:#ffffff;">
+<img alt="Expanded fusion publication-style ROC" src="../05_补充图_训练AUC与泛化差距/20260311_ROC_expanded_fusion_publication.png"/>
+<figcaption>
+<strong>Expanded fusion</strong><br/>
+      训练 AUC = 0.850；外层测试 AUC = 0.526；差值 = 0.324。<br/>
+      变量规模最大、训练分数最高，但训练与外层测试的落差也最大，过拟合最明显。<br/>
+<a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_expanded_fusion_publication.png">PNG</a> /
+      <a href="../05_补充图_训练AUC与泛化差距/20260311_ROC_expanded_fusion_publication.pdf">PDF</a>
+</figcaption>
+</figure>
+</div>
+<h4 id="324-这些补充图目前最能支持的解释">3.2.4 这些补充图目前最能支持的解释</h4>
+<ol type="1">
+<li>训练 ROC 与 outer-test ROC 之间的落差，说明当前模型确实学到了一定分离模式，但其中相当一部分尚未稳定转化为跨折泛化能力。</li>
+<li>模型越复杂，训练分数通常越高，但外层测试 AUC 并未同步受益；这与主结果表中的训练—测试差值趋势一致。</li>
+<li>因此，脂质组与融合方向并非没有价值，而是更需要继续做<strong>模型压缩、稳定特征筛选、标签/队列核查与外部验证</strong>。</li>
+<li>这也是为什么本页把这些图放在“补充解释”位置，而不是把训练 ROC 独立包装成新的正式性能声明。</li>
+</ol>
+<h3 id="section-6">3.3 当前主模型的稳定特征线索</h3>
+<ol type="1">
+<li><code>Lipid-only</code> 中跨折更稳定的脂质主要包括：PA(28:0)、PC(38:7e)、Cer(d19:1_24:1)、Hex1Cer(d18:0_20:4)、Hex2Cer(d18:2_16:0)、PC(26:3e)、PC(32:1_22:4)。</li>
+<li><code>Expanded clinical</code> 中更稳定的扩展临床变量主要包括：whole_blood_LYMPH_count、AV_sub、HAD、HARI、HRI、Inbody_122_BFM._of_Left_Leg、Inbody_207_Growth_Score、SFT。</li>
+<li><code>Expanded fusion</code> 的高频变量同时混合了扩展临床与脂质特征，代表性变量包括：PA(28:0)、PC(38:7e)、whole_blood_LYMPH_count、AV_sub、Cer(d19:1_24:1)、HAD、HARI、HRI。</li>
+<li>这些稳定特征可作为后续压缩模型或补充生物学解释的候选线索，但在当前阶段仍不应被直接等同于“已定稿的生物标志物集合”。</li>
+</ol>
+<h2 id="section-7">4. 正式结果能够支持的判断边界</h2>
+<h3 id="section-8">4.1 可以正式支持的判断</h3>
+<ol type="1">
+<li>目前数据中可以检测到一定预测信号。</li>
+<li>脂质组与融合模型相较单纯临床基线存在<strong>有限增量</strong>，但增幅较小。</li>
+<li>模型复杂度继续增大时，泛化性能并未同步提升，且过拟合迹象更明显。</li>
+<li>strict nested CV 结果比开发阶段结果更适合承担主图、主结论和正式性能声明的角色。</li>
+</ol>
+<h3 id="section-9">4.2 当前不宜正式支持的判断</h3>
+<ol type="1">
+<li>不宜表述为“脂质组显著、大幅、稳定提升了预测性能”。</li>
+<li>不宜表述为“已经得到高性能、可直接临床转化的预测模型”。</li>
+<li>不宜用更早期的较高分结果替代 strict nested CV 结果充当正式主结果。</li>
+</ol>
+<h2 id="section-10">5. 补充小模型分析带来的新增信息</h2>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th style="text-align: right;">mean AUC</th>
+<th style="text-align: right;">std AUC</th>
+<th style="text-align: right;">mean train AUC</th>
+<th style="text-align: right;">训练-测试差值</th>
+<th style="text-align: right;">平均特征数</th>
+<th>结果解释</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Clinical baseline（主基线）</td>
+<td style="text-align: right;">0.5297</td>
+<td style="text-align: right;">0.0640</td>
+<td style="text-align: right;">0.6064</td>
+<td style="text-align: right;">0.0767</td>
+<td style="text-align: right;">5.0</td>
+<td>最稳但区分能力有限，是正式结果解释时的重要基线。</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td style="text-align: right;">0.5396</td>
+<td style="text-align: right;">0.0871</td>
+<td style="text-align: right;">0.6949</td>
+<td style="text-align: right;">0.1554</td>
+<td style="text-align: right;">4.6</td>
+<td>脂质特征压缩到约 5 个后，训练—测试差值明显下降，并出现小幅 AUC 改善。</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td style="text-align: right;">0.5376</td>
+<td style="text-align: right;">0.0506</td>
+<td style="text-align: right;">0.7621</td>
+<td style="text-align: right;">0.2245</td>
+<td style="text-align: right;">19.2</td>
+<td>融合模型缩小后稳定性改善，但 AUC 增益仍非常有限。</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-11">5.1 补充分析的结论重点</h3>
+<ol type="1">
+<li>将脂质模型压缩到约 <strong>5 个特征</strong> 后，<code>ultra_sparse_lipid</code> 的 mean AUC 提升到 <strong>0.5396</strong>，同时训练—测试差值从主脂质模型的 <strong>0.2556</strong> 降到 <strong>0.1554</strong>，说明<strong>压缩复杂度有助于提升稳定性</strong>。</li>
+<li><code>compact_fusion</code> 的 mean AUC 为 <strong>0.5376</strong>，与主融合模型 <strong>0.5364</strong> 非常接近，但训练—测试差值下降到 <strong>0.2245</strong>，说明<strong>较小的融合模型更稳，但收益仍然有限</strong>。</li>
+<li>这组补充结果共同支持：当前更值得优先推进的是<strong>模型压缩、稳定特征筛选和标签/队列核查</strong>，而不是继续无边界扩展变量和算法。</li>
+</ol>
+<h2 id="section-12">6. 标签与队列审计目前能支持的结论</h2>
+<ol type="1">
+<li><code>287 → 281</code> 的分析样本收敛路径是可追溯的，四张核心表重叠后的最终分析样本量为 <strong>281</strong>。</li>
+<li>临床表中存在但未进入最终 281 分析队列的 6 个 ID 为：<code>C115</code>、<code>C316</code>、<code>E217</code>、<code>F249</code>、<code>F298</code>、<code>F303</code>。</li>
+<li>现有本地标签文件仅能支持 <strong>结构级标签审计</strong>，即可以确认 ID 与 <code>Group</code> 分布，但尚不足以完成 response / noresponse 原始定义、时间窗和阈值的原始核验。</li>
+<li>因此，当前最稳妥的正式写法是：<strong>已完成结构级标签/队列审计，但结局真值定义仍需进一步核对。</strong></li>
+</ol>
+<h2 id="section-13">7. 正式材料与补充材料的排布建议</h2>
+<h3 id="section-14">7.1 建议放入主文章正文或主汇报页的内容</h3>
+<ol type="1">
+<li><code>01_主图与主结果/Figure6-4_Honest_NestedCV.png</code> 与对应 PDF。</li>
+<li><code>01_主图与主结果/performance_summary.csv</code> 对应的 5 个主模型总体性能结果。</li>
+<li>对主结果的核心表述：
+<ul>
+<li>融合模型数值最高，但领先幅度有限；</li>
+<li>扩展模型未改善泛化；</li>
+<li>strict nested CV 下的结果更可信，应作为正式结论依据。</li>
+</ul></li>
+</ol>
+<h3 id="section-15">7.2 建议放入补充材料或方法附件的内容</h3>
+<ol type="1">
+<li><code>02_补充分析与审计/20260310_predefined_small_model_comparison.csv</code> 及其小模型目录。</li>
+<li><code>02_补充分析与审计/20260310_small_model_label_audit.md</code> 与对应 CSV。</li>
+<li><code>01_主图与主结果/fold_metrics.csv</code>、<code>feature_stability_summary.csv</code>、<code>feature_frequency.csv</code>、<code>roc_curve_points.csv</code>。</li>
+<li><code>03_关键代码与配置/</code> 中的关键实现脚本与配置文件。</li>
+<li><code>05_补充图_训练AUC与泛化差距/</code> 中的组合图、contact sheet 与 5 张 publication-style ROC 单图，可作为补充材料或方法学审阅附件。</li>
+</ol>
+<h2 id="section-16">8. 文件级阅读与使用建议</h2>
+<h3 id="section-17">8.1 最值得优先打开的文件</h3>
+<ol type="1">
+<li><code>00_正式说明/20260311_strict_nested_cv正式说明.html</code></li>
+<li><code>01_主图与主结果/Figure6-4_Honest_NestedCV.png</code></li>
+<li><code>01_主图与主结果/performance_summary.csv</code></li>
+<li><code>05_补充图_训练AUC与泛化差距/20260311_训练AUC与泛化差距_组合图.png</code></li>
+<li><code>05_补充图_训练AUC与泛化差距/20260311_ROC_publication_contact_sheet.png</code></li>
+<li><code>04_方法学说明/20260311_strict_nested_cv结果定位说明.md</code></li>
+</ol>
+<h3 id="section-18">8.2 关键代码文件的作用分工</h3>
+<ol type="1">
+<li><code>03_关键代码与配置/run_pipeline.py</code>：主流程入口，负责串联主要分析阶段。</li>
+<li><code>03_关键代码与配置/config/analysis.yaml</code>：输入、标签、CV 参数和输出目录配置。</li>
+<li><code>03_关键代码与配置/src/models/run_nested_cv.py</code>：strict nested CV 的核心实现。</li>
+<li><code>03_关键代码与配置/src/reports/make_tables.py</code>：导出 performance、fold 与 stability 相关数据表。</li>
+<li><code>03_关键代码与配置/src/reports/make_figures.py</code>：导出 ROC 点位等绘图支撑数据。</li>
+<li><code>03_关键代码与配置/fig6-4最终.R</code>：读取 strict nested CV 输出并生成 Figure 6-4。</li>
+</ol>
+<h2 id="section-19">9. 当前阶段最稳妥的正式表述</h2>
+<ol type="1">
+<li><strong>正式结论</strong>：当前 strict nested CV 结果显示，模型存在一定预测信号，但泛化增益有限；融合模型虽为当前最优，但优势幅度较小。</li>
+<li><strong>方法学结论</strong>：正式结果应以 strict nested CV 为准，因为该口径更能反映真实泛化能力，并减少乐观偏差。</li>
+<li><strong>工作重点</strong>：后续优先方向应是标签定义核查、稳定特征提炼、模型压缩和外部验证，而不是继续无边界增加变量或更换更复杂算法。</li>
+<li><strong>补充图定位</strong>：训练 ROC 与训练—测试差值图可用于说明“已学到一定模式但泛化有限”，但它们不替代 outer-test 主结果，也不单独承担正式性能声明。</li>
+</ol>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="../01_主图与主结果/Figure6-4_Honest_NestedCV.png">主图</a><a class="footer-link" href="../04_方法学说明/20260311_strict_nested_cv结果定位说明.html">结果定位</a><a class="footer-link" href="../05_补充图_训练AUC与泛化差距/20260311_ROC_publication_contact_sheet.png">补充图总览</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">strict nested CV 正式说明包｜诚实口径优先的结果说明与补充材料总览</p>
+<div class="footer-note">更新日期：2026-03-11 ｜ 分析者：Chenyu Fan ｜ 需求方：Shuxian Zhang</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>
