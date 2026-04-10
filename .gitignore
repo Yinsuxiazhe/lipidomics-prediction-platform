@@ -1,75 +1,61 @@
-# ============================================================
-# 大文件 / 原始数据（保护隐私，禁止上传）
-# ============================================================
-*.csv
-!docs/**/*.csv
-!website/data/*.csv
-
-# 模型文件（可重新训练，不进仓库）
-*.pkl
-
-# macOS 系统文件
-.DS_Store
-._*
-
-# Python 缓存
+# Python
 __pycache__/
-*.pyc
-*.pyo
-*.so
-.Python
+*.py[cod]
 *.egg-info/
 dist/
 build/
 .eggs/
+*.egg
 
-# 测试 / Playwright
-.pytest_cache/
-.playwright-cli/
-.parquet_cache/
+# Jupyter
+.ipynb_checkpoints/
 
-# Streamlit 配置本地目录
-.streamlit/
+# Virtual environments
+venv/
+.env
+.venv/
 
-# Claude 资源文件
-.claude_resources.json
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# 编译缓存 / 中间产物
+# OS
+.DS_Store
+Thumbs.db
+
+# Large data files (too big for Git, use Git LFS or separate storage)
+*.csv
+*.xlsx
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.parquet
+*.feather
+
+# Model outputs / large outputs (exclude everything under outputs/)
+outputs/
+
+# Compressed archives (generated locally)
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+
+# Local config / secrets
+.env
+*.env.local
+config/local_*.yaml
+
+# Logs
 *.log
+logs/
+
+# Temporary files
+tmp/
+temp/
 *.tmp
 *.bak
-
-# PDF（原始文献，已有引用记录）
-*.pdf
-
-# pdf2md 元数据（自动生成，不进版本控制）
-*.meta.json
-
-# 大图 / 视频（Outputs 已含 HTML 可视化，原始大图不进仓库）
-*.png
-*.jpg
-*.jpeg
-!website/**/assets/*.png
-
-# 忽略 outputs 下完整的大模型训练输出（保持代码和数据目录结构）
-# 但保留 report / summary 等文字产物
-outputs/20260410_multi_indicator_glm5/trained_models/
-outputs/20260310_nested_cv/*.png
-outputs/20260310_nested_cv/*.pdf
-outputs/20260310_nested_cv/*.zip
-
-# follow-up 大图
-outputs/20260311_responder_followup/**/*.png
-outputs/20260311_responder_followup/**/*.pdf
-
-# 打包输出（自动产物，不进仓库）
-outputs/*.zip
-outputs/*/*.zip
-
-# 临时截图（不需版本化）
-20260305_淑贤线上汇报过程记录/*.png
-*.screenshots/
-
-# 建议文件夹（原始文献备份）
-20260312_建议/*.pdf
-20260312_建议/*.meta.json
