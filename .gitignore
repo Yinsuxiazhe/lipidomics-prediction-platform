@@ -28,6 +28,7 @@ Thumbs.db
 # Large data files (too big for Git, use Git LFS or separate storage)
 *.csv
 *.xlsx
+*.npy
 *.pkl
 *.joblib
 *.h5
@@ -59,3 +60,16 @@ tmp/
 temp/
 *.tmp
 *.bak
+
+# Local tooling / caches
+.pytest_cache/
+.playwright-cli/
+.streamlit/
+parquet_cache/
+
+# Local-only working materials
+20260305_淑贤线上汇报过程记录/
+20260312_建议/*.pdf
+20260312_建议/*.meta.json
+docs/参考文献/*.pdf
+docs/运动干预实验研究儿童脂质重塑-2026年03月06日_会议记录/*.pdf
