@@ -1,0 +1,13 @@
+record_type,key,value,note
+label_count,noresponse,118,当前二分类标签文件中的样本数。
+label_count,response,163,当前二分类标签文件中的样本数。
+discussion_path,/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/docs/20260311_对接_新的分析思路.txt,available,Angus: 师姐好[玫瑰][玫瑰]，我又回顾了一下，目前最值得先做的不是继续堆模型（我给您的结果里面也是尝试了一些模型了哈），而是先把 responder / non-responder 的定义和差异审清楚。当前不一定要立刻重新分组，但需要优先核对原始终点、时间窗、阈值和灰区样本； 如果更严格分组后 strict nested CV 的 AUC 和稳定性都改善，就说明标签噪声是主要瓶颈。
+discussion_path,/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/docs/运动干预实验研究儿童脂质重塑-2026年03月06日_会议记录/会议纪要_运动干预实验研究儿童脂质重塑_2026-03-06.md,available,- ✅ 画瀑布图展示每个儿童的ΔBMI变化
+id_prefix_distribution,A,54,"response_n=32, noresponse_n=22, response_rate=0.5926"
+id_prefix_distribution,B,18,"response_n=11, noresponse_n=7, response_rate=0.6111"
+id_prefix_distribution,C,52,"response_n=20, noresponse_n=32, response_rate=0.3846"
+id_prefix_distribution,D,37,"response_n=27, noresponse_n=10, response_rate=0.7297"
+id_prefix_distribution,E,38,"response_n=19, noresponse_n=19, response_rate=0.5000"
+id_prefix_distribution,F,40,"response_n=34, noresponse_n=6, response_rate=0.8500"
+id_prefix_distribution,G,42,"response_n=20, noresponse_n=22, response_rate=0.4762"
+blocker,blocker_1,缺少 endpoint_source：本地没有用于重定义 responder 的原始连续终点文件,当前只完成可接入化，不生成伪敏感性结果。

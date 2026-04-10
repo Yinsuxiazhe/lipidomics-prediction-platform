@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Responder follow-up 图文汇报页</title>
+<meta content="已接入 out-phase 的第一阶段补充分析" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="followup_summary.md">🧠 AI 结果展示</a>
+<div class="nav-links"></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">AI 结果展示</div>
+<h1>Responder follow-up 图文汇报页</h1>
+<p class="hero-subtitle-compact">已接入 out-phase 的第一阶段补充分析</p>
+<div class="hero-meta"><span class="meta-pill">strict 主结果不变</span><span class="meta-pill">新增 out-phase</span><span class="meta-pill">不是外部验证</span></div>
+<div class="doc-toolbar"><a class="doc-link-btn" href="followup_summary.md">打开主汇总</a><a class="doc-link-btn" href="outphase_validation.md">打开 out-phase 说明</a></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">一页结论</a></li><li><a href="#section-2">建议阅读顺序</a></li><li><a href="#section-3">正式主结果仍是主锚点（文本口径）</a></li><li><a href="#section-4">Figure F1. 小模型 follow-up 主图（最接近基线 Figure 6-4 的 follow-up 对应图）</a></li><li><a href="#section-6">Figure F2. Generalization gap（强调不能只看 AUC）</a></li><li><a href="#section-8">Figure F3. Self-validation 分布图（看稳定性，而不是只看均值）</a></li><li><a href="#section-10">Figure F5. out-phase 内部时相验证主图（新增）</a></li><li><a href="#section-12">Figure F6. out-phase 分布图（新增）</a></li><li><a href="#section-14">Figure F4. 当前 responder 分组审计图（标签来源与基线平衡）</a></li><li><a href="#section-16">小模型 follow-up 关键数字表</a></li><li><a href="#section-17">这轮结果如何对应 2026-03-11 的新分析思路</a></li><li><a href="#section-18">当前阻塞项（明确写清，不伪造结果）</a></li><li><a href="#section-19">相关文件入口</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">一页结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-2" href="#section-2">建议阅读顺序</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-3" href="#section-3">正式主结果仍是主锚点（文本口径）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-4" href="#section-4">Figure F1. 小模型 follow-up 主图（最接近基线 Figure 6-4 的 follow-up 对应图）</a><a class="sidebar-toc-link sub-item" data-target="section-5" href="#section-5">这张图怎么读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-6" href="#section-6">Figure F2. Generalization gap（强调不能只看 AUC）</a><a class="sidebar-toc-link sub-item" data-target="section-7" href="#section-7">这张图怎么读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-8" href="#section-8">Figure F3. Self-validation 分布图（看稳定性，而不是只看均值）</a><a class="sidebar-toc-link sub-item" data-target="section-9" href="#section-9">这张图怎么读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-10" href="#section-10">Figure F5. out-phase 内部时相验证主图（新增）</a><a class="sidebar-toc-link sub-item" data-target="section-11" href="#section-11">这张图怎么读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-12" href="#section-12">Figure F6. out-phase 分布图（新增）</a><a class="sidebar-toc-link sub-item" data-target="section-13" href="#section-13">这张图怎么读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-14" href="#section-14">Figure F4. 当前 responder 分组审计图（标签来源与基线平衡）</a><a class="sidebar-toc-link sub-item" data-target="section-15" href="#section-15">这张图怎么读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-16" href="#section-16">小模型 follow-up 关键数字表</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-17" href="#section-17">这轮结果如何对应 2026-03-11 的新分析思路</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-18" href="#section-18">当前阻塞项（明确写清，不伪造结果）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-19" href="#section-19">相关文件入口</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">来源文件：followup_summary_shareable.md</div><div class="top-note">本页面样式对齐参考：<code>本页面样式对齐参考：aging-analysis tutorial 风格壳层</code></div><h1 id="responder-follow-up-第一阶段图文汇报页已接入-out-phase">Responder follow-up 第一阶段图文汇报页（已接入 out-phase）</h1>
+<blockquote>
+<p>本页是给老师/合作者直接查看的 follow-up 图文版：<strong>不改正式主结果，但现在已把 out / 干预后数据正式接入，补成“分组审计 + self-validation + out-phase 内部时相验证 + 小模型对照”的完整第一阶段结果页</strong>。</p>
+</blockquote>
+<div class="copyable-example"><div class="copyable-example-header"><span class="copyable-example-label">可直接发送</span><button aria-label="复制可复用内容" class="copy-example-btn" data-copy-text="老师您好，我把 responder 第一阶段 follow-up 重新完整整理了一版。这次不改既有 strict nested CV 的正式主结果，但已经把新拿到的 out / 干预后数据正式接入，补成四层内容：当前 responder 分组证据链审计、self-validation、3 个小模型 follow-up 比较，以及 out-phase 内部时相验证。页内 repeated hold-out、prefix-holdout 和 out-phase 都明确只写成补充稳健性/内部时相证据，不写成外部验证。当前仍未完成的主要还有三块：真正 alternative grouping sensitivity、prefix↔school/community 映射、以及心血管桥接；等相应原始数据到位后再做。" type="button">快捷复制</button></div><blockquote>
+<p>老师您好，我把 responder 第一阶段 follow-up 重新完整整理了一版。这次不改既有 strict nested CV 的正式主结果，但已经把新拿到的 out / 干预后数据正式接入，补成四层内容：当前 responder 分组证据链审计、self-validation、3 个小模型 follow-up 比较，以及 out-phase 内部时相验证。页内 repeated hold-out、prefix-holdout 和 out-phase 都明确只写成补充稳健性/内部时相证据，不写成外部验证。当前仍未完成的主要还有三块：真正 alternative grouping sensitivity、prefix↔school/community 映射、以及心血管桥接；等相应原始数据到位后再做。</p>
+</blockquote></div>
+
+<h2 id="section-1">一页结论</h2>
+<ul>
+<li><strong>正式主结果不变</strong>：严格嵌套 CV 仍是论文主口径，旧目录 <code>outputs/20260310_nested_cv</code> 保持只读引用。</li>
+<li><strong>本轮 follow-up 已补成 6 张图</strong>：F1/F2/F3/F4 仍对应“小模型表现、generalization gap、self-validation、group audit”；新增 F5/F6 专门对应 out-phase 内部时相验证。</li>
+<li><strong>从稳健性角度看</strong>：<code>clinical_baseline_main</code> 的 repeated hold-out gap 最小（0.0528），最稳；<code>compact_fusion</code> 的 repeated hold-out AUC 最高（0.5717），但泛化 gap 最大（0.1938）。</li>
+<li><strong>从 out-phase 角度看</strong>：没有出现“明显强复制”，但 <code>ultra_sparse_lipid</code> 与 <code>compact_fusion</code> 在 out-phase 下仍维持约 0.50 左右 AUC，属于<strong>边界说明型证据</strong>；<code>clinical_baseline_main</code> 在 out-phase 下掉得更明显，提示时相迁移并不强。</li>
+<li><strong>本轮没有伪造缺失模块结果</strong>：缺原始连续终点表，就不做真正 alternative grouping sensitivity；缺 prefix↔school/community 映射，就不把 leave-one-prefix-out 升级成 school/community split；缺心血管表型表，就不做桥接分析。</li>
+</ul>
+<h2 id="section-2">建议阅读顺序</h2>
+<ol type="1">
+<li>先看 <strong>Figure F1</strong>：小模型 follow-up 主图，快速把握“谁更稳、谁更高、谁更适合当主叙事”。</li>
+<li>再看 <strong>Figure F2</strong>：generalization gap，回答“为什么不能只看 AUC 最高”。</li>
+<li>再看 <strong>Figure F3</strong>：self-validation 分布，回答“结果是不是单次切分偶然所得”。</li>
+<li>再看 <strong>Figure F5</strong>：out-phase 主图，回答“新拿到的 out / 干预后数据接进来后，内部时相迁移表现如何”。</li>
+<li>再看 <strong>Figure F6</strong>：out-phase 分布图，回答“这种时相迁移是不是只出现在少数 split”。</li>
+<li>最后看 <strong>Figure F4</strong>：当前 responder 分组审计，交代当前标签来源与基线平衡边界。</li>
+</ol>
+<blockquote>
+<p>如果老师希望把<strong>既有基线主图 + 本轮 follow-up 6 图</strong>按一套完整顺序看，请直接打开统一汇报包：<code>teacher_report_package/02_combined_report.html</code>。</p>
+</blockquote>
+<h2 id="section-3">正式主结果仍是主锚点（文本口径）</h2>
+<table>
+<thead>
+<tr>
+<th>experiment</th>
+<th>mean_auc</th>
+<th>std_auc</th>
+<th>mean_train_auc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_slim_logistic</td>
+<td>0.5297</td>
+<td>0.0640</td>
+<td>0.6064</td>
+</tr>
+<tr>
+<td>lipid_elastic_net</td>
+<td>0.5338</td>
+<td>0.0701</td>
+<td>0.7895</td>
+</tr>
+<tr>
+<td>clinical_full_elastic_net</td>
+<td>0.5011</td>
+<td>0.0742</td>
+<td>0.7437</td>
+</tr>
+<tr>
+<td>fusion_elastic_net</td>
+<td>0.5364</td>
+<td>0.0535</td>
+<td>0.8055</td>
+</tr>
+<tr>
+<td>fusion_full_elastic_net</td>
+<td>0.5258</td>
+<td>0.0450</td>
+<td>0.8496</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>上表继续对应既有 strict nested CV 主结果。</li>
+<li>本页下面的所有新图，定位都是：<strong>补充稳健性证据 / 内部时相验证 / 标签审计</strong>，不是推翻主结果。</li>
+</ul>
+<h2 id="section-4">Figure F1. 小模型 follow-up 主图（最接近基线 Figure 6-4 的 follow-up 对应图）</h2>
+<p><img alt="Figure F1：小模型 follow-up 主图" src="FigureF1_Followup_ModelPerformance.png"/></p>
+<p>图文件： <a href="FigureF1_Followup_ModelPerformance.png">PNG</a> · <a href="FigureF1_Followup_ModelPerformance.pdf">PDF</a></p>
+<h3 id="section-5">这张图怎么读</h3>
+<ul>
+<li>这张图仍是本轮 follow-up 最核心的“模型层面”图，对应你之前基线分析里“主性能图”的位置。</li>
+<li><code>compact_fusion</code> 在 repeated hold-out 下均值 AUC 最高（0.5717），说明融合路线仍有一定性能上限。</li>
+<li>但 <code>clinical_baseline_main</code> 更稳：strict nested CV、repeated hold-out、prefix-holdout 三条线更接近，没有明显“只在某一套切分里看起来好”的情况。</li>
+<li>因此写作上更合理的口径仍是：<strong>临床 5 锚点模型更稳，compact fusion 可作为增强路线，而不是唯一主叙事</strong>。</li>
+</ul>
+<h2 id="section-6">Figure F2. Generalization gap（强调不能只看 AUC）</h2>
+<p><img alt="Figure F2：generalization gap" src="FigureF2_Followup_GeneralizationGap.png"/></p>
+<p>图文件： <a href="FigureF2_Followup_GeneralizationGap.png">PNG</a> · <a href="FigureF2_Followup_GeneralizationGap.pdf">PDF</a></p>
+<h3 id="section-7">这张图怎么读</h3>
+<ul>
+<li><code>compact_fusion</code> 虽然 AUC 最高，但 repeated hold-out mean gap 约为 <strong>0.1938</strong>，prefix-holdout mean gap 约为 <strong>0.2452</strong>，说明训练-测试落差仍明显。</li>
+<li><code>clinical_baseline_main</code> 的 repeated hold-out mean gap 仅 <strong>0.0528</strong>，prefix-holdout mean gap <strong>0.0832</strong>，是当前三条路线中最容易防守的一条。</li>
+<li><code>ultra_sparse_lipid</code> 介于两者之间：说明“少量脂质即可支持预测”这一补充叙事可以保留，但不宜替代更稳的临床锚点模型。</li>
+</ul>
+<h2 id="section-8">Figure F3. Self-validation 分布图（看稳定性，而不是只看均值）</h2>
+<p><img alt="Figure F3：self-validation 分布图" src="FigureF3_SelfValidation_Distribution.png"/></p>
+<p>图文件： <a href="FigureF3_SelfValidation_Distribution.png">PNG</a> · <a href="FigureF3_SelfValidation_Distribution.pdf">PDF</a></p>
+<h3 id="section-9">这张图怎么读</h3>
+<ul>
+<li>这张图把 repeated random hold-out 与 leave-one-prefix-out 各 split 的分布摆出来，避免只汇报一个均值。</li>
+<li>它回答的是：<strong>这些结果是不是单次切分碰巧得到的</strong>。</li>
+<li>当前 three-model 的分布中心都在 0.5 上方，但离“强预测”仍有距离；因此 follow-up 更像是“稳健性与边界说明”，而不是“性能显著跃升”。</li>
+<li>这也支持当前三层叙事：正式主结果保留、补充稳健性证据补上、真正更强的验证等数据到位后再做。</li>
+</ul>
+<h2 id="section-10">Figure F5. out-phase 内部时相验证主图（新增）</h2>
+<p><img alt="Figure F5：out-phase 主图" src="FigureF5_OutPhase_ModelPerformance.png"/></p>
+<p>图文件： <a href="FigureF5_OutPhase_ModelPerformance.png">PNG</a> · <a href="FigureF5_OutPhase_ModelPerformance.pdf">PDF</a></p>
+<h3 id="section-11">这张图怎么读</h3>
+<ul>
+<li>这张图是新拿到 out / 干预后数据后补出来的正式 out-phase 主图。</li>
+<li>它的定位是：<strong>基线训练 → out-phase 测试</strong> 的内部时相验证，不是 external validation。</li>
+<li>目前 best out-phase mean AUC 大约只在 <strong>0.5073</strong> 左右，说明 out-phase 下没有出现特别强的时相复制。</li>
+<li>因此这张图更像是在帮我们<strong>诚实划边界</strong>：可以说“差异在 out-phase 下仍有一定残留信号”，但不能说“已经完成强验证”。</li>
+</ul>
+<h2 id="section-12">Figure F6. out-phase 分布图（新增）</h2>
+<p><img alt="Figure F6：out-phase 分布图" src="FigureF6_OutPhase_Distribution.png"/></p>
+<p>图文件： <a href="FigureF6_OutPhase_Distribution.png">PNG</a> · <a href="FigureF6_OutPhase_Distribution.pdf">PDF</a></p>
+<h3 id="section-13">这张图怎么读</h3>
+<ul>
+<li>这张图把 out-phase repeated hold-out 与 out-phase prefix hold-out 的 split-level 分布摊开。</li>
+<li>它回答的是：<strong>out-phase 的结果是不是只被极少数 split 撑起来</strong>。</li>
+<li>目前 out-phase 分布整体比 self-validation 更靠近 0.5，说明时相迁移比同相切分更难，这本身是有价值的负结果/边界结果。</li>
+<li>这也支持更谨慎的写法：<strong>out-phase 已完成，但结论应写成 internal temporal validation with modest signal，而不是 strong replication</strong>。</li>
+</ul>
+<h2 id="section-14">Figure F4. 当前 responder 分组审计图（标签来源与基线平衡）</h2>
+<p><img alt="Figure F4：当前 responder 分组审计图" src="FigureF4_GroupAudit.png"/></p>
+<p>图文件： <a href="FigureF4_GroupAudit.png">PNG</a> · <a href="FigureF4_GroupAudit.pdf">PDF</a></p>
+<h3 id="section-15">这张图怎么读</h3>
+<ul>
+<li>当前本地能回溯到的是<strong>二分类标签 + 会议纪要级证据链</strong>，不是原始连续终点真值表。</li>
+<li>因此这张图的作用不是证明“当前分组就是真理”，而是把现阶段能说清楚的两件事摆出来：
+<ol type="1">
+<li>当前标签来源于 ΔBMI 百分位变化及 tie-break 讨论的既有决策脉络；</li>
+<li>至少在几个临床锚点上，没有看到完全失控的基线失衡。</li>
+</ol></li>
+<li>这也是为什么本轮正确做法是“审计 + 标注边界”，而不是伪造一套 alternative grouping 结果。</li>
+</ul>
+<h2 id="section-16">小模型 follow-up 关键数字表</h2>
+<table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>strict_mean_auc</th>
+<th>repeated_holdout_mean_auc</th>
+<th>prefix_holdout_mean_auc</th>
+<th>outphase_repeated_holdout_mean_auc</th>
+<th>outphase_prefix_holdout_mean_auc</th>
+<th>repeated_holdout_mean_gap</th>
+<th>outphase_repeated_holdout_mean_gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>0.5297</td>
+<td>0.5545</td>
+<td>0.5223</td>
+<td>0.3601</td>
+<td>0.4255</td>
+<td>0.0528</td>
+<td>0.2472</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>0.5338</td>
+<td>0.5410</td>
+<td>0.5281</td>
+<td>0.5034</td>
+<td>0.5073</td>
+<td>0.1423</td>
+<td>0.1798</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>0.5364</td>
+<td>0.5717</td>
+<td>0.5157</td>
+<td>0.4986</td>
+<td>0.4730</td>
+<td>0.1938</td>
+<td>0.2670</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-17">这轮结果如何对应 2026-03-11 的新分析思路</h2>
+<table>
+<thead>
+<tr>
+<th>对接思路</th>
+<th>当前状态</th>
+<th>目前如何落地</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>分组定义/差异先审清楚</td>
+<td>部分完成</td>
+<td>已完成当前 responder 标签证据链审计、基线平衡汇总、ID prefix 分布整理；但仍缺原始连续终点文件。</td>
+</tr>
+<tr>
+<td>小模型、稀疏模型、稳定特征</td>
+<td>已完成</td>
+<td>已完成 <code>clinical_baseline_main</code>、<code>ultra_sparse_lipid</code>、<code>compact_fusion</code> 的 strict vs repeated hold-out vs prefix-holdout 比较，并补出 F1/F2/F3 图。</td>
+</tr>
+<tr>
+<td>pseudo-external validation</td>
+<td>已完成</td>
+<td>已实现 leave-one-prefix-out，但明确只可写成 <strong>exploratory weak proxy</strong>。</td>
+</tr>
+<tr>
+<td>out 数据做验证</td>
+<td>已完成</td>
+<td>已接入 out / 干预后数据，完成基线训练 → out-phase 测试的内部时相验证；但结果强度有限，因此定位为边界说明型证据，而不是强复制。</td>
+</tr>
+<tr>
+<td>心血管相关表型</td>
+<td>当前阻塞</td>
+<td>本地没有新增整理好的心血管表型表。</td>
+</tr>
+</tbody>
+</table>
+<p>更完整文字说明见： <a href="followup_plan_alignment.md">followup_plan_alignment.md</a></p>
+<h2 id="section-18">当前阻塞项（明确写清，不伪造结果）</h2>
+<ol type="1">
+<li><strong>alternative grouping sensitivity</strong>：缺少原始连续终点文件（endpoint source）</li>
+<li><strong>心血管表型桥接</strong>：缺少新增整理后的心血管表型表</li>
+</ol>
+<h2 id="section-19">相关文件入口</h2>
+<ul>
+<li>主汇总： <a href="followup_summary.md">followup_summary.md</a></li>
+<li>分组审计： <a href="group_definition_audit.md">group_definition_audit.md</a></li>
+<li>out-phase 汇总： <a href="outphase_validation.md">outphase_validation.md</a></li>
+<li>阻塞项： <a href="blocked_items.md">blocked_items.md</a></li>
+<li>self-validation 汇总表： <a href="self_validation_summary.csv">self_validation_summary.csv</a></li>
+<li>out-phase 汇总表： <a href="outphase_validation_summary.csv">outphase_validation_summary.csv</a></li>
+<li>小模型比较表： <a href="small_model_followup_comparison.csv">small_model_followup_comparison.csv</a></li>
+<li>文献跟进说明： <a href="teacher_report_package/03_literature_followup_note.html">teacher_report_package/03_literature_followup_note.html</a></li>
+<li>grouped proxy 逐前缀汇总： <a href="teacher_report_package/prefix_group_holdout_summary.csv">teacher_report_package/prefix_group_holdout_summary.csv</a></li>
+<li>统一汇报包： <a href="teacher_report_package/02_combined_report.html">teacher_report_package/02_combined_report.html</a></li>
+</ul>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="teacher_report_package/02_combined_report.html">统一汇报包</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">© 2026 AI 结果展示页 | Styled after aging-analysis tutorial</p>
+<div class="footer-note">生成日期：2026-03-12 | 本页为 follow-up 本地汇报页</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>

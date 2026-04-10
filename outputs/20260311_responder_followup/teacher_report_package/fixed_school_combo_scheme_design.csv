@@ -1,0 +1,3 @@
+scheme,train_schools,test_schools,train_n,test_n,train_response_rate,test_response_rate,abs_response_rate_gap,train_intensity_count,test_intensity_count,recommended
+A_5train_2test_balanced_rate,中关村、冷泉、唐家岭校区、本部、百旺,六里屯、华清校区,195,86,0.5743589743589743,0.5930232558139535,0.018664281454979226,3,2,sensitivity
+B_4train_3test_all_intensity,六里屯、冷泉、本部、百旺,中关村、华清校区、唐家岭校区,161,120,0.5590062111801242,0.6083333333333333,0.04932712215320911,3,3,selected

@@ -1,0 +1,7 @@
+experiment,model_label,validation_scheme,n_total_splits,n_completed,n_skipped,mean_auc,std_auc,mean_train_auc,mean_gap,mean_selected_feature_count
+clinical_slim_logistic,clinical_baseline_main,leave_one_school_out,7,7,0,0.5155303476206426,0.0784160138330782,0.6059540966595394,0.09042374903889654,5.0
+clinical_slim_logistic,clinical_baseline_main,repeated_random_holdout,30,30,0,0.5545454545454546,0.08508602211929822,0.6073349699945446,0.052789515449089906,5.0
+fusion_elastic_net,compact_fusion,leave_one_school_out,7,7,0,0.5245928553226027,0.10393093036793495,0.7599012634099717,0.23530840808736908,19.857142857142858
+fusion_elastic_net,compact_fusion,repeated_random_holdout,30,30,0,0.5717592592592593,0.06236068659841798,0.765542825968358,0.1937835667090987,19.733333333333334
+lipid_elastic_net,ultra_sparse_lipid,leave_one_school_out,7,7,0,0.530958898510806,0.09449640369950718,0.6934515516398105,0.16249265312900452,4.857142857142857
+lipid_elastic_net,ultra_sparse_lipid,repeated_random_holdout,30,30,0,0.5409090909090909,0.061704929985525354,0.6832624113475176,0.14235332043842677,4.9
