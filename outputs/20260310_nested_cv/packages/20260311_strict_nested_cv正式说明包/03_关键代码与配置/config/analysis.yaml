@@ -1,0 +1,45 @@
+project_name: lipidomics_prediction_pipeline
+
+paths:
+  group: /Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/281_new_grouped.csv
+  lipid: /Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/281_merge_lipids_enroll.csv
+  clinical_full: /Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/287_enroll_data_clean.csv
+  clinical_slim: /Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/287_enroll_data_predict.csv
+
+target:
+  label_column: Group
+  positive_label: response
+
+clinical:
+  slim_columns:
+    - ID
+    - age_enroll
+    - bmi_z_enroll
+    - SFT
+    - Gender
+    - BMI
+
+stages:
+  - validate
+  - cohort
+  - experiments
+
+experiments:
+  requested:
+    - clinical_slim_logistic
+    - lipid_elastic_net
+    - clinical_full_elastic_net
+    - fusion_elastic_net
+    - fusion_full_elastic_net
+  cv_config:
+    outer_splits: 5
+    outer_repeats: 1
+    inner_splits: 3
+    random_state: 42
+    lipid_top_k: 30
+    clinical_top_k: 30
+    correlation_threshold: 0.95
+    clinical_missing_threshold: 0.2
+
+outputs:
+  base_dir: /Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260310_nested_cv

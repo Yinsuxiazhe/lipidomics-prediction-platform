@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>三个 biobanks external-proxy 可行性正式报告包</title>
+<meta content="总览页：用于快速理解结论、阅读顺序、材料清单与结论边界。" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="index.html">🧠 AI 结果展示</a>
+<div class="nav-links"><a class="nav-link" href="01_biobank_external_proxy_formal_report.html">主报告</a><a class="nav-link" href="02_supplementary_note.html">补充说明</a></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">正式报告</div>
+<h1>三个 biobanks external-proxy 可行性正式报告包</h1>
+<p class="hero-subtitle-compact">总览页：用于快速理解结论、阅读顺序、材料清单与结论边界。</p>
+<div class="hero-meta"><span class="meta-pill">需求方：Shuxian Zhang</span><span class="meta-pill">分析提供方：Chenyu Fan</span><span class="meta-pill">strict nested CV 不等于 external validation</span></div>
+<div class="doc-toolbar"><a class="doc-link-btn" href="README.md">打开 README</a><a class="doc-link-btn" href="overlap_feature_mapping.csv">overlap-feature 表</a><a class="doc-link-btn" href="reduced_external_proxy_model_feature_set.csv">reduced model 表</a></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">项目角色</a></li><li><a href="#section-2">本包一句话结论</a></li><li><a href="#section-3">建议阅读顺序</a></li><li><a href="#section-4">包内主要内容</a></li><li><a href="#section-5">当前必须坚持的结论边界</a></li><li><a href="#section-6">下一步建议</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">项目角色</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-2" href="#section-2">本包一句话结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-3" href="#section-3">建议阅读顺序</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-4" href="#section-4">包内主要内容</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-5" href="#section-5">当前必须坚持的结论边界</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-6" href="#section-6">下一步建议</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">来源文件：index.md</div><div class="top-note">本页面样式对齐参考：<code>本页用于正式结果说明，不改变当前项目正式主结果锚点。</code></div><h1 id="三个-biobanks-external-proxy-可行性正式报告包">三个 biobanks external-proxy 可行性正式报告包</h1>
+<blockquote>
+<p>本页是正式报告包总入口，用于概览当前结论、阅读顺序、材料清单与结论边界。<br/>
+生成日期：2026-03-17</p>
+</blockquote>
+<h2 id="section-1">项目角色</h2>
+<ul>
+<li>需求方：<code>Shuxian Zhang</code></li>
+<li>分析提供方：<code>Chenyu Fan</code></li>
+</ul>
+<h2 id="section-2">本包一句话结论</h2>
+<p>当前材料支持的结论是：<strong>UK Biobank、Estonian Biobank、THL Biobank 可以作为第二阶段的 external-proxy / transportability 候选资源；但现阶段仍不能直接写成当前儿童运动干预 responder 模型的严格 external validation。</strong></p>
+<h2 id="section-3">建议阅读顺序</h2>
+<ol type="1">
+<li>先打开 <code>01_biobank_external_proxy_formal_report.html</code>：这是本次结果的主报告页。</li>
+<li>再看 <code>02_supplementary_note.html</code>：这是补充说明页，包含结果比对、数据申请现实性判断与下一步建议。</li>
+<li>如需查看配套表格，继续查看根目录下 CSV 文件。</li>
+<li>如需复核材料来源与可复现性，查看 <code>analysis_code/</code> 与 <code>analysis_data/</code>。</li>
+</ol>
+<h2 id="section-4">包内主要内容</h2>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>index.html</code></td>
+<td>本包总入口</td>
+</tr>
+<tr>
+<td><code>01_biobank_external_proxy_formal_report.html</code></td>
+<td>主报告页</td>
+</tr>
+<tr>
+<td><code>02_supplementary_note.html</code></td>
+<td>补充说明页</td>
+</tr>
+<tr>
+<td><code>overlap_feature_mapping.csv</code></td>
+<td>overlap-feature 对照表</td>
+</tr>
+<tr>
+<td><code>reduced_external_proxy_model_feature_set.csv</code></td>
+<td>reduced external-proxy model 草案</td>
+</tr>
+<tr>
+<td><code>strict_nested_cv_performance_summary.csv</code></td>
+<td>当前正式主结果汇总</td>
+</tr>
+<tr>
+<td><code>analysis_code/</code></td>
+<td>直接相关的主要分析代码</td>
+</tr>
+<tr>
+<td><code>analysis_data/</code></td>
+<td>数据说明与输入来源清单</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-5">当前必须坚持的结论边界</h2>
+<ul>
+<li>正式主结果仍是：<strong>strict nested CV outer-test AUC 约 0.50–0.54</strong>。</li>
+<li>用户印象中的 <strong>AUC≈0.8</strong> 对应的是训练侧 <code>mean_train_auc</code>，不能写成 outer-test AUC。</li>
+<li>repeated hold-out、leave-one-school-out、baseline -&gt; out-phase 队列内时相验证都属于补充分析，<strong>不能升级表述为 strict external validation</strong>。</li>
+<li>本包支持的是：<strong>external-proxy / transportability feasibility</strong> 的可行性说明。</li>
+<li>本包不支持的是：<strong>当前 responder 分类器已完成严格外部验证</strong>。</li>
+</ul>
+<h2 id="section-6">下一步建议</h2>
+<ol type="1">
+<li>先在本地运行 <code>transport_core_8</code> / <code>transport_extended_12</code> 的 strict nested CV 与 follow-up 比较。</li>
+<li>如果需要推进外部资源，优先评估 UK Biobank 的 feasibility。</li>
+<li>对外措辞继续使用 <code>external-proxy validation</code>、<code>transportability assessment</code> 或 <code>targeted replication feasibility</code>。</li>
+</ol>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="analysis_code/README.md">analysis_code</a><a class="footer-link" href="analysis_data/README.md">analysis_data</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">© 2026 AI 结果展示页 | Styled after aging-analysis tutorial</p>
+<div class="footer-note">生成日期：2026-03-17 | 当前目录：.</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>

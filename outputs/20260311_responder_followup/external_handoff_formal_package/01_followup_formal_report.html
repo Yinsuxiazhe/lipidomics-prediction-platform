@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Responder follow-up 正式交接报告（school split + out-phase）</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --line: #dbe4f0;
+  --brand: #2563eb;
+  --brand-soft: #dbeafe;
+  --accent: #0f766e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 220px);
+  color: var(--ink);
+}
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+}
+.hero {
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(219,228,240,.95);
+  border-radius: 24px;
+  padding: 28px 30px 24px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, .08);
+  backdrop-filter: blur(8px);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--accent);
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin-bottom: 14px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+}
+.subtitle {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+.meta-row, .nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.meta-pill, .nav-link, .path-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 13px;
+  color: var(--muted);
+}
+.doc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+.sidebar-toc {
+  position: sticky;
+  top: 24px;
+}
+.sidebar-toc-card {
+  background: rgba(255,255,255,.92);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .06);
+  padding: 22px 18px;
+}
+.sidebar-toc-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.sidebar-toc-title span {
+  color: var(--brand);
+}
+.sidebar-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-toc-item {
+  margin: 0;
+}
+.sidebar-toc-link {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.sidebar-toc-link:hover {
+  text-decoration: none;
+  background: #eff6ff;
+  color: var(--brand);
+  transform: translateX(2px);
+}
+.sidebar-toc-link.sub-item {
+  padding-left: 24px;
+  font-size: 13px;
+}
+.main-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .06);
+  padding: 30px;
+}
+.content h1, .content h2, .content h3, .content h4 {
+  color: var(--ink);
+  margin-top: 1.6em;
+  margin-bottom: .55em;
+}
+.content h1 { font-size: 30px; }
+.content h2 { font-size: 24px; border-bottom: 1px solid var(--line); padding-bottom: .35em; }
+.content h3 { font-size: 20px; }
+.content p, .content li {
+  color: #1e293b;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.content ul, .content ol { padding-left: 1.4em; }
+.content code {
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: .12em .38em;
+  border-radius: 6px;
+  font-size: .92em;
+}
+.content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 14px;
+  overflow: auto;
+}
+.content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 24px;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  vertical-align: top;
+}
+.content th {
+  background: #f8fafc;
+  text-align: left;
+}
+.content img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.doc-link-btn, .footer-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.doc-link-btn:hover, .footer-link:hover {
+  text-decoration: none;
+  background: #dbeafe;
+}
+.footer {
+  margin-top: 24px;
+  padding: 18px 6px 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer-note {
+  margin-top: 14px;
+}
+@media (max-width: 760px) {
+  .page { padding: 18px 14px 36px; }
+  .doc-layout { grid-template-columns: 1fr; }
+  .sidebar-toc { position: static; }
+  .hero, .main-card, .sidebar-toc-card { padding: 20px 18px; border-radius: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+<section class="hero">
+<div class="badge">External formal handoff · 2026-03-12</div>
+<h1>Responder follow-up 正式交接报告（school split + out-phase）</h1>
+<p class="subtitle">对外正式交接页：在不改变 strict nested CV 主结果的前提下，补充真实 school grouped split 与 out-phase internal temporal validation 的解释层。</p>
+<div class="meta-row"><span class="meta-pill">主锚点：strict nested CV outer-test AUC≈0.50–0.54</span><span class="meta-pill">AUC≈0.8 仅指 mean_train_auc</span><span class="meta-pill">school split / out-phase 均非 external validation</span><span class="path-chip">来源文件：01_followup_formal_report.md</span><span class="path-chip top-note">交接用途：follow-up explanation layer</span></div>
+<div class="nav-row doc-toolbar"><a class="nav-link" href="02_combined_formal_report.html">统一交接总页</a><a class="nav-link" href="03_school_split_protocol_note.html">school split / protocol</a><a class="nav-link" href="school_group_holdout_summary.csv">学校汇总 CSV</a><a class="nav-link" href="04_fixed_school_combo_note.html">fixed school combo</a></div>
+</section>
+<div class="doc-layout">
+<aside class="sidebar-toc"><div class="sidebar-toc-card"><div class="sidebar-toc-title"><span>📚</span> Table of contents</div><ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="一页结论" href="#一页结论">一页结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="怎么读这页" href="#怎么读这页">怎么读这页</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="结构性解读" href="#结构性解读">结构性解读</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="不能过度宣称的点" href="#不能过度宣称的点">不能过度宣称的点</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="交接材料索引" href="#交接材料索引">交接材料索引</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="正式主结果仍是主锚点" href="#正式主结果仍是主锚点">正式主结果仍是主锚点</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="学校-split--out-phase-关键数字" href="#学校-split--out-phase-关键数字">学校 split + out-phase
+关键数字</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="figure-f1-小模型-follow-up-主图" href="#figure-f1-小模型-follow-up-主图">Figure F1. 小模型 follow-up
+主图</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="figure-f2-generalization-gap" href="#figure-f2-generalization-gap">Figure F2. Generalization gap</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="figure-f3-self-validation-分布图" href="#figure-f3-self-validation-分布图">Figure F3. Self-validation
+分布图</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="figure-f5-out-phase-内部时相验证主图" href="#figure-f5-out-phase-内部时相验证主图">Figure F5. out-phase
+内部时相验证主图</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="figure-f6-out-phase-分布图" href="#figure-f6-out-phase-分布图">Figure F6. out-phase 分布图</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="figure-f4-当前-responder-分组审计图" href="#figure-f4-当前-responder-分组审计图">Figure F4. 当前 responder
+分组审计图</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="运动-protocol-写法建议" href="#运动-protocol-写法建议">运动 protocol 写法建议</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="当前仍-blocked-的内容" href="#当前仍-blocked-的内容">当前仍 blocked 的内容</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="相关文件入口" href="#相关文件入口">相关文件入口</a></li></ul></div></aside>
+<main class="main-card content"><h1 id="responder-follow-up-正式交接报告school-split--out-phase">Responder
+follow-up 正式交接报告（school split + out-phase）</h1><blockquote>
+<p>本页用于外部正式交接：在不改变 strict nested CV
+主结果的前提下，补充真实 school grouped split 与 out-phase internal
+temporal validation 的结果解释、边界说明与引用路径。</p>
+</blockquote><p><strong>交接摘要：</strong></p><blockquote>
+<p>当前 follow-up
+的作用是补充稳健性与解释边界，而不是替代正式主结果。strict nested CV
+outer-test AUC 仍约 0.50–0.54；真实 <code>leave-one-school-out</code> 与
+<code>outphase_leave_one_school_out</code>
+已补跑，但均属于内部验证链路，不能写成 external validation；AUC≈0.8
+仅对应 <code>mean_train_auc</code>。</p>
+</blockquote><h2 id="一页结论">一页结论</h2><ul>
+<li><strong>正式主结果不变</strong>：strict nested CV
+仍是论文与正式汇报的主锚点。</li>
+<li><strong>真实学校 grouped split
+已补跑</strong>：<code>leave-one-school-out</code> 的 mean AUC 约
+<strong>0.5155–0.5310</strong>。</li>
+<li><strong>out-phase 学校 grouped split
+也已补跑</strong>：<code>outphase_leave_one_school_out</code> 的 mean
+AUC 约 <strong>0.4221–0.4941</strong>。</li>
+<li><strong>结论边界不变</strong>：repeated hold-out、school
+split、out-phase internal temporal validation 都不能写成
+<code>external validation</code>。</li>
+<li><strong>运动 protocol
+主文继续保守写</strong>：先写方案编号、周期、频次、总体框架；强度细节放补充材料或答审。</li>
+</ul><h2 id="怎么读这页">怎么读这页</h2><ol type="1">
+<li><strong>先看主锚点</strong>：strict nested CV outer-test
+AUC≈0.50–0.54 仍没变，这决定了正式主结论的上限。</li>
+<li><strong>再看 grouped split / out-phase
+数字</strong>：核心不是看有没有某一格分数更高，而是看信号在更严切法下还能不能站住。</li>
+<li><strong>再看 F1–F6</strong>：这些图的作用是解释“为什么不能只报最高
+AUC”，以及“为什么要同时看 gap、split-level 分布、时相迁移”。</li>
+<li><strong>最后看 protocol
+与数据条件</strong>：明确当前主文可写到哪一步，以及哪些细节更适合放在补充材料或待后续数据到位后补充。</li>
+</ol><h2 id="结构性解读">结构性解读</h2><ul>
+<li><code>repeated_random_holdout</code> 普遍高于
+<code>leave_one_school_out</code>，说明<strong>随机切分更乐观</strong>，而真实学校
+grouped split 更接近来源异质性的检验。</li>
+<li><code>clinical_baseline_main</code> 的上限不是最高，但
+<strong>generalization gap
+最小</strong>，因此它更适合作为当前最稳妥、最防守的主叙事。</li>
+<li><code>compact_fusion</code> 往往能给出更高的 train AUC，但 school
+split / out-phase 下 gap
+更大，说明它更像“容量更高但稳定性更弱”的路线。</li>
+<li><code>outphase_leave_one_school_out</code>
+进一步下降，提示<strong>时相迁移比同相 grouped split
+更难</strong>；这支持“信号 modest but not robust
+enough”，不支持“强泛化已建立”。</li>
+</ul><h2 id="不能过度宣称的点">不能过度宣称的点</h2><ul>
+<li>这里所有补充分析都属于<strong>内部验证</strong>，不是 external
+validation。</li>
+<li>用户记得的 <strong>AUC≈0.8</strong> 仍然只对应 strict nested CV 的
+<code>mean_train_auc</code>，不是 outer-test AUC。</li>
+<li>这页的价值是把“边界、稳定性、风险”讲清楚，而不是把 headline 从 0.53
+改写成更高的 test AUC。</li>
+</ul><h2 id="交接材料索引">交接材料索引</h2><ul>
+<li>学校/强度映射：<code>id_school_intensity_mapping.csv</code></li>
+<li>学校级 grouped holdout
+汇总：<code>school_group_holdout_summary.csv</code></li>
+<li>模型级 self-validation
+汇总：<code>self_validation_summary.csv</code></li>
+<li>模型级 out-phase
+汇总：<code>outphase_validation_summary.csv</code></li>
+<li>综合比较表：<code>small_model_followup_comparison.csv</code></li>
+<li>总交接页：<code>02_combined_formal_report.html</code></li>
+<li>school split 与 protocol
+说明：<code>03_school_split_protocol_note.html</code></li>
+</ul><h2 id="正式主结果仍是主锚点">正式主结果仍是主锚点</h2><table>
+<thead>
+<tr>
+<th>experiment</th>
+<th>mean_auc</th>
+<th>std_auc</th>
+<th>mean_train_auc</th>
+<th>n_outer_folds</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_slim_logistic</td>
+<td>0.5297</td>
+<td>0.0640</td>
+<td>0.6064</td>
+<td>5</td>
+</tr>
+<tr>
+<td>lipid_elastic_net</td>
+<td>0.5338</td>
+<td>0.0701</td>
+<td>0.7895</td>
+<td>5</td>
+</tr>
+<tr>
+<td>clinical_full_elastic_net</td>
+<td>0.5011</td>
+<td>0.0742</td>
+<td>0.7437</td>
+<td>5</td>
+</tr>
+<tr>
+<td>fusion_elastic_net</td>
+<td>0.5364</td>
+<td>0.0535</td>
+<td>0.8055</td>
+<td>5</td>
+</tr>
+<tr>
+<td>fusion_full_elastic_net</td>
+<td>0.5258</td>
+<td>0.0450</td>
+<td>0.8496</td>
+<td>5</td>
+</tr>
+</tbody>
+</table><ul>
+<li>正式可防守的主结论仍然来自 strict nested CV outer-test
+AUC≈0.50–0.54。</li>
+<li>用户记得的 AUC≈0.8 只对应 <code>mean_train_auc</code>，不是
+outer-test AUC。</li>
+</ul><h2 id="学校-split--out-phase-关键数字">学校 split + out-phase
+关键数字</h2><table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>strict_mean_auc</th>
+<th>leave_one_school_out_mean_auc</th>
+<th>repeated_random_holdout_mean_auc</th>
+<th>outphase_leave_one_school_out_mean_auc</th>
+<th>outphase_repeated_random_holdout_mean_auc</th>
+<th>leave_one_school_out_mean_gap</th>
+<th>outphase_leave_one_school_out_mean_gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>0.5297</td>
+<td>0.5155</td>
+<td>0.5545</td>
+<td>0.4221</td>
+<td>0.3601</td>
+<td>0.0904</td>
+<td>0.1839</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>0.5338</td>
+<td>0.5310</td>
+<td>0.5409</td>
+<td>0.4941</td>
+<td>0.5034</td>
+<td>0.1625</td>
+<td>0.1993</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>0.5364</td>
+<td>0.5246</td>
+<td>0.5718</td>
+<td>0.4774</td>
+<td>0.4986</td>
+<td>0.2353</td>
+<td>0.2825</td>
+</tr>
+</tbody>
+</table><h2 id="figure-f1-小模型-follow-up-主图">Figure F1. 小模型 follow-up
+主图</h2><p><img alt="Figure F1：小模型 follow-up 主图" src="assets/02_followup_f1_model_performance.png"/></p><p>图文件： <a href="assets/02_followup_f1_model_performance.png">PNG</a> · <a href="assets/02_followup_f1_model_performance.pdf">PDF</a></p><ul>
+<li><code>compact_fusion</code> 的 repeated hold-out AUC 仍最高，但
+<code>clinical_baseline_main</code> 的 generalization gap 更小。</li>
+<li>真实 school hold-out 接入后，三条路线的 mean AUC 依旧在 0.52
+左右，没有把主结论抬高到新的量级。</li>
+</ul><h2 id="figure-f2-generalization-gap">Figure F2. Generalization gap</h2><p><img alt="Figure F2：generalization gap" src="assets/03_followup_f2_generalization_gap.png"/></p><p>图文件： <a href="assets/03_followup_f2_generalization_gap.png">PNG</a> · <a href="assets/03_followup_f2_generalization_gap.pdf">PDF</a></p><ul>
+<li><code>clinical_baseline_main</code> 的
+<code>leave_one_school_out_mean_gap</code>
+最小，更适合作为稳妥主叙事。</li>
+<li><code>compact_fusion</code> 虽有性能上限，但 school hold-out 与
+out-phase 下 gap 仍明显更大。</li>
+</ul><h2 id="figure-f3-self-validation-分布图">Figure F3. Self-validation
+分布图</h2><p><img alt="Figure F3：self-validation 分布图" src="assets/04_followup_f3_self_validation_distribution.png"/></p><p>图文件： <a href="assets/04_followup_f3_self_validation_distribution.png">PNG</a> ·
+<a href="assets/04_followup_f3_self_validation_distribution.pdf">PDF</a></p><ul>
+<li>这张图把 repeated hold-out 与 leave-one-school-out 的 split-level
+分布摆出来。</li>
+<li>它说明：这不是单次切分偶然得到的结果，但它也没有显示出强泛化。</li>
+</ul><h2 id="figure-f5-out-phase-内部时相验证主图">Figure F5. out-phase
+内部时相验证主图</h2><p><img alt="Figure F5：out-phase 主图" src="assets/06_followup_f5_outphase_model_performance.png"/></p><p>图文件： <a href="assets/06_followup_f5_outphase_model_performance.png">PNG</a> · <a href="assets/06_followup_f5_outphase_model_performance.pdf">PDF</a></p><ul>
+<li>baseline → out-phase 的内部时相验证已经接入。</li>
+<li>但当前 best <code>outphase_leave_one_school_out</code> 也只在 0.49
+左右，仍属于边界说明型证据。</li>
+</ul><h2 id="figure-f6-out-phase-分布图">Figure F6. out-phase 分布图</h2><p><img alt="Figure F6：out-phase 分布图" src="assets/07_followup_f6_outphase_distribution.png"/></p><p>图文件： <a href="assets/07_followup_f6_outphase_distribution.png">PNG</a> · <a href="assets/07_followup_f6_outphase_distribution.pdf">PDF</a></p><ul>
+<li>这张图把 out-phase repeated hold-out 与 out-phase school hold-out
+的分布展开。</li>
+<li>它支持的不是“强复制”，而是“我们已经把更严一点的 internal temporal
+validation 做出来了”。</li>
+</ul><h2 id="figure-f4-当前-responder-分组审计图">Figure F4. 当前 responder
+分组审计图</h2><p><img alt="Figure F4：当前 responder 分组审计图" src="assets/05_followup_f4_group_audit.png"/></p><p>图文件： <a href="assets/05_followup_f4_group_audit.png">PNG</a> · <a href="assets/05_followup_f4_group_audit.pdf">PDF</a></p><ul>
+<li>当前标签来源仍是既有二分类标签 +
+会议纪要级证据链，不是原始连续终点真值表。</li>
+<li>因此这张图的作用仍是交代边界，而不是证明 alternative grouping
+sensitivity 已完成。</li>
+</ul><h2 id="运动-protocol-写法建议">运动 protocol 写法建议</h2><ul>
+<li><strong>主文</strong>：写干预方案编号、周期、频次、总体框架。</li>
+<li><strong>补充材料 / 答审</strong>：再写学校 /
+场地对应的强度分层、执行细节、依从性。</li>
+<li>如果需要对应学校强度，可直接查看
+<code>id_school_intensity_mapping.csv</code>。</li>
+</ul><h2 id="当前仍-blocked-的内容">当前仍 blocked 的内容</h2><ul>
+<li><code>endpoint_source</code>：缺原始连续终点文件，暂不做真正的
+alternative grouping sensitivity。</li>
+<li>心血管表型整理表：暂不做机制桥接分析。</li>
+</ul><h2 id="相关文件入口">相关文件入口</h2><ul>
+<li>统一汇报页： <a href="02_combined_formal_report.html">02_combined_formal_report.html</a></li>
+<li>主汇总： <a href="followup_summary.md">followup_summary.md</a></li>
+<li>学校 split / protocol 说明： <a href="03_school_split_protocol_note.html">03_school_split_protocol_note.html</a></li>
+<li>学校 grouped holdout： <a href="school_group_holdout_summary.csv">school_group_holdout_summary.csv</a></li>
+<li>学校/强度映射： <a href="id_school_intensity_mapping.csv">id_school_intensity_mapping.csv</a></li>
+<li>out-phase 说明： <a href="outphase_validation.md">outphase_validation.md</a></li>
+</ul></main>
+</div>
+<footer class="footer">
+<div class="footer-links"><a class="footer-link" href="02_combined_formal_report.html">总交接页</a><a class="footer-link" href="README.md">README</a></div>
+<div class="footer-note">External formal handoff package refresh on 2026-03-12.</div>
+</footer>
+</div>
+</body>
+</html>

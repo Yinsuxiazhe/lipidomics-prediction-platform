@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>20260311_正式说明包代码完整性审计</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; line-height: 1.75; color: #1f2937; max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; background: #ffffff; }
+  a { color: #0f62fe; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3, h4 { color: #111827; line-height: 1.35; }
+  h1 { font-size: 2rem; margin-top: 0; border-bottom: 3px solid #e5e7eb; padding-bottom: 0.7rem; }
+  h2 { margin-top: 2.2rem; padding-top: 0.2rem; border-top: 1px solid #f3f4f6; }
+  p, li { font-size: 1rem; }
+  blockquote { margin: 1rem 0; padding: 0.85rem 1rem; background: #f8fafc; border-left: 4px solid #cbd5e1; color: #334155; }
+  img { max-width: 100%; height: auto; display: block; margin: 1.25rem auto; border-radius: 10px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12); }
+  table { width: 100%; border-collapse: collapse; margin: 1.2rem 0 1.6rem; font-size: 0.95rem; }
+  th, td { border: 1px solid #e5e7eb; padding: 0.7rem 0.75rem; vertical-align: top; }
+  th { background: #f8fafc; }
+  code { background: #f3f4f6; padding: 0.12rem 0.32rem; border-radius: 4px; font-size: 0.92em; }
+  #TOC { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem 1.2rem; margin: 1.5rem 0 2rem; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">20260311_正式说明包代码完整性审计</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#正式说明包代码完整性审计"
+id="toc-正式说明包代码完整性审计">正式说明包代码完整性审计</a>
+<ul>
+<li><a href="#一审计结论摘要"
+id="toc-一审计结论摘要">一、审计结论摘要</a></li>
+<li><a href="#二已包含的关键代码文件"
+id="toc-二已包含的关键代码文件">二、已包含的关键代码文件</a></li>
+<li><a href="#三阻碍独立复现的关键缺口"
+id="toc-三阻碍独立复现的关键缺口">三、阻碍独立复现的关键缺口</a>
+<ul>
+<li><a href="#p1缺少多个被直接-import-的本地模块"
+id="toc-p1缺少多个被直接-import-的本地模块">P1：缺少多个被直接 import
+的本地模块</a></li>
+<li><a href="#p1配置文件使用原项目绝对路径缺乏可移植性"
+id="toc-p1配置文件使用原项目绝对路径缺乏可移植性">P1：配置文件使用原项目绝对路径，缺乏可移植性</a></li>
+<li><a href="#p1r-主图脚本在正式包内不能独立重跑主流程"
+id="toc-p1r-主图脚本在正式包内不能独立重跑主流程">P1：R
+主图脚本在正式包内不能独立重跑主流程</a></li>
+</ul></li>
+<li><a href="#四次级缺口" id="toc-四次级缺口">四、次级缺口</a>
+<ul>
+<li><a href="#p2缺少环境依赖说明"
+id="toc-p2缺少环境依赖说明">P2：缺少环境依赖说明</a></li>
+<li><a href="#p2缺少测试文件"
+id="toc-p2缺少测试文件">P2：缺少测试文件</a></li>
+<li><a href="#p2当前代码目录中原本夹带-.ds_store"
+id="toc-p2当前代码目录中原本夹带-.ds_store">P2：当前代码目录中原本夹带
+<code>.DS_Store</code></a></li>
+</ul></li>
+<li><a href="#五当前包适合承担的角色"
+id="toc-五当前包适合承担的角色">五、当前包适合承担的角色</a>
+<ul>
+<li><a href="#适合" id="toc-适合">适合</a></li>
+<li><a href="#不适合" id="toc-不适合">不适合</a></li>
+</ul></li>
+<li><a href="#六建议的正式表述"
+id="toc-六建议的正式表述">六、建议的正式表述</a></li>
+<li><a href="#七如果要升级成完整复现包至少还需要补什么"
+id="toc-七如果要升级成完整复现包至少还需要补什么">七、如果要升级成“完整复现包”，至少还需要补什么</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="正式说明包代码完整性审计">正式说明包代码完整性审计</h1>
+<blockquote>
+<p>审计对象：<code>03_关键代码与配置/</code>
+目录及其与正式说明包复现能力的对应关系。</p>
+</blockquote>
+<h2 id="一审计结论摘要">一、审计结论摘要</h2>
+<ol type="1">
+<li><strong>结论一：代码“用于说明核心方法逻辑”基本够用。</strong>
+<ul>
+<li>当前包内已经包含主流程入口、strict nested CV
+核心建模脚本、结果表导出脚本、ROC 导出脚本、主配置文件和 Figure 6-4
+绘图脚本。</li>
+<li>如果目的只是让接收者理解主结果是如何生成的，这一层级的信息是基本齐全的。</li>
+</ul></li>
+<li><strong>结论二：代码“用于独立完整复现”并不齐全。</strong>
+<ul>
+<li>正式包当前并不是一个可脱离原项目目录独立运行的完整复现包。</li>
+<li>也就是说，它更适合作为“方法学证据与关键实现摘录”，而不是“拿到包就能从头跑完整流程”的交付件。</li>
+</ul></li>
+<li><strong>结论三：当前最准确的定位应为“关键代码摘录包”，而不是“完整复现代码包”。</strong></li>
+</ol>
+<h2 id="二已包含的关键代码文件">二、已包含的关键代码文件</h2>
+<ol type="1">
+<li><code>run_pipeline.py</code>
+<ul>
+<li>主流程入口。</li>
+</ul></li>
+<li><code>config/analysis.yaml</code>
+<ul>
+<li>输入路径、标签定义、CV 参数和输出目录配置。</li>
+</ul></li>
+<li><code>src/models/run_nested_cv.py</code>
+<ul>
+<li>strict nested CV 的核心逻辑。</li>
+</ul></li>
+<li><code>src/reports/make_tables.py</code>
+<ul>
+<li>主结果表导出逻辑。</li>
+</ul></li>
+<li><code>src/reports/make_figures.py</code>
+<ul>
+<li>ROC 点位导出逻辑。</li>
+</ul></li>
+<li><code>fig6-4最终.R</code>
+<ul>
+<li>主图 Figure 6-4 绘图脚本。</li>
+</ul></li>
+</ol>
+<h2 id="三阻碍独立复现的关键缺口">三、阻碍独立复现的关键缺口</h2>
+<h3 id="p1缺少多个被直接-import-的本地模块">P1：缺少多个被直接 import
+的本地模块</h3>
+<p>以下模块被当前包内代码直接调用，但并未一同打包：</p>
+<ol type="1">
+<li><code>src.data.build_cohort</code></li>
+<li><code>src.io.load_data</code></li>
+<li><code>src.features.correlation_prune</code></li>
+<li><code>src.features.univariate_screen</code></li>
+<li><code>src.preprocess.clinical_filter</code></li>
+<li><code>src.preprocess.lipid_transform</code></li>
+</ol>
+<p>这意味着： - <code>run_pipeline.py</code>
+在当前正式说明包中<strong>不能单独运行</strong>； -
+<code>run_nested_cv.py</code>
+也<strong>不能在当前包内独立导入执行</strong>。</p>
+<h3
+id="p1配置文件使用原项目绝对路径缺乏可移植性">P1：配置文件使用原项目绝对路径，缺乏可移植性</h3>
+<p><code>config/analysis.yaml</code>
+中的数据路径和输出路径全部指向原项目机器上的绝对路径。</p>
+<p>这意味着： 1.
+若把正式说明包拷贝到别的电脑或别的目录，配置将立即失效； 2.
+即使补齐部分代码模块，也仍然不能直接复现； 3.
+当前配置更像“原始工程的运行快照”，不是“可移植的交付配置”。</p>
+<h3 id="p1r-主图脚本在正式包内不能独立重跑主流程">P1：R
+主图脚本在正式包内不能独立重跑主流程</h3>
+<p>实际测试表明： 1. 直接运行包内 <code>run_pipeline.py --dry-run</code>
+会报 <code>ModuleNotFoundError: No module named 'src.data'</code>； 2.
+直接运行包内 <code>fig6-4最终.R</code> 也会因为其内部调用
+<code>run_pipeline.py</code> 而失败。</p>
+<p>因此，当前包内的 <code>fig6-4最终.R</code>
+更适合作为<strong>方法说明脚本</strong>，而不是当前包环境下可直接复现的可执行脚本。</p>
+<h2 id="四次级缺口">四、次级缺口</h2>
+<h3 id="p2缺少环境依赖说明">P2：缺少环境依赖说明</h3>
+<p>当前正式包中没有以下文件：</p>
+<ol type="1">
+<li><code>requirements.txt</code> / <code>environment.yml</code> /
+<code>pyproject.toml</code></li>
+<li>R 包依赖说明文件</li>
+<li>Python 与 R 版本说明</li>
+</ol>
+<p>这会导致接收者即使补齐代码，也不容易准确还原运行环境。</p>
+<h3 id="p2缺少测试文件">P2：缺少测试文件</h3>
+<p>正式包没有打入对应测试文件，因此： 1.
+无法在包内直接验证代码行为是否一致； 2.
+无法把“代码可看”提升为“代码可验证”。</p>
+<h3 id="p2当前代码目录中原本夹带-.ds_store">P2：当前代码目录中原本夹带
+<code>.DS_Store</code></h3>
+<p>这属于低风险问题，但会影响交付整洁度。当前本轮整理时已清理。</p>
+<h2 id="五当前包适合承担的角色">五、当前包适合承担的角色</h2>
+<h3 id="适合">适合</h3>
+<ol type="1">
+<li>解释 strict nested CV 的核心方法流程；</li>
+<li>说明主图和结果表来自哪些关键脚本；</li>
+<li>作为正式说明包中的“关键实现证据”。</li>
+</ol>
+<h3 id="不适合">不适合</h3>
+<ol type="1">
+<li>作为完全独立的复现代码仓；</li>
+<li>作为别人拿到后即可一键重跑的完整分析包；</li>
+<li>作为软件交付意义上的完整 source release。</li>
+</ol>
+<h2 id="六建议的正式表述">六、建议的正式表述</h2>
+<p>建议把当前 <code>03_关键代码与配置/</code> 的定位写成：</p>
+<blockquote>
+<p>本目录提供 strict nested CV
+主结果所对应的关键实现脚本与配置文件，用于说明主结果生成逻辑与方法学边界；其目的在于支撑结果解释与审阅，而非作为完整、可脱离原工程环境独立运行的复现包。</p>
+</blockquote>
+<h2
+id="七如果要升级成完整复现包至少还需要补什么">七、如果要升级成“完整复现包”，至少还需要补什么</h2>
+<ol type="1">
+<li>补齐所有
+<code>src.data</code>、<code>src.io</code>、<code>src.features</code>、<code>src.preprocess</code>
+相关模块；</li>
+<li>增加环境依赖文件；</li>
+<li>把绝对路径改成相对路径或参数化路径；</li>
+<li>补入最小测试集与运行说明；</li>
+<li>增加一个真正可在包内运行的 <code>README</code> 与复现命令示例。</li>
+</ol>
+</body>
+</html>

@@ -1,0 +1,27 @@
+黄老师/晨宇您好，我把这篇 Nature Communications（2024-11-21）里提到的三个 biobanks 快速对了一下：UK Biobank、Estonian Biobank、THL Biobank。我的判断是，这三个库**可以作为第二阶段的 external-proxy / transportability 候选**，但**不能直接写成我们当前儿童运动干预 responder 模型的严格 external validation**。
+
+主要原因有四点：第一，人群不匹配，我们现在是儿童运动干预队列，而这三个库基本都是北欧成人一般人群；第二，终点不匹配，对方主要是慢病发生风险，不是运动干预 responder/non-responder；第三，平台不匹配，论文用的是 Nightingale NMR 的 36 个标准化代谢指标，而我们当前主结果主要来自 species-level lipidomics；第四，我们现有 responder 标签本身还需要继续守住“会议纪要级证据链，不是原始真值表”的边界。
+
+不过，这三个库**仍然值得做 reduced external-proxy 路线**。我已经对了 overlap feature：在 paper 的 36 个 metabolomic biomarkers 里，我们本地没有与 lipid species 的直接同名重叠，但能从常规临床化学里稳定映射出 9 个 overlap biomarkers（ApoA1、ApoB、LDL-C、HDL-C、总胆固醇、甘油三酯、白蛋白、肌酐，以及葡萄糖作为 Glucose/Lactate 的近似 proxy），再加上 age、sex、BMI，可以组成一个 reduced external-proxy model 草案。
+
+这条路线更适合写成：**external transportability / proxy validation / targeted replication feasibility**，不建议现在直接写成 external validation。如果您同意，我建议下一步先在我们本地把 overlap-feature reduced model 单独跑出来，再决定是先走 UK Biobank 可行性申请，还是先继续找更贴近儿童干预场景的 targeted external cohort。
+
+---
+
+黄老师/晨宇您好，
+
+我基于 Nature Communications 文章《Metabolomic and genomic prediction of common diseases in 700,217 participants in three national biobanks》（2024-11-21）以及我们当前 responder 项目的本地数据结构，初步做了一版“三个 biobanks 是否可用于外部验证”的可行性审查。
+
+当前结论是：**这三个 biobanks（UK Biobank、Estonian Biobank、THL Biobank）可以作为第二阶段的 external-proxy / transportability 候选资源，但暂时不宜直接表述为我们当前儿童运动干预 responder 模型的严格 external validation。**
+
+主要边界如下：
+1. **人群边界**：我们的队列是儿童运动干预，而三个 biobanks 基本是北欧成人一般人群；
+2. **终点边界**：对方主要是慢病发病风险，不是运动干预 responder / non-responder；
+3. **平台边界**：论文使用 Nightingale NMR 标准化 36 项代谢指标，而我们当前主结果主要来自 species-level lipidomics，不能直接一一映射；
+4. **标签边界**：我们当前 responder 标签仍需维持“会议纪要级证据链，而非原始真值表”的谨慎口径。
+
+但从 overlap-feature 角度看，这三个库并非完全不能用。我这边已整理出一版 reduced external-proxy model 草案：在 paper 的 36 个 metabolomic biomarkers 中，可从我们现有常规临床中稳定映射出 9 个 overlap biomarkers，再联合 age、sex、BMI 组成可迁移的小模型候选。这样的路线更适合回答“是否存在可外推的广义心代谢信号”，而不是直接宣称“当前 responder 分类器已获外部验证”。
+
+如果您认可，我建议下一步先做两件事：
+- **第一步**：在我们本地先把 overlap-feature reduced model 单独跑出来，形成内部 strict nested CV / hold-out 结果；
+- **第二步**：再决定是优先推进 UK Biobank 的 external-proxy feasibility，还是继续找更贴近儿童运动干预场景的 targeted external cohort。

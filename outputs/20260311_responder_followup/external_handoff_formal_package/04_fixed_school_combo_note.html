@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>固定校区组合版 split：正式说明 + sensitivity analysis</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --line: #dbe4f0;
+  --brand: #2563eb;
+  --brand-soft: #dbeafe;
+  --accent: #0f766e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 220px);
+  color: var(--ink);
+}
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+}
+.hero {
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(219,228,240,.95);
+  border-radius: 24px;
+  padding: 28px 30px 24px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, .08);
+  backdrop-filter: blur(8px);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--accent);
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin-bottom: 14px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+}
+.subtitle {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+.meta-row, .nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.meta-pill, .nav-link, .path-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 13px;
+  color: var(--muted);
+}
+.doc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+.sidebar-toc {
+  position: sticky;
+  top: 24px;
+}
+.sidebar-toc-card {
+  background: rgba(255,255,255,.92);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .06);
+  padding: 22px 18px;
+}
+.sidebar-toc-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.sidebar-toc-title span {
+  color: var(--brand);
+}
+.sidebar-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-toc-item {
+  margin: 0;
+}
+.sidebar-toc-link {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.sidebar-toc-link:hover {
+  text-decoration: none;
+  background: #eff6ff;
+  color: var(--brand);
+  transform: translateX(2px);
+}
+.sidebar-toc-link.sub-item {
+  padding-left: 24px;
+  font-size: 13px;
+}
+.main-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .06);
+  padding: 30px;
+}
+.content h1, .content h2, .content h3, .content h4 {
+  color: var(--ink);
+  margin-top: 1.6em;
+  margin-bottom: .55em;
+}
+.content h1 { font-size: 30px; }
+.content h2 { font-size: 24px; border-bottom: 1px solid var(--line); padding-bottom: .35em; }
+.content h3 { font-size: 20px; }
+.content p, .content li {
+  color: #1e293b;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.content ul, .content ol { padding-left: 1.4em; }
+.content code {
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: .12em .38em;
+  border-radius: 6px;
+  font-size: .92em;
+}
+.content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 14px;
+  overflow: auto;
+}
+.content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 24px;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  vertical-align: top;
+}
+.content th {
+  background: #f8fafc;
+  text-align: left;
+}
+.content img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.doc-link-btn, .footer-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.doc-link-btn:hover, .footer-link:hover {
+  text-decoration: none;
+  background: #dbeafe;
+}
+.footer {
+  margin-top: 24px;
+  padding: 18px 6px 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer-note {
+  margin-top: 14px;
+}
+@media (max-width: 760px) {
+  .page { padding: 18px 14px 36px; }
+  .doc-layout { grid-template-columns: 1fr; }
+  .sidebar-toc { position: static; }
+  .hero, .main-card, .sidebar-toc-card { padding: 20px 18px; border-radius: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+<section class="hero">
+<div class="badge">External sensitivity note · 2026-03-12</div>
+<h1>固定校区组合版 split：正式说明 + sensitivity analysis</h1>
+<p class="subtitle">把固定校区 train/test 组合的两套合理方案、已选主方案 B 与方案 A sensitivity 放在同一页，便于正式交接时直接引用。</p>
+<div class="meta-row"><span class="meta-pill">主口径仍是 strict nested CV outer-test AUC≈0.50–0.54</span><span class="meta-pill">方案 B 为主固定 split，方案 A 为 sensitivity</span><span class="meta-pill">fixed combo / out-phase 均非 external validation</span><span class="path-chip">来源文件：04_fixed_school_combo_note.md</span></div>
+<div class="nav-row doc-toolbar"><a class="nav-link" href="02_combined_formal_report.html">总交接页</a><a class="nav-link" href="03_school_split_protocol_note.html">school split / protocol</a><a class="nav-link" href="fixed_school_combo_result_comparison.csv">结果对比 CSV</a><a class="nav-link" href="fixed_school_combo_scheme_design.csv">方案设计 CSV</a></div>
+</section>
+<div class="doc-layout">
+<aside class="sidebar-toc"><div class="sidebar-toc-card"><div class="sidebar-toc-title"><span>📚</span> Table of contents</div><ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="怎么读这页" href="#怎么读这页">怎么读这页</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="1-为什么要单独做固定校区组合版-split" href="#1-为什么要单独做固定校区组合版-split">1.
+为什么要单独做固定校区组合版 split</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="2-两个固定校区方案" href="#2-两个固定校区方案">2. 两个固定校区方案</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="当前主方案b4-train--3-test" href="#当前主方案b4-train--3-test">当前主方案：B（4 train + 3
+test）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="3-方案-b-结果已选主方案" href="#3-方案-b-结果已选主方案">3. 方案 B 结果（已选主方案）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="self-validation" href="#self-validation">self-validation</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="out-phase" href="#out-phase">out-phase</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="4-方案-a-结果补跑-sensitivity-analysis" href="#4-方案-a-结果补跑-sensitivity-analysis">4. 方案 A 结果（补跑
+sensitivity analysis）</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="self-validation-1" href="#self-validation-1">self-validation</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="out-phase-1" href="#out-phase-1">out-phase</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="a--b-并排后的真正结论" href="#a--b-并排后的真正结论">A / B 并排后的真正结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="5-当前最稳妥的正式表述" href="#5-当前最稳妥的正式表述">5. 当前最稳妥的正式表述</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="如对方问询为什么不直接采用方案-a" href="#如对方问询为什么不直接采用方案-a">如对方问询：为什么不直接采用方案
+A？</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="6-包内可直接打开的文件" href="#6-包内可直接打开的文件">6. 包内可直接打开的文件</a></li></ul></div></aside>
+<main class="main-card content"><h1 id="固定校区组合版-split正式说明--sensitivity-analysis">固定校区组合版
+split：正式说明 + sensitivity analysis</h1><blockquote>
+<p>本页用于外部正式交接，单独回答“若固定若干校区训练、另外若干校区测试，结论会怎样变化”，并把已选主方案
+B 与补跑的 sensitivity 方案 A 放在同一页中，便于接收方快速理解
+train/test 组合设计与边界判断。</p>
+</blockquote><h2 id="怎么读这页">怎么读这页</h2><ol type="1">
+<li><strong>先看方案设计</strong>：不要一上来只盯某一格 AUC，而要先看
+train/test 样本量、response rate gap、intensity 覆盖是否合理。</li>
+<li><strong>再看 B
+为什么是主方案</strong>：它不是因为“所有数字都最高”，而是因为更像真正的多校区固定
+hold-out。</li>
+<li><strong>最后再看 A 的 sensitivity 价值</strong>：A 的作用不是取代
+B，而是检验“换一种更平衡的切法，结论会不会根本改变”。</li>
+</ol><blockquote>
+<p>这页真正要回答的不是“哪一套切法赢了”，而是“固定校区 train/test
+组合之后，我们的结论边界有没有改变”。</p>
+</blockquote><h2 id="1-为什么要单独做固定校区组合版-split">1.
+为什么要单独做固定校区组合版 split</h2><ul>
+<li><code>leave_one_school_out</code> 是逐校区留一，更像系统的 grouped
+validation。</li>
+<li>固定校区组合版 split
+则更贴近现在讨论的实际表述：<strong>若干校区训练，另外若干校区测试</strong>。</li>
+<li>但它的定位仍是 internal grouped validation / internal temporal
+validation，<strong>不是 external validation</strong>。</li>
+</ul><h2 id="2-两个固定校区方案">2. 两个固定校区方案</h2><table>
+<thead>
+<tr>
+<th>scheme</th>
+<th>train_schools</th>
+<th>test_schools</th>
+<th>train_n</th>
+<th>test_n</th>
+<th>train_response_rate</th>
+<th>test_response_rate</th>
+<th>abs_response_rate_gap</th>
+<th>train_intensity_count</th>
+<th>test_intensity_count</th>
+<th>recommended</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A_5train_2test_balanced_rate</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+<td>0.5744</td>
+<td>0.5930</td>
+<td>0.0187</td>
+<td>3</td>
+<td>2</td>
+<td>sensitivity</td>
+</tr>
+<tr>
+<td>B_4train_3test_all_intensity</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+<td>0.5590</td>
+<td>0.6083</td>
+<td>0.0493</td>
+<td>3</td>
+<td>3</td>
+<td>selected</td>
+</tr>
+</tbody>
+</table><h3 id="当前主方案b4-train--3-test">当前主方案：B（4 train + 3
+test）</h3><ul>
+<li>选择理由：train/test 两侧都覆盖 3 种 intensity；test
+样本量更大；更像多校区固定 hold-out。</li>
+</ul><h2 id="3-方案-b-结果已选主方案">3. 方案 B 结果（已选主方案）</h2><h3 id="self-validation">self-validation</h3><table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>validation_scheme</th>
+<th>mean_auc</th>
+<th>mean_train_auc</th>
+<th>mean_gap</th>
+<th>train_schools</th>
+<th>test_schools</th>
+<th>train_n</th>
+<th>test_n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>fixed_school_combo_holdout</td>
+<td>0.5940</td>
+<td>0.5687</td>
+<td>-0.0253</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>fixed_school_combo_holdout</td>
+<td>0.5171</td>
+<td>0.8178</td>
+<td>0.3008</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>fixed_school_combo_holdout</td>
+<td>0.5334</td>
+<td>0.7064</td>
+<td>0.1730</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+</tr>
+</tbody>
+</table><h3 id="out-phase">out-phase</h3><table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>validation_scheme</th>
+<th>mean_auc</th>
+<th>mean_train_auc</th>
+<th>mean_gap</th>
+<th>train_schools</th>
+<th>test_schools</th>
+<th>train_n</th>
+<th>test_n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>outphase_fixed_school_combo_holdout</td>
+<td>0.5325</td>
+<td>0.5687</td>
+<td>0.0362</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>outphase_fixed_school_combo_holdout</td>
+<td>0.3191</td>
+<td>0.8180</td>
+<td>0.4988</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>outphase_fixed_school_combo_holdout</td>
+<td>0.3133</td>
+<td>0.7064</td>
+<td>0.3931</td>
+<td>六里屯、冷泉、本部、百旺</td>
+<td>中关村、华清校区、唐家岭校区</td>
+<td>161</td>
+<td>120</td>
+</tr>
+</tbody>
+</table><p>解读：</p><ul>
+<li><code>clinical_baseline_main</code> 在方案 B 的 self-validation AUC
+约 <strong>0.5940</strong>，但 out-phase 约
+<strong>0.5325</strong>。</li>
+<li><code>compact_fusion</code> 与 <code>ultra_sparse_lipid</code> 的
+train AUC 仍高于 test AUC 很多，说明 fixed split 下 generalization gap
+依旧存在。</li>
+</ul><h2 id="4-方案-a-结果补跑-sensitivity-analysis">4. 方案 A 结果（补跑
+sensitivity analysis）</h2><h3 id="self-validation-1">self-validation</h3><table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>validation_scheme</th>
+<th>mean_auc</th>
+<th>mean_train_auc</th>
+<th>mean_gap</th>
+<th>train_schools</th>
+<th>test_schools</th>
+<th>train_n</th>
+<th>test_n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>fixed_school_combo_holdout</td>
+<td>0.5787</td>
+<td>0.6292</td>
+<td>0.0505</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>fixed_school_combo_holdout</td>
+<td>0.5501</td>
+<td>0.8269</td>
+<td>0.2768</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>fixed_school_combo_holdout</td>
+<td>0.4857</td>
+<td>0.7473</td>
+<td>0.2616</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+</tr>
+</tbody>
+</table><h3 id="out-phase-1">out-phase</h3><table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>validation_scheme</th>
+<th>mean_auc</th>
+<th>mean_train_auc</th>
+<th>mean_gap</th>
+<th>train_schools</th>
+<th>test_schools</th>
+<th>train_n</th>
+<th>test_n</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>outphase_fixed_school_combo_holdout</td>
+<td>0.4543</td>
+<td>0.6292</td>
+<td>0.1749</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>outphase_fixed_school_combo_holdout</td>
+<td>0.4594</td>
+<td>0.8269</td>
+<td>0.3675</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>outphase_fixed_school_combo_holdout</td>
+<td>0.3843</td>
+<td>0.7473</td>
+<td>0.3630</td>
+<td>中关村、冷泉、唐家岭校区、本部、百旺</td>
+<td>六里屯、华清校区</td>
+<td>195</td>
+<td>86</td>
+</tr>
+</tbody>
+</table><p>解读：</p><ul>
+<li>方案 A 的优点是 response rate gap 更小，更适合作为 sensitivity
+analysis。</li>
+<li>如果方案 A 与方案 B
+的结论方向一致，就可以更稳妥地说明：<strong>固定校区组合怎么切，当前信号都没有上升到强跨校区泛化的层级</strong>。</li>
+</ul><h2 id="a--b-并排后的真正结论">A / B 并排后的真正结论</h2><ul>
+<li><strong>方案 B</strong> 在 <code>clinical_baseline_main</code>
+上更好，尤其 out-phase 仍能保持在 <strong>0.5325</strong>
+左右，因此它更适合作为当前正式交接的主固定 split。</li>
+<li><strong>方案 A</strong> 在 response rate 上更平衡，也让
+<code>compact_fusion</code> 的数值看起来稍好一些，但这并没有消除它的大
+gap 问题。</li>
+<li>两套切法下，模型排序会有一些细节变化，但<strong>没有任何一个模型在
+A/B 两套方案下都表现出一致、强而稳定的跨校区泛化</strong>。</li>
+<li>因此 A/B
+并排之后最重要的收获不是“挑出更高分的一套”，而是可以更稳妥地说：<strong>固定校区
+train/test 的具体切法会影响局部数值，但不会把当前结论从 modest signal
+改写成 strong generalization</strong>。</li>
+</ul><h2 id="5-当前最稳妥的正式表述">5. 当前最稳妥的正式表述</h2><ol type="1">
+<li>strict nested CV outer-test AUC 约 <strong>0.50–0.54</strong>
+仍是正式主结果。</li>
+<li>AUC≈0.8 仅对应 strict nested CV 的
+<code>mean_train_auc</code>。</li>
+<li>固定校区组合版 split、leave-one-school-out、repeated
+hold-out、out-phase 都只能写成内部验证，不是 external validation。</li>
+<li>方案 B 适合作为当前主固定 split 展示；方案 A 可作为 sensitivity
+analysis 证明结论不依赖单一切法。</li>
+</ol><h2 id="如对方问询为什么不直接采用方案-a">如对方问询：为什么不直接采用方案
+A？</h2><ul>
+<li>因为 <strong>B 的结构更合理</strong>：test 侧样本量更大，而且
+train/test 两边都覆盖 3 种 intensity，更接近“多校区固定
+hold-out”的主问题。</li>
+<li>因为 <strong>A 的定位本来就是
+sensitivity</strong>：它更像在问“如果用更平衡的 response rate
+组合切一次，结论会不会变”。</li>
+<li>现在 A
+已经补跑，所以我们可以更从容地说：<strong>不是没试过别的切法，而是试过以后，边界并没有根本变化。</strong></li>
+</ul><blockquote>
+<p>可直接用于正式交接的一句话：固定校区组合版 split 我们现在已经有主方案
+B，也补跑了方案 A 做
+sensitivity；两套切法结论方向一致——当前信号可以说存在，但还不足以写成强跨校区泛化或
+external validation。</p>
+</blockquote><h2 id="6-包内可直接打开的文件">6. 包内可直接打开的文件</h2><ul>
+<li>统一汇报页： <a href="02_combined_formal_report.html">02_combined_formal_report.html</a></li>
+<li>文献 / protocol 说明： <a href="03_school_split_protocol_note.html">03_school_split_protocol_note.html</a></li>
+<li>固定校区组合结果对比 CSV： <a href="fixed_school_combo_result_comparison.csv">fixed_school_combo_result_comparison.csv</a></li>
+<li>固定校区组合方案设计 CSV： <a href="fixed_school_combo_scheme_design.csv">fixed_school_combo_scheme_design.csv</a></li>
+</ul></main>
+</div>
+<footer class="footer">
+<div class="footer-links"><a class="footer-link" href="02_combined_formal_report.html">总交接页</a><a class="footer-link" href="README.md">README</a></div>
+<div class="footer-note">External formal handoff package refresh on 2026-03-12.</div>
+</footer>
+</div>
+</body>
+</html>

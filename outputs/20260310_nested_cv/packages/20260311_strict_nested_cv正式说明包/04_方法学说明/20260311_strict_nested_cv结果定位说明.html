@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>20260311_strict_nested_cv结果定位说明</title>
+  <style>
+    /* Default styles provided by pandoc.
+    ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+    */
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    svg {
+      height: auto;
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      border: none;
+      border-top: 1px solid #1a1a1a;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <style>
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; line-height: 1.75; color: #1f2937; max-width: 1080px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; background: #ffffff; }
+  a { color: #0f62fe; text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  h1, h2, h3, h4 { color: #111827; line-height: 1.35; }
+  h1 { font-size: 2rem; margin-top: 0; border-bottom: 3px solid #e5e7eb; padding-bottom: 0.7rem; }
+  h2 { margin-top: 2.2rem; padding-top: 0.2rem; border-top: 1px solid #f3f4f6; }
+  p, li { font-size: 1rem; }
+  blockquote { margin: 1rem 0; padding: 0.85rem 1rem; background: #f8fafc; border-left: 4px solid #cbd5e1; color: #334155; }
+  img { max-width: 100%; height: auto; display: block; margin: 1.25rem auto; border-radius: 10px; box-shadow: 0 12px 30px rgba(15, 23, 42, 0.12); }
+  table { width: 100%; border-collapse: collapse; margin: 1.2rem 0 1.6rem; font-size: 0.95rem; }
+  th, td { border: 1px solid #e5e7eb; padding: 0.7rem 0.75rem; vertical-align: top; }
+  th { background: #f8fafc; }
+  code { background: #f3f4f6; padding: 0.12rem 0.32rem; border-radius: 4px; font-size: 0.92em; }
+  #TOC { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1rem 1.2rem; margin: 1.5rem 0 2rem; }
+  </style>
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">20260311_strict_nested_cv结果定位说明</h1>
+</header>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#strict-nested-cv-结果定位说明"
+id="toc-strict-nested-cv-结果定位说明">strict nested CV 结果定位说明</a>
+<ul>
+<li><a href="#结果分层与定位" id="toc-结果分层与定位">1.
+结果分层与定位</a></li>
+<li><a href="#strict-nested-cv-之所以作为正式口径的依据"
+id="toc-strict-nested-cv-之所以作为正式口径的依据">2. strict nested CV
+之所以作为正式口径的依据</a></li>
+<li><a href="#开发阶段较高分结果的正式定位"
+id="toc-开发阶段较高分结果的正式定位">3.
+开发阶段较高分结果的正式定位</a></li>
+<li><a href="#正式表述时的推荐写法" id="toc-正式表述时的推荐写法">4.
+正式表述时的推荐写法</a>
+<ul>
+<li><a href="#推荐写法" id="toc-推荐写法">4.1 推荐写法</a></li>
+<li><a href="#不推荐写法" id="toc-不推荐写法">4.2 不推荐写法</a></li>
+</ul></li>
+<li><a href="#本说明包的证据链对应关系"
+id="toc-本说明包的证据链对应关系">5. 本说明包的证据链对应关系</a></li>
+<li><a href="#当前阶段最建议的使用方式"
+id="toc-当前阶段最建议的使用方式">6. 当前阶段最建议的使用方式</a></li>
+</ul></li>
+</ul>
+</nav>
+<h1 id="strict-nested-cv-结果定位说明">strict nested CV
+结果定位说明</h1>
+<blockquote>
+<p>本说明用于界定本包内各类结果的正式定位、使用边界与推荐表述。</p>
+</blockquote>
+<h2 id="结果分层与定位">1. 结果分层与定位</h2>
+<ol type="1">
+<li><strong>正式主结果</strong>：<code>01_主图与主结果/</code> 中的
+Figure 6-4、主结果 CSV 及其对应说明，均以 strict nested CV
+为正式口径。</li>
+<li><strong>补充结果</strong>：<code>02_补充分析与审计/</code>
+中的小模型压缩结果、标签/队列审计与诊断表，用于补充说明稳定性与局限性。</li>
+<li><strong>关键实现依据</strong>：<code>03_关键代码与配置/</code>
+中的配置文件、nested CV
+核心脚本和绘图脚本，构成正式结果的实现证据链。</li>
+<li><strong>方法学说明</strong>：本目录文档用于解释为何本包采用 strict
+nested CV 作为正式结果，以及其他结果应如何被引用。</li>
+</ol>
+<h2 id="strict-nested-cv-之所以作为正式口径的依据">2. strict nested CV
+之所以作为正式口径的依据</h2>
+<ol type="1">
+<li>特征筛选、标准化和参数调优均限定在训练折内完成，避免了验证信息泄漏。</li>
+<li>外层测试折不参与模型选择，因此结果更接近模型在未知样本中的真实表现。</li>
+<li>绘图脚本直接读取 strict nested CV
+输出，而不是在绘图阶段重新建模，有助于保证图形与结果表的一致性。</li>
+<li>对外汇报、论文主图和正式结论应优先依赖可信度更高的评估口径，而不是更高但边界不够严格的分数。</li>
+</ol>
+<h2 id="开发阶段较高分结果的正式定位">3.
+开发阶段较高分结果的正式定位</h2>
+<ol type="1">
+<li>先前较高分结果如需提及，只能定位为
+<strong>开发阶段探索性结果</strong>。</li>
+<li>这类结果可以用于说明“曾观察到潜在线索”或“开发过程中曾出现更高区分度”，但不宜承担正式性能声明。</li>
+<li>在正式正文中，如必须提及，应放在 Discussion、Limitations
+或方法补充部分，并明确与 strict nested CV 正式结果区分开来。</li>
+<li>本说明包不再把此类结果作为主要入口材料，以避免正式汇报时出现结果口径混淆。</li>
+</ol>
+<h2 id="正式表述时的推荐写法">4. 正式表述时的推荐写法</h2>
+<h3 id="推荐写法">4.1 推荐写法</h3>
+<ol type="1">
+<li>当前 strict nested CV 结果显示，临床与脂质融合模型达到当前最高 mean
+AUC，但优势幅度有限。</li>
+<li>扩展变量集没有带来更好的泛化表现，提示现阶段主要问题不是模型复杂度不足，而是信号强度与稳定性仍有限。</li>
+<li>现阶段更合适的说法是“存在一定预测信号，但仍需进一步验证与压缩模型复杂度”。</li>
+</ol>
+<h3 id="不推荐写法">4.2 不推荐写法</h3>
+<ol type="1">
+<li>不建议直接表述为“已经建立高性能稳定预测模型”。</li>
+<li>不建议把开发阶段较高分结果写成正式主结果或正式主图。</li>
+<li>不建议把轻微 AUC 增量包装成明确且稳定的临床增益。</li>
+</ol>
+<h2 id="本说明包的证据链对应关系">5. 本说明包的证据链对应关系</h2>
+<ol type="1">
+<li><strong>图形证据</strong>：<code>01_主图与主结果/Figure6-4_Honest_NestedCV.png</code>
+与 PDF。</li>
+<li><strong>表格证据</strong>：<code>01_主图与主结果/performance_summary.csv</code>、<code>fold_metrics.csv</code>、<code>feature_stability_summary.csv</code>。</li>
+<li><strong>补充证据</strong>：<code>02_补充分析与审计/20260310_predefined_small_model_comparison.csv</code>
+与小模型子目录。</li>
+<li><strong>实现证据</strong>：<code>03_关键代码与配置/src/models/run_nested_cv.py</code>、<code>make_tables.py</code>、<code>fig6-4最终.R</code>。</li>
+<li><strong>综合说明入口</strong>：<code>00_正式说明/20260311_strict_nested_cv正式说明.html</code>。</li>
+</ol>
+<h2 id="当前阶段最建议的使用方式">6. 当前阶段最建议的使用方式</h2>
+<ol type="1">
+<li>将 <code>00_正式说明/20260311_strict_nested_cv正式说明.html</code>
+作为正式对外说明首页。</li>
+<li>将 <code>01_主图与主结果/</code>
+作为所有主结果图表和数据引用的唯一来源。</li>
+<li>在需要回应方法学问题时，优先引用本目录说明，而不是引用过程性会话记录。</li>
+<li>在需要讨论优化方向时，引用 <code>02_补充分析与审计/</code>
+的补充结果，但保持其“补充证据”定位不变。</li>
+</ol>
+</body>
+</html>

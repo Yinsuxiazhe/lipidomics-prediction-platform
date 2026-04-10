@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Responder 脂质组学分析结果：1分钟封面说明</title>
+  <meta name="description" content="用于对外发送时的1分钟封面说明，概括主结果、AUC≈0.8来源与当前结论边界"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+    }
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-content {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .nav-logo {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 1.05rem;
+    }
+    .nav-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.92rem;
+      font-weight: 500;
+    }
+    .nav-link:hover { color: var(--primary); }
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 72px 24px 44px;
+    }
+    .hero-content {
+      max-width: 1040px;
+      margin: 0 auto;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.16);
+      border: 1px solid rgba(255,255,255,0.24);
+      border-radius: 999px;
+      padding: 8px 14px;
+      margin-bottom: 18px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    h1 {
+      font-size: clamp(2rem, 5vw, 3rem);
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero p {
+      max-width: 860px;
+      font-size: 1.06rem;
+      opacity: 0.94;
+      margin-bottom: 22px;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px 28px;
+      font-size: 0.92rem;
+      opacity: 0.88;
+    }
+    .main {
+      max-width: 1040px;
+      margin: 0 auto;
+      padding: 28px 24px 56px;
+    }
+    .quick-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: -22px;
+      margin-bottom: 24px;
+    }
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 11px 16px;
+      border-radius: 12px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      transition: 0.2s ease;
+    }
+    .cta-primary {
+      background: var(--primary);
+      color: white;
+      box-shadow: 0 10px 24px rgba(37,99,235,0.2);
+    }
+    .cta-primary:hover { background: var(--primary-dark); }
+    .cta-secondary {
+      background: white;
+      color: var(--primary);
+      border-color: #bfdbfe;
+    }
+    .cta-secondary:hover { background: #eff6ff; }
+    .section {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
+    }
+    .section h2 {
+      font-size: 1.2rem;
+      margin-bottom: 14px;
+    }
+    .lead {
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 16px;
+      margin: 18px 0 8px;
+    }
+    .card {
+      background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .card-label {
+      font-size: 0.84rem;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .card-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      line-height: 1.1;
+      margin-bottom: 8px;
+    }
+    .card-note {
+      font-size: 0.92rem;
+      color: var(--text-light);
+    }
+    .list {
+      padding-left: 1.2rem;
+    }
+    .list li { margin: 8px 0; }
+    .callout {
+      border-left: 5px solid var(--primary);
+      background: #eff6ff;
+      padding: 16px 18px;
+      border-radius: 14px;
+      margin-top: 12px;
+    }
+    .callout.warning {
+      border-left-color: var(--warning);
+      background: #fffbeb;
+    }
+    .callout.success {
+      border-left-color: var(--success);
+      background: #ecfdf5;
+    }
+    .table-wrap {
+      overflow-x: auto;
+      margin-top: 12px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.95rem;
+    }
+    th, td {
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { color: var(--text-light); font-weight: 700; }
+    .footer {
+      color: var(--text-light);
+      font-size: 0.9rem;
+      text-align: center;
+      padding-top: 12px;
+    }
+    @media (max-width: 860px) {
+      .grid { grid-template-columns: 1fr; }
+      .nav-content { height: auto; padding-top: 12px; padding-bottom: 12px; align-items: flex-start; }
+      .nav-links { justify-content: flex-start; }
+      .quick-nav { margin-top: -8px; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <a class="nav-logo" href="index.html">Responder 正式交付封面说明</a>
+      <div class="nav-links">
+        <a class="nav-link" href="01_formal_report.html">完整正式报告</a>
+        <a class="nav-link" href="strict_nested_cv_key_metrics.csv">strict nested CV 指标表</a>
+        <a class="nav-link" href="assets/01_baseline_main.png">基线主图</a>
+        <a class="nav-link" href="assets/08_strict_nested_cv_train_vs_outer_test_combo.png">AUC≈0.8 来源图</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-content">
+      <div style="display:flex;flex-wrap:wrap;gap:10px 12px;margin-bottom:16px;">
+        <span style="display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.26);font-size:0.92rem;font-weight:600;">需求方：Shuxian Zhang</span>
+        <span style="display:inline-flex;align-items:center;padding:7px 12px;border-radius:999px;background:rgba(255,255,255,0.18);border:1px solid rgba(255,255,255,0.26);font-size:0.92rem;font-weight:600;">分析提供方：Chenyu Fan</span>
+      </div>
+      <div class="badge">正式对外发送 · 1 分钟封面说明</div>
+      <h1>Responder 脂质组学分析结果</h1>
+      <p>本页用于在对外发送时，先用极简口径说明三件事：当前正式主结果是什么、为什么会看到 AUC≈0.8 的数值、以及当前结论边界在哪里。完整技术细节见后附正式报告页。</p>
+      <div class="hero-meta">
+        <span>正式主结果：strict nested CV</span>
+        <span>补充说明：训练/测试口径拆解</span>
+        <span>补充证据：稳健性与时相验证</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <div class="quick-nav">
+      <a class="cta cta-primary" href="01_formal_report.html">查看完整正式报告</a>
+      <a class="cta cta-secondary" href="strict_nested_cv_key_metrics.csv">下载 strict nested CV 指标表</a>
+      <a class="cta cta-secondary" href="assets/08_strict_nested_cv_train_vs_outer_test_combo.pdf">查看 AUC≈0.8 来源图</a>
+    </div>
+
+    <section class="section">
+      <h2>一句话结论</h2>
+      <p class="lead">当前正式主结果应以 <strong>strict nested CV 的 outer-test performance</strong> 为准；如果此前沟通中提到过 <strong>AUC≈0.8</strong>，那对应的是同一 strict nested CV 框架中的 <strong>mean_train_auc</strong>，不是 outer-test 或 external validation AUC。</p>
+      <div class="grid">
+        <div class="card">
+          <div class="card-label">正式主结果</div>
+          <div class="card-value">AUC 0.50–0.54</div>
+          <div class="card-note">对应 strict nested CV 的 outer-test mean AUC，是当前最应被引用的正式性能口径。</div>
+        </div>
+        <div class="card">
+          <div class="card-label">AUC≈0.8 的来源</div>
+          <div class="card-value">0.8055 / 0.8496</div>
+          <div class="card-note">对应 strict nested CV 中融合模型的 mean_train_auc，用于说明训练阶段能学到模式，但不能替代正式泛化性能。</div>
+        </div>
+        <div class="card">
+          <div class="card-label">当前结论边界</div>
+          <div class="card-value">补充验证 ≠ 外部验证</div>
+          <div class="card-note">repeated hold-out、leave-one-prefix-out 与 post-intervention within-dataset temporal validation 均属于补充证据，不应表述为 external validation。</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>主结果怎么说最稳妥</h2>
+      <ul class="list">
+        <li>当前数据下，严格 nested CV 给出的正式主结果约为 <strong>AUC 0.50–0.54</strong>。</li>
+        <li>这说明模型在当前样本与当前标签定义下，已经能观察到一定建模信号，但 <strong>正式泛化性能仍属中等</strong>，不应直接表述为稳定的高性能分类器。</li>
+        <li>因此，对外正式沟通时，建议始终以 <strong>outer-test mean AUC</strong> 作为主口径。</li>
+      </ul>
+      <div class="callout success">
+        推荐表述：<strong>“正式主结果基于 strict nested CV 的 outer-test performance；目前主模型 outer-test mean AUC 约为 0.50–0.54。”</strong>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>为什么又会看到 AUC≈0.8</h2>
+      <p class="lead">这一点最容易引起误解，所以建议单独解释。</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>模型</th>
+              <th>outer-test mean AUC</th>
+              <th>mean_train_auc</th>
+              <th>应如何理解</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>fusion_elastic_net</td>
+              <td>0.5364</td>
+              <td>0.8055</td>
+              <td>训练折内可学到较强模式，但外层测试泛化明显下降。</td>
+            </tr>
+            <tr>
+              <td>fusion_full_elastic_net</td>
+              <td>0.5258</td>
+              <td>0.8496</td>
+              <td>0.8+ 数值来自训练阶段平均区分度，不是正式外层验证结果。</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout warning">
+        对外时建议直接说明：<strong>“AUC≈0.8 对应 strict nested CV 中的 mean_train_auc；正式性能声明仍以 outer-test mean AUC 为准。”</strong>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>当前结论边界</h2>
+      <ul class="list">
+        <li>本包中的 repeated hold-out、leave-one-prefix-out 与 post-intervention within-dataset temporal validation，均作为<strong>补充稳健性证据</strong>使用。</li>
+        <li>这些分析有助于理解模型稳定性、标签一致性与时相可迁移性，但 <strong>不等同于 external validation</strong>。</li>
+        <li>因此，本轮交付更适合作为<strong>正式技术沟通与后续方案讨论基础</strong>，而不是对外宣称“已完成独立外部验证”的材料。</li>
+      </ul>
+    </section>
+
+    <section class="section">
+      <h2>建议阅读顺序</h2>
+      <ol class="list">
+        <li>先看本页：快速统一主结果口径。</li>
+        <li>再看 <a href="01_formal_report.html">`01_formal_report.html`</a>：查看完整 8 图正式报告。</li>
+        <li>如需追溯 “AUC≈0.8” 的具体来源，再看 <a href="strict_nested_cv_key_metrics.csv">`strict_nested_cv_key_metrics.csv`</a> 和 <a href="assets/08_strict_nested_cv_train_vs_outer_test_combo.png">Figure 2</a>。</li>
+      </ol>
+    </section>
+
+    <div class="footer">Responder 脂质组学正式技术报告 · 封面说明页</div>
+  </main>
+</body>
+</html>

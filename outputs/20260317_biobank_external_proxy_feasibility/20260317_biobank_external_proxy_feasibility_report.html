@@ -1,0 +1,1751 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>三个 biobanks 外部验证可行性评估</title>
+<meta content="给黄老师 / 晨宇的中文可行性说明、overlap-feature 对照表与 reduced external-proxy model 草案" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260317_biobank_external_proxy_feasibility">🧠 AI 结果展示</a>
+<div class="nav-links"><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260317_biobank_external_proxy_feasibility/20260317_biobank_external_proxy_feasibility_report.md">Markdown源文件</a><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260317_biobank_external_proxy_feasibility/overlap_feature_mapping.csv">Overlap映射CSV</a><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260317_biobank_external_proxy_feasibility/reduced_external_proxy_model_feature_set.csv">Reduced特征CSV</a></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">AI 结果展示</div>
+<h1>三个 biobanks 外部验证可行性评估</h1>
+<p class="hero-subtitle-compact">给黄老师 / 晨宇的中文可行性说明、overlap-feature 对照表与 reduced external-proxy model 草案</p>
+<div class="hero-meta"><span class="meta-pill">External-proxy feasibility</span><span class="meta-pill">Overlap-feature mapping</span><span class="meta-pill">Reduced model draft</span></div>
+<div class="doc-toolbar"><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260317_biobank_external_proxy_feasibility/direct_message_to_huanglaoshi_chenyu.txt">打开直接发送文本</a><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260311_responder_followup/group_definition_audit.md">查看本地分组审计</a><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260310_nested_cv/performance_summary.csv">查看strict nested CV结果</a></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">1. 本次一句话结论</a></li><li><a href="#section-2">2. 可直接发送版本</a></li><li><a href="#section-3">3. 为什么现在不能直接叫“严格 external validation”</a></li><li><a href="#section-8">4. 三个 biobanks 的现实定位</a></li><li><a href="#section-9">5. overlap-feature 审查结果</a></li><li><a href="#section-13">6. reduced external-proxy model 草案</a></li><li><a href="#section-19">7. 与当前项目主结果的关系边界</a></li><li><a href="#section-20">8. 建议下一步</a></li><li><a href="#section-23">9. 本次新增产物清单</a></li><li><a href="#section-24">10. 参考来源</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">1. 本次一句话结论</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-2" href="#section-2">2. 可直接发送版本</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-3" href="#section-3">3. 为什么现在不能直接叫“严格 external validation”</a><a class="sidebar-toc-link sub-item" data-target="section-4" href="#section-4">3.1 人群不匹配</a><a class="sidebar-toc-link sub-item" data-target="section-5" href="#section-5">3.2 终点不匹配</a><a class="sidebar-toc-link sub-item" data-target="section-6" href="#section-6">3.3 平台不匹配</a><a class="sidebar-toc-link sub-item" data-target="section-7" href="#section-7">3.4 标签边界也要继续守住</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-8" href="#section-8">4. 三个 biobanks 的现实定位</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-9" href="#section-9">5. overlap-feature 审查结果</a><a class="sidebar-toc-link sub-item" data-target="section-10" href="#section-10">5.1 定量结论</a><a class="sidebar-toc-link sub-item" data-target="section-11" href="#section-11">5.2 候选 overlap-feature 对照表</a><a class="sidebar-toc-link sub-item" data-target="section-12" href="#section-12">5.3 本地可用样本完整性</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-13" href="#section-13">6. reduced external-proxy model 草案</a><a class="sidebar-toc-link sub-item" data-target="section-14" href="#section-14">6.1 目标重新定义</a><a class="sidebar-toc-link sub-item" data-target="section-15" href="#section-15">6.2 推荐特征集</a><a class="sidebar-toc-link sub-item" data-target="section-16" href="#section-16">6.3 建议模型结构</a><a class="sidebar-toc-link sub-item" data-target="section-17" href="#section-17">6.4 推荐验证口径</a><a class="sidebar-toc-link sub-item" data-target="section-18" href="#section-18">6.5 允许说什么 / 不能说什么</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-19" href="#section-19">7. 与当前项目主结果的关系边界</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-20" href="#section-20">8. 建议下一步</a><a class="sidebar-toc-link sub-item" data-target="section-21" href="#section-21">优先顺序（推荐）</a><a class="sidebar-toc-link sub-item" data-target="section-22" href="#section-22">如果只选一个外部资源先评估</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-23" href="#section-23">9. 本次新增产物清单</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-24" href="#section-24">10. 参考来源</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">来源文件：20260317_biobank_external_proxy_feasibility_report.md</div><div class="top-note">本页面样式对齐参考：<code>基于 Nature Communications 论文、Supplementary Data 以及本地 responder 项目文件整理。</code></div><h1 id="三个-biobanks-外部验证可行性评估与-overlap-feature-草案">三个 biobanks 外部验证可行性评估与 overlap-feature 草案</h1>
+<blockquote>
+<p>生成日期：2026-03-17<br/>
+适用对象：黄老师 / 晨宇<br/>
+结论定位：<strong>external-proxy / transportability feasibility</strong>，不是严格 external validation 结论</p>
+</blockquote>
+<h2 id="section-1">1. 本次一句话结论</h2>
+<p>基于当前儿童运动干预 responder 项目与 Nature Communications 这篇三 biobanks 论文的对照，<strong>UK Biobank、Estonian Biobank、THL Biobank 可以作为第二阶段的 reduced external-proxy / transportability 候选资源，但暂时不能直接写成当前 responder 模型的严格 external validation</strong>。</p>
+<p>当前更合理的路线是：</p>
+<ol type="1">
+<li>先在本地用 overlap clinical-chemistry features 建一个 <strong>reduced external-proxy model</strong>；</li>
+<li>再决定是否推进 UKB/EBB/THL 的受控访问或合作；</li>
+<li>对外表述上坚持“proxy validation / transportability / targeted replication feasibility”，不要提前写成 strict external validation。</li>
+</ol>
+<h2 id="section-2">2. 可直接发送版本</h2>
+<div class="copyable-example"><div class="copyable-example-header"><span class="copyable-example-label">可复制发送版</span><button aria-label="复制可复用内容" class="copy-example-btn" data-copy-text="黄老师/晨宇您好，我把这篇 Nature 文章里提到的三个 biobanks 快速对了一下。我的判断是，这三个库可以作为第二阶段的 external-proxy / transportability 候选，但暂时不能直接写成我们当前儿童运动干预 responder 模型的严格 external validation。主要问题是人群、终点和检测平台都不一致；不过我已经整理出一版 overlap-feature reduced model 草案，下一步可以先在我们本地把这条 reduced 路线单独跑出来，再决定是否推进 UKB 或其他外部资源。" type="button">快捷复制</button></div><blockquote>
+<p>黄老师/晨宇您好，我把这篇 Nature 文章里提到的三个 biobanks 快速对了一下。我的判断是，这三个库可以作为第二阶段的 external-proxy / transportability 候选，但暂时不能直接写成我们当前儿童运动干预 responder 模型的严格 external validation。主要问题是人群、终点和检测平台都不一致；不过我已经整理出一版 overlap-feature reduced model 草案，下一步可以先在我们本地把这条 reduced 路线单独跑出来，再决定是否推进 UKB 或其他外部资源。</p>
+</blockquote></div>
+
+<div class="copyable-example"><div class="copyable-example-header"><span class="copyable-example-label">可复制发送版</span><button aria-label="复制可复用内容" class="copy-example-btn" data-copy-text="黄老师/晨宇您好，
+
+我基于 Nature Communications 文章《Metabolomic and genomic prediction of common diseases in 700,217 participants in three national biobanks》（2024-11-21）以及我们当前 responder 项目的本地数据结构，初步做了一版“三个 biobanks 是否可用于外部验证”的可行性审查。
+
+当前结论是： 这三个 biobanks（UK Biobank、Estonian Biobank、THL Biobank）可以作为第二阶段的 external-proxy / transportability 候选资源，但暂时不宜直接表述为我们当前儿童运动干预 responder 模型的严格 external validation。
+
+主要边界如下：
+
+但从 overlap-feature 角度看，这三个库并非完全不能用。我这边已整理出一版 reduced external-proxy model 草案：在 paper 的 36 个 metabolomic biomarkers 中，可从我们现有常规临床中稳定映射出 9 个 overlap biomarkers，再联合 age、sex、BMI 组成可迁移的小模型候选。这样的路线更适合回答“是否存在可外推的广义心代谢信号”，而不是直接宣称“当前 responder 分类器已获外部验证”。
+
+如果您认可，我建议下一步先做两件事：" type="button">快捷复制</button></div><blockquote>
+<p>黄老师/晨宇您好，</p>
+<p>我基于 Nature Communications 文章《Metabolomic and genomic prediction of common diseases in 700,217 participants in three national biobanks》（2024-11-21）以及我们当前 responder 项目的本地数据结构，初步做了一版“三个 biobanks 是否可用于外部验证”的可行性审查。</p>
+<p>当前结论是：<strong>这三个 biobanks（UK Biobank、Estonian Biobank、THL Biobank）可以作为第二阶段的 external-proxy / transportability 候选资源，但暂时不宜直接表述为我们当前儿童运动干预 responder 模型的严格 external validation。</strong></p>
+<p>主要边界如下：</p>
+<ol type="1">
+<li><strong>人群边界</strong>：我们的队列是儿童运动干预，而三个 biobanks 基本是北欧成人一般人群；</li>
+<li><strong>终点边界</strong>：对方主要是慢病发病风险，不是运动干预 responder / non-responder；</li>
+<li><strong>平台边界</strong>：论文使用 Nightingale NMR 标准化 36 项代谢指标，而我们当前主结果主要来自 species-level lipidomics，不能直接一一映射；</li>
+<li><strong>标签边界</strong>：我们当前 responder 标签仍需维持“会议纪要级证据链，而非原始真值表”的谨慎口径。</li>
+</ol>
+<p>但从 overlap-feature 角度看，这三个库并非完全不能用。我这边已整理出一版 reduced external-proxy model 草案：在 paper 的 36 个 metabolomic biomarkers 中，可从我们现有常规临床中稳定映射出 9 个 overlap biomarkers，再联合 age、sex、BMI 组成可迁移的小模型候选。这样的路线更适合回答“是否存在可外推的广义心代谢信号”，而不是直接宣称“当前 responder 分类器已获外部验证”。</p>
+<p>如果您认可，我建议下一步先做两件事：</p>
+<ul>
+<li><strong>第一步</strong>：在我们本地先把 overlap-feature reduced model 单独跑出来，形成内部 strict nested CV / hold-out 结果；</li>
+<li><strong>第二步</strong>：再决定是优先推进 UK Biobank 的 external-proxy feasibility，还是继续找更贴近儿童运动干预场景的 targeted external cohort。</li>
+</ul>
+</blockquote></div>
+
+<h2 id="section-3">3. 为什么现在不能直接叫“严格 external validation”</h2>
+<h3 id="section-4">3.1 人群不匹配</h3>
+<ul>
+<li>我们当前本地队列是<strong>儿童运动干预</strong> responder / non-responder 预测。</li>
+<li>论文里的三个 biobanks 是<strong>北欧成人一般人群</strong>：
+<ul>
+<li>UK Biobank：38–71 岁；</li>
+<li>Estonian Biobank：成人一般人群；</li>
+<li>THL Biobank：25–98 岁。</li>
+</ul></li>
+</ul>
+<p>这会带来明显的 external validity / transportability 风险，不能把成人一般人群的风险建模，直接等同为儿童干预 responder 标签验证。</p>
+<h3 id="section-5">3.2 终点不匹配</h3>
+<ul>
+<li>当前项目终点：<strong>运动干预后的 responder / non-responder</strong>。</li>
+<li>论文终点：<strong>慢病发生风险 / disease onset</strong>，基于随访与 EHR。</li>
+</ul>
+<p>因此，即使能访问这三个库，也没有与我们完全同义的 responder 标签；更现实的是做 <strong>proxy endpoint</strong>、<strong>broad cardiometabolic transportability</strong> 或 <strong>targeted replication feasibility</strong>。</p>
+<h3 id="section-6">3.3 平台不匹配</h3>
+<ul>
+<li>论文主分析用的是 <strong>Nightingale NMR</strong> 的 <strong>36 个标准化 metabolomic biomarkers</strong>，强调跨队列可直接转移的绝对浓度单位。</li>
+<li>我们当前正式主结果主要来自 <strong>species-level lipidomics</strong>，稳定特征如 <code>PA(28:0)</code>、<code>PC(38:7e)</code>、<code>Cer(d19:1_24:1)</code>、<code>Hex1Cer(d18:0_20:4)</code> 等，<strong>不能直接一一映射到 paper 的 36 项 NMR biomarker</strong>。</li>
+</ul>
+<h3 id="section-7">3.4 标签边界也要继续守住</h3>
+<p>根据本地分组审计文件，当前 responder 标签仍需坚持：</p>
+<ul>
+<li><code>281_new_grouped.csv</code> 提供的是当前二分类结果；</li>
+<li>分组依据目前只能回溯到<strong>会议纪要级证据</strong>；</li>
+<li>还<strong>不是原始真值表</strong>。</li>
+</ul>
+<p>所以在标签源头尚未完全封口之前，不宜过早对外宣称已经进入“外部验证完成”阶段。</p>
+<h2 id="section-8">4. 三个 biobanks 的现实定位</h2>
+<table>
+<thead>
+<tr>
+<th>biobank</th>
+<th>是否适合直接做 strict external validation</th>
+<th>当前更合理定位</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UK Biobank</td>
+<td>否</td>
+<td>external-proxy / transportability 候选</td>
+<td>数据生态最成熟，repeat-visit 子样本丰富，最值得先做 feasibility</td>
+</tr>
+<tr>
+<td>Estonian Biobank</td>
+<td>否</td>
+<td>broad replication / cross-population comparison</td>
+<td>适合看广义代谢风险模式，不适合直接 responder 标签验证</td>
+</tr>
+<tr>
+<td>THL Biobank</td>
+<td>否</td>
+<td>broad replication / targeted panel feasibility</td>
+<td>人群与平台优势存在，但与儿童运动干预终点仍不对题</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-9">5. overlap-feature 审查结果</h2>
+<h3 id="section-10">5.1 定量结论</h3>
+<ul>
+<li>论文纯 <code>Age + sex + metabolomics</code> 模型涉及 <strong>36</strong> 个标准化 metabolomic biomarkers。</li>
+<li>这 36 个 biomarker 与我们本地 <code>281_merge_lipids_enroll.csv</code> 的 <strong>species-level lipidomics 同名直接 overlap = 0</strong>。</li>
+<li>但在本地常规临床化学中，可以稳定映射出：
+<ul>
+<li><strong>8 个 exact-like overlap biomarkers</strong>；</li>
+<li><strong>1 个 partial proxy biomarker</strong>（<code>Glucose_Lactate -&gt; serum_Glu</code>，缺 lactate）；</li>
+</ul></li>
+<li>再加上 <code>age</code>、<code>sex</code>、<code>BMI</code> 这 3 个基础 covariates，可以组成一条现实可执行的 reduced external-proxy 路线。</li>
+</ul>
+<h3 id="section-11">5.2 候选 overlap-feature 对照表</h3>
+<table>
+<thead>
+<tr>
+<th>paper_feature</th>
+<th>paper36</th>
+<th>baseline_field</th>
+<th>outphase_field</th>
+<th>mapping_type</th>
+<th>notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Albumin</td>
+<td>yes</td>
+<td>serum_ALB</td>
+<td>serum_ALB</td>
+<td>exact_like</td>
+<td>血清白蛋白，语义基本一致</td>
+</tr>
+<tr>
+<td>ApoA1</td>
+<td>yes</td>
+<td>serum_ApoA1</td>
+<td>serum_ApoA1</td>
+<td>exact_like</td>
+<td>载脂蛋白A1，可直接作为 overlap 候选</td>
+</tr>
+<tr>
+<td>ApoB</td>
+<td>yes</td>
+<td>serum_ApoB</td>
+<td>serum_ApoB</td>
+<td>exact_like</td>
+<td>载脂蛋白B，可直接作为 overlap 候选</td>
+</tr>
+<tr>
+<td>Clinical_LDL_C</td>
+<td>yes</td>
+<td>serum_LDL.C</td>
+<td>serum_LDL.C</td>
+<td>exact_like</td>
+<td>临床 LDL-C，命名不同但含义一致</td>
+</tr>
+<tr>
+<td>Creatinine</td>
+<td>yes</td>
+<td>serum_Cr</td>
+<td>serum_Cr</td>
+<td>exact_like</td>
+<td>肌酐，临床化学指标</td>
+</tr>
+<tr>
+<td>Glucose_Lactate</td>
+<td>yes</td>
+<td>serum_Glu</td>
+<td>serum_Glu</td>
+<td>partial_proxy</td>
+<td>本地只有葡萄糖，无 lactate 组合项</td>
+</tr>
+<tr>
+<td>HDL_C</td>
+<td>yes</td>
+<td>serum_HDL.C</td>
+<td>serum_HDL.C</td>
+<td>exact_like</td>
+<td>临床 HDL-C，可直接映射</td>
+</tr>
+<tr>
+<td>Total_C</td>
+<td>yes</td>
+<td>serum_T.CHO</td>
+<td>serum_T.CHO</td>
+<td>exact_like</td>
+<td>总胆固醇，命名格式不同</td>
+</tr>
+<tr>
+<td>Total_TG</td>
+<td>yes</td>
+<td>serum_TG</td>
+<td>serum_TG</td>
+<td>exact_like</td>
+<td>总甘油三酯，命名格式不同</td>
+</tr>
+<tr>
+<td>age</td>
+<td>no</td>
+<td>age_enroll</td>
+<td>age</td>
+<td>core_covariate</td>
+<td>外部 proxy 模型基础协变量；本地基线/出组字段名不同</td>
+</tr>
+<tr>
+<td>sex_male</td>
+<td>no</td>
+<td>Gender</td>
+<td>Gender</td>
+<td>core_covariate</td>
+<td>需统一编码方向（建议 male=1）</td>
+</tr>
+<tr>
+<td>body_mass_index</td>
+<td>no</td>
+<td>BMI</td>
+<td>BMI</td>
+<td>core_covariate</td>
+<td>用于 reduced proxy 模型，不计入 paper 的 36 个 metabolomic biomarkers</td>
+</tr>
+</tbody>
+</table>
+<p>完整 CSV：<code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/overlap_feature_mapping.csv</code></p>
+<h3 id="section-12">5.3 本地可用样本完整性</h3>
+<table>
+<thead>
+<tr>
+<th>feature set</th>
+<th style="text-align: right;">baseline labeled complete cases</th>
+<th style="text-align: right;">out-phase complete cases</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transport_core_8</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">287</td>
+<td>基线 281 例带标签样本全部可用</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td style="text-align: right;">281</td>
+<td style="text-align: right;">287</td>
+<td>当前常规临床字段完整性足够，不是主要阻塞</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-13">6. reduced external-proxy model 草案</h2>
+<h3 id="section-14">6.1 目标重新定义</h3>
+<p>这条 reduced 路线不是为了证明：</p>
+<ul>
+<li>“当前 responder 分类器已经完成 strict external validation”。</li>
+</ul>
+<p>而是为了回答更现实的问题：</p>
+<ol type="1">
+<li><strong>我们在儿童运动干预里看到的广义心代谢信号，是否具有跨人群可迁移性？</strong></li>
+<li><strong>在只保留 overlap clinical/metabolic features 后，是否还能保留一定区分信息？</strong></li>
+<li><strong>是否值得继续申请或合作获取 UKB / EBB / THL 数据做二阶段 external-proxy 验证？</strong></li>
+</ol>
+<h3 id="section-15">6.2 推荐特征集</h3>
+<table>
+<thead>
+<tr>
+<th>model_variant</th>
+<th>order</th>
+<th>local_feature</th>
+<th>role</th>
+<th>strict_overlap_or_proxy</th>
+<th>note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>transport_core_8</td>
+<td>1</td>
+<td>age_enroll</td>
+<td>baseline demographic anchor</td>
+<td>Yes</td>
+<td>Use age in out-phase / external</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>2</td>
+<td>Gender</td>
+<td>baseline demographic anchor</td>
+<td>Yes</td>
+<td>Recode male=1 consistently</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>3</td>
+<td>BMI</td>
+<td>body size anchor</td>
+<td>Yes</td>
+<td>Shared across local/external settings</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>4</td>
+<td>serum_TG</td>
+<td>core lipid chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Total_TG</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>5</td>
+<td>serum_HDL.C</td>
+<td>core lipid chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper HDL_C</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>6</td>
+<td>serum_LDL.C</td>
+<td>core lipid chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Clinical_LDL_C</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>7</td>
+<td>serum_ApoA1</td>
+<td>apolipoprotein</td>
+<td>Yes</td>
+<td>Mapped to paper ApoA1</td>
+</tr>
+<tr>
+<td>transport_core_8</td>
+<td>8</td>
+<td>serum_ApoB</td>
+<td>apolipoprotein</td>
+<td>Yes</td>
+<td>Mapped to paper ApoB</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>1</td>
+<td>age_enroll</td>
+<td>baseline demographic anchor</td>
+<td>Yes</td>
+<td>Use age in out-phase / external</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>2</td>
+<td>Gender</td>
+<td>baseline demographic anchor</td>
+<td>Yes</td>
+<td>Recode male=1 consistently</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>3</td>
+<td>BMI</td>
+<td>body size anchor</td>
+<td>Yes</td>
+<td>Shared across local/external settings</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>4</td>
+<td>serum_TG</td>
+<td>core lipid chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Total_TG</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>5</td>
+<td>serum_HDL.C</td>
+<td>core lipid chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper HDL_C</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>6</td>
+<td>serum_LDL.C</td>
+<td>core lipid chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Clinical_LDL_C</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>7</td>
+<td>serum_ApoA1</td>
+<td>apolipoprotein</td>
+<td>Yes</td>
+<td>Mapped to paper ApoA1</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>8</td>
+<td>serum_ApoB</td>
+<td>apolipoprotein</td>
+<td>Yes</td>
+<td>Mapped to paper ApoB</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>9</td>
+<td>serum_ALB</td>
+<td>clinical chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Albumin</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>10</td>
+<td>serum_Cr</td>
+<td>clinical chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Creatinine</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>11</td>
+<td>serum_Glu</td>
+<td>clinical chemistry proxy</td>
+<td>Partial</td>
+<td>Paper variable is Glucose_Lactate; local lacks lactate</td>
+</tr>
+<tr>
+<td>transport_extended_12</td>
+<td>12</td>
+<td>serum_T.CHO</td>
+<td>clinical chemistry</td>
+<td>Yes</td>
+<td>Mapped to paper Total_C</td>
+</tr>
+</tbody>
+</table>
+<p>完整 CSV：<code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/reduced_external_proxy_model_feature_set.csv</code></p>
+<h3 id="section-16">6.3 建议模型结构</h3>
+<h4 id="model-atransport_core_8">Model A：transport_core_8</h4>
+<ul>
+<li>输入：<code>age_enroll</code>, <code>Gender</code>, <code>BMI</code>, <code>serum_TG</code>, <code>serum_HDL.C</code>, <code>serum_LDL.C</code>, <code>serum_ApoA1</code>, <code>serum_ApoB</code></li>
+<li>推荐算法：<strong>ridge / elastic-net logistic</strong></li>
+<li>用途：
+<ul>
+<li>本地先做 responder 的 reduced overlap feasibility；</li>
+<li>外部若只有基础临床化学，也能较容易迁移。</li>
+</ul></li>
+</ul>
+<h4 id="model-btransport_extended_12">Model B：transport_extended_12</h4>
+<ul>
+<li>在 core_8 基础上增加：<code>serum_ALB</code>, <code>serum_Cr</code>, <code>serum_Glu</code>, <code>serum_T.CHO</code></li>
+<li>推荐算法：<strong>elastic-net logistic</strong></li>
+<li>备注：
+<ul>
+<li><code>serum_Glu</code> 仅是 <code>Glucose_Lactate</code> 的 partial proxy；</li>
+<li><code>Total_C</code> 与 LDL/HDL/ApoB 可能存在共线性，建议用正则化而非普通回归。</li>
+</ul></li>
+</ul>
+<h3 id="section-17">6.4 推荐验证口径</h3>
+<h4 id="本地阶段可以做">本地阶段（可以做）</h4>
+<ol type="1">
+<li>用 <code>transport_core_8</code> / <code>transport_extended_12</code> 在本地跑 <strong>strict nested CV</strong>；</li>
+<li>再补 <strong>repeated hold-out</strong> 与 <strong>leave-one-school-out</strong>；</li>
+<li>若需要，再看 baseline -&gt; out-phase internal temporal validation 的方向一致性。</li>
+</ol>
+<h4 id="外部阶段只能做-proxy--transportability">外部阶段（只能做 proxy / transportability）</h4>
+<ol type="1">
+<li>不能直接要求外部也有 responder / non-responder 标签；</li>
+<li>可以评估 reduced score 与：
+<ul>
+<li>broad cardiometabolic risk；</li>
+<li>obesity / dyslipidemia / diabetes related endpoint；</li>
+<li>repeat-measure change pattern； 的关系；</li>
+</ul></li>
+<li>最终表述必须写成：
+<ul>
+<li><strong>external-proxy validation</strong>；</li>
+<li><strong>transportability assessment</strong>；</li>
+<li><strong>targeted replication feasibility</strong>。</li>
+</ul></li>
+</ol>
+<h3 id="section-18">6.5 允许说什么 / 不能说什么</h3>
+<table>
+<thead>
+<tr>
+<th>可以说</th>
+<th>不能说</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>三个 biobanks 可作为第二阶段 external-proxy 候选</td>
+<td>三个 biobanks 已完成当前 responder 模型外部验证</td>
+</tr>
+<tr>
+<td>overlap-feature reduced model 具有跨队列迁移可行性</td>
+<td>当前 species-level lipidomics 模型可直接迁移到 UKB/EBB/THL</td>
+</tr>
+<tr>
+<td>这条路线可用于评估 broad cardiometabolic transportability</td>
+<td>UKB / EBB / THL 直接验证了儿童运动干预 responder 标签</td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-19">7. 与当前项目主结果的关系边界</h2>
+<p>当前正式主结果仍然是本地 strict nested CV：</p>
+<table>
+<thead>
+<tr>
+<th>experiment</th>
+<th>mean_auc</th>
+<th>std_auc</th>
+<th>mean_train_auc</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_slim_logistic</td>
+<td>0.5297</td>
+<td>0.064</td>
+<td>0.6064</td>
+</tr>
+<tr>
+<td>lipid_elastic_net</td>
+<td>0.5338</td>
+<td>0.0701</td>
+<td>0.7895</td>
+</tr>
+<tr>
+<td>clinical_full_elastic_net</td>
+<td>0.5011</td>
+<td>0.0742</td>
+<td>0.7437</td>
+</tr>
+<tr>
+<td>fusion_elastic_net</td>
+<td>0.5364</td>
+<td>0.0535</td>
+<td>0.8055</td>
+</tr>
+<tr>
+<td>fusion_full_elastic_net</td>
+<td>0.5258</td>
+<td>0.045</td>
+<td>0.8496</td>
+</tr>
+</tbody>
+</table>
+<p>需要继续坚持的口径：</p>
+<ul>
+<li>正式主结果是 <strong>strict nested CV outer-test performance</strong>；</li>
+<li><code>AUC≈0.8</code> 对应的是训练侧 <code>mean_train_auc</code>，不是外部验证 AUC；</li>
+<li>repeated hold-out、leave-one-school-out、out-phase internal temporal validation 都不能写成 external validation。</li>
+</ul>
+<h2 id="section-20">8. 建议下一步</h2>
+<h3 id="section-21">优先顺序（推荐）</h3>
+<ol type="1">
+<li><strong>先在本地实现 reduced overlap model</strong>（core_8 / extended_12）；</li>
+<li>形成独立的小结：
+<ul>
+<li>strict nested CV</li>
+<li>repeated hold-out</li>
+<li>leave-one-school-out</li>
+<li>baseline -&gt; out-phase</li>
+</ul></li>
+<li>再决定：
+<ul>
+<li>是否推进 UK Biobank feasibility；</li>
+<li>还是继续寻找更贴近儿童运动干预场景的 targeted external cohort。</li>
+</ul></li>
+</ol>
+<h3 id="section-22">如果只选一个外部资源先评估</h3>
+<p>优先建议：<strong>UK Biobank</strong>。</p>
+<p>原因：</p>
+<ul>
+<li>数据生态与文档最成熟；</li>
+<li>论文中已有 repeat-visit 子样本应用；</li>
+<li>更适合先做 external-proxy feasibility，而不是直接宣称 strict external validation。</li>
+</ul>
+<h2 id="section-23">9. 本次新增产物清单</h2>
+<table>
+<thead>
+<tr>
+<th>产物</th>
+<th>作用</th>
+<th>路径</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>中文可行性说明 Markdown</td>
+<td>主报告</td>
+<td><code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/20260317_biobank_external_proxy_feasibility_report.md</code></td>
+</tr>
+<tr>
+<td>HTML 展示页</td>
+<td>可转发汇报页</td>
+<td><code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/20260317_biobank_external_proxy_feasibility_report.html</code></td>
+</tr>
+<tr>
+<td>overlap-feature 映射表</td>
+<td>36 biomarker 与本地字段对照</td>
+<td><code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/overlap_feature_mapping.csv</code></td>
+</tr>
+<tr>
+<td>reduced model 特征集</td>
+<td>core_8 / extended_12 草案</td>
+<td><code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/reduced_external_proxy_model_feature_set.csv</code></td>
+</tr>
+<tr>
+<td>直接发送文本</td>
+<td>给黄老师/晨宇的可复制版本</td>
+<td><code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility/direct_message_to_huanglaoshi_chenyu.txt</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="section-24">10. 参考来源</h2>
+<ul>
+<li><a href="https://www.nature.com/articles/s41467-024-54357-0">Nature Communications 论文页面</a></li>
+<li><a href="https://static-content.springer.com/esm/art%3A10.1038%2Fs41467-024-54357-0/MediaObjects/41467_2024_54357_MOESM4_ESM.xlsx">Supplementary Data 1–10 XLSX</a></li>
+<li><a href="https://www.ukbiobank.ac.uk/enable-your-research/apply-for-access">UK Biobank access</a></li>
+<li><a href="https://genomics.ut.ee/en/content/estonian-biobank">Estonian Biobank</a></li>
+<li><a href="https://thl.fi/en/web/thl-biobank">THL Biobank</a></li>
+<li>本地分组审计：<code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260311_responder_followup/group_definition_audit.md</code></li>
+<li>本地 strict nested CV 结果：<code>/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260310_nested_cv/performance_summary.csv</code></li>
+</ul>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/outputs/20260317_biobank_external_proxy_feasibility">输出目录</a><a class="footer-link" href="https://www.nature.com/articles/s41467-024-54357-0">Nature论文</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">本页仅新增 feasibility 评估产物，不覆盖既有 strict nested CV 主结果目录。</p>
+<div class="footer-note">生成日期：2026-03-17 | 当前目录：/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/outputs/20260317_biobank_external_proxy_feasibility</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>学校 / 社区 split 与运动 protocol 说明</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --muted: #475569;
+  --line: #dbe4f0;
+  --brand: #2563eb;
+  --brand-soft: #dbeafe;
+  --accent: #0f766e;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  background: linear-gradient(180deg, #eef4ff 0%, var(--bg) 220px);
+  color: var(--ink);
+}
+a { color: var(--brand); text-decoration: none; }
+a:hover { text-decoration: underline; }
+.page {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 24px 60px;
+}
+.hero {
+  background: rgba(255,255,255,.92);
+  border: 1px solid rgba(219,228,240,.95);
+  border-radius: 24px;
+  padding: 28px 30px 24px;
+  box-shadow: 0 24px 64px rgba(15, 23, 42, .08);
+  backdrop-filter: blur(8px);
+}
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--accent);
+  background: #ecfeff;
+  border: 1px solid #bae6fd;
+  border-radius: 999px;
+  padding: 6px 12px;
+  margin-bottom: 14px;
+}
+.hero h1 {
+  margin: 0;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.15;
+}
+.subtitle {
+  margin: 12px 0 0;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+.meta-row, .nav-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+.meta-pill, .nav-link, .path-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #fff;
+  font-size: 13px;
+  color: var(--muted);
+}
+.doc-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 280px) minmax(0, 1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 24px;
+}
+.sidebar-toc {
+  position: sticky;
+  top: 24px;
+}
+.sidebar-toc-card {
+  background: rgba(255,255,255,.92);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .06);
+  padding: 22px 18px;
+}
+.sidebar-toc-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.sidebar-toc-title span {
+  color: var(--brand);
+}
+.sidebar-toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.sidebar-toc-item {
+  margin: 0;
+}
+.sidebar-toc-link {
+  display: block;
+  padding: 9px 10px;
+  border-radius: 12px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+}
+.sidebar-toc-link:hover {
+  text-decoration: none;
+  background: #eff6ff;
+  color: var(--brand);
+  transform: translateX(2px);
+}
+.sidebar-toc-link.sub-item {
+  padding-left: 24px;
+  font-size: 13px;
+}
+.main-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 18px 40px rgba(15, 23, 42, .06);
+  padding: 30px;
+}
+.content h1, .content h2, .content h3, .content h4 {
+  color: var(--ink);
+  margin-top: 1.6em;
+  margin-bottom: .55em;
+}
+.content h1 { font-size: 30px; }
+.content h2 { font-size: 24px; border-bottom: 1px solid var(--line); padding-bottom: .35em; }
+.content h3 { font-size: 20px; }
+.content p, .content li {
+  color: #1e293b;
+  line-height: 1.75;
+  font-size: 15px;
+}
+.content ul, .content ol { padding-left: 1.4em; }
+.content code {
+  background: #eff6ff;
+  color: #1d4ed8;
+  padding: .12em .38em;
+  border-radius: 6px;
+  font-size: .92em;
+}
+.content pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 16px;
+  border-radius: 14px;
+  overflow: auto;
+}
+.content pre code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+}
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 18px 0 24px;
+  font-size: 14px;
+}
+.content th, .content td {
+  border: 1px solid var(--line);
+  padding: 10px 12px;
+  vertical-align: top;
+}
+.content th {
+  background: #f8fafc;
+  text-align: left;
+}
+.content img {
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: #fff;
+}
+.doc-link-btn, .footer-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 999px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+.doc-link-btn:hover, .footer-link:hover {
+  text-decoration: none;
+  background: #dbeafe;
+}
+.footer {
+  margin-top: 24px;
+  padding: 18px 6px 0;
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.footer-note {
+  margin-top: 14px;
+}
+@media (max-width: 760px) {
+  .page { padding: 18px 14px 36px; }
+  .doc-layout { grid-template-columns: 1fr; }
+  .sidebar-toc { position: static; }
+  .hero, .main-card, .sidebar-toc-card { padding: 20px 18px; border-radius: 20px; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+<section class="hero">
+<div class="badge">方法说明 · 2026-03-12</div>
+<h1>学校 / 社区 split 与运动 protocol 说明</h1>
+<p class="subtitle">说明 school/community split 当前落点、可写与不可写边界，以及 protocol 的正式写法。</p>
+<div class="meta-row"><span class="meta-pill">需求方：Shuxian Zhang</span><span class="meta-pill">分析提供方：Chenyu Fan</span><span class="meta-pill">学校-强度映射已整理为 CSV</span><span class="meta-pill">均属 internal validation，不是 external validation</span><span class="path-chip">来源文件：03_school_split_protocol_note.md</span></div>
+<div class="nav-row doc-toolbar"><a class="nav-link" href="02_combined_formal_report.html">总览页</a><a class="nav-link" href="id_school_intensity_mapping.csv">学校映射 CSV</a><a class="nav-link" href="analysis_code/README.md">分析代码</a><a class="nav-link" href="analysis_data/README.md">分析数据</a></div>
+</section>
+<div class="doc-layout">
+<aside class="sidebar-toc"><div class="sidebar-toc-card"><div class="sidebar-toc-title"><span>📚</span> Table of contents</div><ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="怎么读这页" href="#怎么读这页">怎么读这页</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="1-这轮新增分析现在放在哪里" href="#1-这轮新增分析现在放在哪里">1. 这轮新增分析现在放在哪里</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="2-两篇参考文献给我们的实际启发" href="#2-两篇参考文献给我们的实际启发">2.
+两篇参考文献给我们的实际启发</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="3-本项目现在已经补上的真实-school-grouped-split" href="#3-本项目现在已经补上的真实-school-grouped-split">3.
+本项目现在已经补上的真实 school grouped split</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="31-映射来源" href="#31-映射来源">3.1 映射来源</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="32-为什么旧-prefix-split-不能回溯改名成-school-split" href="#32-为什么旧-prefix-split-不能回溯改名成-school-split">3.2
+为什么旧 prefix split 不能回溯改名成 school split</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="4-当前结果说明什么" href="#4-当前结果说明什么">4. 当前结果说明什么</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="结构性解读文献启发怎样映射到本项目" href="#结构性解读文献启发怎样映射到本项目">结构性解读：文献启发怎样映射到本项目</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="5-现在可以怎么写不能怎么写" href="#5-现在可以怎么写不能怎么写">5. 现在可以怎么写，不能怎么写</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="可以写的" href="#可以写的">可以写的</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link sub-item" data-target="不能写的" href="#不能写的">不能写的</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="6-运动-protocol-写法建议" href="#6-运动-protocol-写法建议">6. 运动 protocol 写法建议</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="7-仍值得继续补的数据" href="#7-仍值得继续补的数据">7. 仍值得继续补的数据</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="常见问答" href="#常见问答">常见问答</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="8-一句话结论" href="#8-一句话结论">8. 一句话结论</a></li></ul></div></aside>
+<main class="main-card content"><h1 id="学校--社区-split-与运动-protocol-说明">学校 / 社区 split 与运动
+protocol 说明</h1><blockquote>
+<p>本页基于两篇参考文献与当前项目已完成分析整理，目的不是重写正式主结果，而是把“学校
+/ 社区 split 放在哪里、能怎么写、不能怎么写、运动 protocol
+如何稳妥落地”整理成可直接引用的正式说明。</p>
+</blockquote><h2 id="怎么读这页">怎么读这页</h2><ul>
+<li>这页不是用来展示“又做出了一个更高的
+AUC”，而是用来回答两个更实际的问题：<strong>学校 / 社区 split
+现在到底放在哪里了？运动 protocol 正文该怎么写才稳妥？</strong></li>
+<li>因此它的阅读顺序应该是：<strong>先看文献启发 → 再看本地已落地分析 →
+最后看现在能怎么写、不能怎么写</strong>。</li>
+<li>如果把 02
+页看成“总览页”，那这页就是用于补充方法学解释与写作边界的正式说明页。</li>
+</ul><h2 id="1-这轮新增分析现在放在哪里">1. 这轮新增分析现在放在哪里</h2><ul>
+<li>学校/强度映射：<code>id_school_intensity_mapping.csv</code></li>
+<li>学校级 grouped holdout
+汇总：<code>school_group_holdout_summary.csv</code></li>
+<li>模型级 self-validation
+汇总：<code>self_validation_summary.csv</code></li>
+<li>模型级 out-phase
+汇总：<code>outphase_validation_summary.csv</code></li>
+<li>综合比较表：<code>small_model_followup_comparison.csv</code></li>
+<li>总览页：<code>02_combined_formal_report.html</code></li>
+<li>正式说明页：<code>03_school_split_protocol_note.html</code></li>
+</ul><p>如果只想快速回答“学校/社区 split 现在放哪了”，最直接看这 4
+个文件：</p><ol type="1">
+<li><code>school_group_holdout_summary.csv</code>：按学校汇总的留一结果，含
+<code>baseline_n / response_rate / intensity / self_auc / outphase_auc</code>。</li>
+<li><code>self_validation_summary.csv</code>：模型级
+<code>leave_one_school_out</code> 均值。</li>
+<li><code>outphase_validation_summary.csv</code>：模型级
+<code>outphase_leave_one_school_out</code> 均值。</li>
+<li><code>02_combined_formal_report.html</code>：汇总当前结论边界、页面入口与正式说明顺序。</li>
+</ol><h2 id="2-两篇参考文献给我们的实际启发">2.
+两篇参考文献给我们的实际启发</h2><table>
+<thead>
+<tr>
+<th>参考文献</th>
+<th>设计要点</th>
+<th>对本项目真正可借鉴之处</th>
+<th>当前不能直接照搬之处</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Liu et al., Cell Metabolism 2020（徐爱民团队）</td>
+<td>discovery cohort 与独立 validation cohort 来自不同 community</td>
+<td>提醒我们：如果存在可审计的真实来源分组，可以优先做 grouped split /
+cohort-style validation</td>
+<td>我们当前补跑的是同一项目内的学校 grouped split，仍属于 internal
+grouped validation，不是独立 external validation</td>
+</tr>
+<tr>
+<td>Nature Medicine 儿童脂质组文章</td>
+<td>cohort 内 repeated cross-validation 即可形成预测证据</td>
+<td>支持我们把 repeated hold-out / school grouped split 作为 honest
+internal evidence 写清楚</td>
+<td>这不意味着可以把 <code>mean_train_auc≈0.8</code> 写成正式 test
+AUC，更不能替代 strict nested CV outer-test 结果</td>
+</tr>
+</tbody>
+</table><h2 id="3-本项目现在已经补上的真实-school-grouped-split">3.
+本项目现在已经补上的真实 school grouped split</h2><h3 id="31-映射来源">3.1 映射来源</h3><ul>
+<li>真实映射来自项目原始学校-强度对应表。</li>
+<li>已导出为：<code>id_school_intensity_mapping.csv</code>。</li>
+<li>当前学校与运动强度的对应关系如下：</li>
+</ul><table>
+<thead>
+<tr>
+<th>school</th>
+<th>intensity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>华清校区</td>
+<td>Intermittent vigorous</td>
+</tr>
+<tr>
+<td>百旺</td>
+<td>Intermittent vigorous</td>
+</tr>
+<tr>
+<td>唐家岭校区</td>
+<td>Low-intensity</td>
+</tr>
+<tr>
+<td>本部</td>
+<td>Low-intensity</td>
+</tr>
+<tr>
+<td>中关村</td>
+<td>Moderate-intensity</td>
+</tr>
+<tr>
+<td>六里屯</td>
+<td>Moderate-intensity</td>
+</tr>
+<tr>
+<td>冷泉</td>
+<td>Moderate-intensity</td>
+</tr>
+</tbody>
+</table><h3 id="32-为什么旧-prefix-split-不能回溯改名成-school-split">3.2
+为什么旧 prefix split 不能回溯改名成 school split</h3><ul>
+<li>这轮已经确认：<code>prefix != school</code>，两者并非一一对应。</li>
+<li>典型例子：<code>C</code> 前缀同时对应 <code>本部</code> 和
+<code>六里屯</code>。</li>
+<li>因此旧的 <code>leave-one-prefix-out</code> 只能保留为早期 grouped
+weak proxy，<strong>不能在更新后回写成学校 / 社区 split</strong>。</li>
+</ul><h2 id="4-当前结果说明什么">4. 当前结果说明什么</h2><table>
+<thead>
+<tr>
+<th>model_label</th>
+<th>strict_mean_auc</th>
+<th>leave_one_school_out_mean_auc</th>
+<th>repeated_random_holdout_mean_auc</th>
+<th>outphase_leave_one_school_out_mean_auc</th>
+<th>outphase_repeated_random_holdout_mean_auc</th>
+<th>leave_one_school_out_mean_gap</th>
+<th>outphase_leave_one_school_out_mean_gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>clinical_baseline_main</td>
+<td>0.5297</td>
+<td>0.5155</td>
+<td>0.5545</td>
+<td>0.4221</td>
+<td>0.3601</td>
+<td>0.0904</td>
+<td>0.1839</td>
+</tr>
+<tr>
+<td>ultra_sparse_lipid</td>
+<td>0.5338</td>
+<td>0.5310</td>
+<td>0.5409</td>
+<td>0.4941</td>
+<td>0.5034</td>
+<td>0.1625</td>
+<td>0.1993</td>
+</tr>
+<tr>
+<td>compact_fusion</td>
+<td>0.5364</td>
+<td>0.5246</td>
+<td>0.5718</td>
+<td>0.4774</td>
+<td>0.4986</td>
+<td>0.2353</td>
+<td>0.2825</td>
+</tr>
+</tbody>
+</table><p>解读要点：</p><ul>
+<li><strong>正式主结果仍是 strict nested CV outer-test AUC 约
+0.50–0.54。</strong></li>
+<li>真实 <code>leave-one-school-out</code> 的均值大约在
+<strong>0.5155–0.5310</strong>，没有出现更强的泛化结论。</li>
+<li><code>outphase_leave_one_school_out</code> 更低，约
+<strong>0.4221–0.4941</strong>，说明 baseline → out-phase
+的时相迁移信号依然偏弱。</li>
+<li>用户记得的 <strong>AUC≈0.8 只对应
+<code>mean_train_auc</code></strong>，不对应 outer-test
+AUC，也不对应任何 external validation AUC。</li>
+</ul><h2 id="结构性解读文献启发怎样映射到本项目">结构性解读：文献启发怎样映射到本项目</h2><ul>
+<li>徐爱民团队那篇文章真正给我们的启发，不是“借一句 external validation
+说法”，而是：<strong>如果来源分组是真实且可审计的，就优先做 grouped
+split / cohort-style checking</strong>。</li>
+<li>Nature Medicine 那篇文章给的启发则是：<strong>cohort 内 repeated
+cross-validation 和内部验证本身也可以成为 honest
+evidence</strong>，前提是口径不能越界。</li>
+<li>放到我们项目里，当前最合理的落点就是：<strong>真实学校 grouped split
++ out-phase internal temporal validation</strong>
+已经补上，但它们仍然都在同一项目框架内，因此不能升级表述为 external
+validation。</li>
+<li>这也是为什么运动 protocol 的正文写法要保守：当前 prediction
+的核心任务还是守住主结果边界，而不是在主文里过早铺开所有场地/强度细节。</li>
+</ul><h2 id="5-现在可以怎么写不能怎么写">5. 现在可以怎么写，不能怎么写</h2><h3 id="可以写的">可以写的</h3><ol type="1">
+<li>已经补跑了<strong>真实学校 grouped
+split</strong>：<code>leave_one_school_out</code> 与
+<code>outphase_leave_one_school_out</code>。</li>
+<li>它们的定位是<strong>内部 grouped validation / internal temporal
+validation</strong>，用于补充稳健性证据。</li>
+<li>当前结果整体支持的仍是：现有 responder 信号较弱，正式主结论继续锚定
+strict nested CV outer-test AUC≈0.50–0.54。</li>
+</ol><h3 id="不能写的">不能写的</h3><ol type="1">
+<li>不能把 repeated
+hold-out、leave-one-school-out、leave-one-prefix-out、out-phase internal
+temporal validation 写成 <strong>external validation</strong>。</li>
+<li>不能把 <code>mean_train_auc≈0.8</code> 写成正式 test AUC。</li>
+<li>不能因为学校 split 已补跑，就把当前结果升级成“强泛化已被证明”。</li>
+</ol><h2 id="6-运动-protocol-写法建议">6. 运动 protocol 写法建议</h2><p>当前最稳妥的写法是：</p><ul>
+<li><strong>主文先写</strong>：干预方案编号、周期、频次、总体框架。</li>
+<li><strong>补充材料 /
+答审再写</strong>：学校/场地对应的强度分层、执行细节、依从性记录。</li>
+<li>如对方进一步问询，再引用
+<code>id_school_intensity_mapping.csv</code>
+中的学校-强度对应关系，说明这套信息已整理为可审计映射文件。</li>
+</ul><h2 id="7-仍值得继续补的数据">7. 仍值得继续补的数据</h2><ol type="1">
+<li><code>endpoint_source</code>：只有拿到 responder
+原始连续终点，才值得做真正的 alternative grouping sensitivity。</li>
+<li>心血管表型整理表：只有数据到位后，才适合做机制桥接分析。</li>
+</ol><h2 id="常见问答">常见问答</h2><ul>
+<li><strong>问：school / community split 是否已经完成？</strong><br/>
+答：已经完成，真实学校映射来自项目原始学校-强度对应表，结果落在
+<code>school_group_holdout_summary.csv</code>、<code>self_validation_summary.csv</code>
+和 <code>outphase_validation_summary.csv</code>。</li>
+<li><strong>问：为什么这些结果仍不能写成 external
+validation？</strong><br/>
+答：因为这些 split 仍然来自同一项目内部，只是按真实 school/source
+grouping 与时相去切，不是独立新 cohort。</li>
+<li><strong>问：为什么运动 protocol
+不建议在主文中一次铺开所有强度细节？</strong><br/>
+答：因为主文当前更需要先把主结果与验证边界讲清楚；学校-强度细节已整理为可审计映射文件，更适合放补充材料或答审时展开。</li>
+</ul><h2 id="8-一句话结论">8. 一句话结论</h2><blockquote>
+<p>学校 / 社区 split 对应的新分析已整合到
+<code>school_group_holdout_summary.csv</code>、<code>self_validation_summary.csv</code>、<code>outphase_validation_summary.csv</code>
+与 <code>02_combined_formal_report.html</code> 中；当前结果支持“真实学校
+grouped split 已补跑，但整体 AUC 仍在 0.50 左右”，不支持将其升级表述为
+external validation。运动 protocol
+的主文写法则建议继续从方案编号、周期、频次入手，把强度细节放到补充材料或答审中。</p>
+</blockquote></main>
+</div>
+<footer class="footer">
+<div class="footer-links"><a class="footer-link" href="02_combined_formal_report.html">总览页</a><a class="footer-link" href="README.md">README</a></div>
+<div class="footer-note">Formal report package refreshed on 2026-03-12.</div>
+</footer>
+</div>
+</body>
+</html>

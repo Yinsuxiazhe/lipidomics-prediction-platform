@@ -1,0 +1,117 @@
+project_name: lipidomics_prediction_pipeline
+
+paths:
+  group: <PROJECT_ROOT>/281_new_grouped.csv
+  lipid: <PROJECT_ROOT>/281_merge_lipids_enroll.csv
+  clinical_full: <PROJECT_ROOT>/287_enroll_data_clean.csv
+  clinical_slim: <PROJECT_ROOT>/287_enroll_data_predict.csv
+
+target:
+  label_column: Group
+  positive_label: response
+
+clinical:
+  slim_columns:
+    - ID
+    - age_enroll
+    - bmi_z_enroll
+    - SFT
+    - Gender
+    - BMI
+
+stages:
+  - validate
+  - cohort
+  - experiments
+
+experiments:
+  requested:
+    - clinical_slim_logistic
+    - lipid_elastic_net
+    - clinical_full_elastic_net
+    - fusion_elastic_net
+    - fusion_full_elastic_net
+  cv_config:
+    outer_splits: 5
+    outer_repeats: 1
+    inner_splits: 3
+    random_state: 42
+    lipid_top_k: 30
+    clinical_top_k: 30
+    correlation_threshold: 0.95
+    clinical_missing_threshold: 0.2
+
+outputs:
+  base_dir: <PROJECT_ROOT>/outputs/20260310_nested_cv
+
+followup:
+  output_dir: <PROJECT_ROOT>/outputs/20260311_responder_followup
+  strict_outputs_dir: <PROJECT_ROOT>/outputs/20260310_nested_cv
+  discussion_paths:
+    - <PROJECT_ROOT>/docs/20260311_对接_新的分析思路.txt
+    - <PROJECT_ROOT>/docs/运动干预实验研究儿童脂质重塑-2026年03月06日_会议记录/会议纪要_运动干预实验研究儿童脂质重塑_2026-03-06.md
+  models:
+    - model_label: clinical_baseline_main
+      experiment: clinical_slim_logistic
+      cv_overrides: {}
+    - model_label: ultra_sparse_lipid
+      experiment: lipid_elastic_net
+      cv_overrides:
+        lipid_top_k: 5
+        clinical_top_k: 5
+        correlation_threshold: 0.8
+    - model_label: compact_fusion
+      experiment: fusion_elastic_net
+      cv_overrides:
+        lipid_top_k: 15
+        clinical_top_k: 10
+        correlation_threshold: 0.9
+  alternative_grouping:
+    endpoint_source:
+    endpoint_value_column:
+    gray_zone_rule:
+  self_validation:
+    random_holdout_splits: 30
+    test_size: 0.2
+    random_state: 42
+    pseudo_external:
+      enabled: true
+      group_by: school
+      mapping_path: <PROJECT_ROOT>/运动与发育项目中英文变量缩写及文件历史迭代说明.xlsx
+      mapping_sheet_name: 运动强度分组_401人
+    cv_config:
+      outer_splits: 5
+      outer_repeats: 1
+      inner_splits: 3
+      random_state: 42
+      lipid_top_k: 30
+      clinical_top_k: 30
+      correlation_threshold: 0.95
+      clinical_missing_threshold: 0.2
+  outphase_validation:
+    enabled: true
+    out_lipid_path: <PROJECT_ROOT>/281_merge_lipids_out.csv
+    out_clinical_full_path: <PROJECT_ROOT>/287_outroll_data_clean.csv
+    clinical_anchor_mapping:
+      age_enroll: age_out
+      bmi_z_enroll: bmi_z_out
+      SFT: SFT
+      Gender: Gender
+      BMI: BMI
+    random_holdout_splits: 30
+    test_size: 0.2
+    random_state: 42
+    pseudo_external:
+      enabled: true
+      group_by: school
+      mapping_path: <PROJECT_ROOT>/运动与发育项目中英文变量缩写及文件历史迭代说明.xlsx
+      mapping_sheet_name: 运动强度分组_401人
+    cv_config:
+      outer_splits: 5
+      outer_repeats: 1
+      inner_splits: 3
+      random_state: 42
+      lipid_top_k: 30
+      clinical_top_k: 30
+      correlation_threshold: 0.95
+      clinical_missing_threshold: 0.2
