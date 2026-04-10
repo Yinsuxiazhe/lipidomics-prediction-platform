@@ -1,0 +1,1 @@
+1.体重指标方面表格里面有bmi_z_enroll，这个是我们需要用到的BMI z-score。体重指标中选用BMI，体重，BMI p-score：bmi_p_enroll，注意不是数字，是等级；BMI z-score，腰围，臀围，腰臀比，体脂率，肌肉率：Inbody_PSM_.Percent_Skeletal_Muscle_Mass.即可。2.B；3.ok；4.C

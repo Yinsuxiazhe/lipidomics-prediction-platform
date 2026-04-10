@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>多指标脂质组预测网站 · 需求确认文档</title>
+<meta content="2026-04-10 · 发送对象：张淑贤" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs">🧠 AI 结果展示</a>
+<div class="nav-links"><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/20260410_%E5%A4%9A%E6%8C%87%E6%A0%87%E9%A2%84%E6%B5%8B%E7%BD%91%E7%AB%99_%E9%9C%80%E6%B1%82%E7%A1%AE%E8%AE%A4%E6%96%87%E6%A1%A3.md">需求文档</a></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">需求确认</div>
+<h1>多指标脂质组预测网站 · 需求确认文档</h1>
+<p class="hero-subtitle-compact">2026-04-10 · 发送对象：张淑贤</p>
+<div class="hero-meta"><span class="meta-pill">8项待确认事项</span><span class="meta-pill">脂质组预测网站</span></div>
+<div class="doc-toolbar"><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/20260410_%E6%9C%80%E6%96%B0%E6%B2%9F%E9%80%9A%E7%BB%93%E6%9E%9C.txt">沟通记录</a></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">一、需求概述</a></li><li><a href="#section-2">二、待确认事项（共 8 项）</a></li><li><a href="#section-11">三、预期交付物</a></li><li><a href="#section-12">四、暂不覆盖的内容</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">一、需求概述</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-2" href="#section-2">二、待确认事项（共 8 项）</a><a class="sidebar-toc-link sub-item" data-target="section-3" href="#section-3">确认项 1：用于分组的“临床指标“候选清单</a><a class="sidebar-toc-link sub-item" data-target="section-4" href="#section-4">确认项 2：分组策略——四分位 vs. 三分位</a><a class="sidebar-toc-link sub-item" data-target="section-5" href="#section-5">确认项 3：“响应“方向的一致性约定</a><a class="sidebar-toc-link sub-item" data-target="section-6" href="#section-6">确认项 4：每个指标独立建模还是联合建模</a><a class="sidebar-toc-link sub-item" data-target="section-7" href="#section-7">确认项 5：脂质组特征的选择</a><a class="sidebar-toc-link sub-item" data-target="section-8" href="#section-8">确认项 6：样本量与每组最小样本数约定</a><a class="sidebar-toc-link sub-item" data-target="section-9" href="#section-9">确认项 7：网站功能需求</a><a class="sidebar-toc-link sub-item" data-target="section-10" href="#section-10">确认项 8：当前 responder / non-responder 分组是否保留</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-11" href="#section-11">三、预期交付物</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-12" href="#section-12">四、暂不覆盖的内容</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">来源文件：20260410_多指标预测网站_需求确认文档.md</div><div class="top-note">本页面样式对齐参考：<code>/Users/angus/Nutstore Files/我的坚果云/北大北大/课题组/我的课题/Life_OS/medical-ai-knowledge-base/public/aging-analysis/tutorial.html</code></div><h1 id="需求确认文档多指标运动响应预测网站">需求确认文档：多指标运动响应预测网站</h1>
+<p><strong>发送对象：</strong> 张淑贤<br/>
+<strong>日期：</strong> 2026-04-10<br/>
+<strong>当前状态：</strong> 草稿，待确认后执行</p>
+<hr/>
+<h2 id="section-1">一、需求概述</h2>
+<p>基于 2026-04-10 的沟通共识，拟构建一套<strong>多指标预测网站</strong>，其核心逻辑为：</p>
+<ol type="1">
+<li><strong>针对每个临床指标</strong>（如 ΔBMI、ΔTG、ΔHDL 等），根据该指标干预前后变化量的<strong>四分位数或三分位数</strong>，将儿童划分为“极端响应者“和“极端非响应者“两个对立亚组；</li>
+<li><strong>以基线脂质组数据</strong>（入组时刻采血）为特征，训练机器学习分类模型，预测某儿童在给定指标上属于“极适运动“还是“极不适运动“亚组；</li>
+<li><strong>所有指标的模型结果</strong>汇总后，形成一个可交互的预测网站，供临床医生参考。</li>
+</ol>
+<hr/>
+<h2 id="section-2">二、待确认事项（共 8 项）</h2>
+<p>以下事项在正式执行前需要张淑贤确认，否则分析方向可能出现偏差。</p>
+<hr/>
+<h3 id="section-3">确认项 1：用于分组的“临床指标“候选清单</h3>
+<p><strong>背景：</strong> 当前数据中有 378 个可计算干预前后变化量的共同临床指标。我们需要从中<strong>筛选出有临床意义且变化量可解读的指标</strong>，用于构建预测模型。</p>
+<p><strong>建议的候选指标清单（按临床意义分组）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>类别</th>
+<th>指标中文名</th>
+<th>对应英文列名</th>
+<th>变化量计算方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>肥胖/体成分</strong></td>
+<td>BMI（体质指数）</td>
+<td><code>BMI</code></td>
+<td>ΔBMI = 出组 BMI - 入组 BMI</td>
+</tr>
+<tr>
+<td><strong>肥胖/体成分</strong></td>
+<td>体脂率</td>
+<td><code>Inbody_39_PBF_.Percent_Body_Fat.</code></td>
+<td>ΔPBF = 出组 PBF - 入组 PBF</td>
+</tr>
+<tr>
+<td><strong>肥胖/体成分</strong></td>
+<td>内脏脂肪面积</td>
+<td><code>Inbody_133_VFA_.Visceral_Fat_Area.</code></td>
+<td>ΔVFA</td>
+</tr>
+<tr>
+<td><strong>肥胖/体成分</strong></td>
+<td>腰臀比</td>
+<td><code>WHR</code></td>
+<td>ΔWHR</td>
+</tr>
+<tr>
+<td><strong>血脂</strong></td>
+<td>甘油三酯（TG）</td>
+<td><code>serum_TG</code></td>
+<td>ΔTG</td>
+</tr>
+<tr>
+<td><strong>血脂</strong></td>
+<td>高密度脂蛋白（HDL-C）</td>
+<td><code>serum_HDL.C</code></td>
+<td>ΔHDL-C</td>
+</tr>
+<tr>
+<td><strong>血脂</strong></td>
+<td>低密度脂蛋白（LDL-C）</td>
+<td><code>serum_LDL.C</code></td>
+<td>ΔLDL-C</td>
+</tr>
+<tr>
+<td><strong>血脂</strong></td>
+<td>总胆固醇（TC）</td>
+<td><code>serum_T.CHO</code></td>
+<td>ΔTC</td>
+</tr>
+<tr>
+<td><strong>肝脏代谢</strong></td>
+<td>谷丙转氨酶（ALT）</td>
+<td><code>serum_ALT</code></td>
+<td>ΔALT</td>
+</tr>
+<tr>
+<td><strong>肝脏代谢</strong></td>
+<td>谷草转氨酶（AST）</td>
+<td><code>serum_AST</code></td>
+<td>ΔAST</td>
+</tr>
+<tr>
+<td><strong>肝脏代谢</strong></td>
+<td>NAFLD 评分/分级</td>
+<td><code>NAFLD</code></td>
+<td>ΔNAFLD（若为数值型）</td>
+</tr>
+<tr>
+<td><strong>血糖</strong></td>
+<td>空腹血糖</td>
+<td><code>serum_Glu</code></td>
+<td>ΔGlu</td>
+</tr>
+<tr>
+<td><strong>心脏功能</strong></td>
+<td>左室射血分数（LVEF）</td>
+<td><code>LVEF</code></td>
+<td>ΔLVEF</td>
+</tr>
+<tr>
+<td><strong>心脏功能</strong></td>
+<td>左房内径（LAD）</td>
+<td><code>LAD</code></td>
+<td>ΔLAD</td>
+</tr>
+<tr>
+<td><strong>心脏功能</strong></td>
+<td>左室舒张末期内径（LVDd）</td>
+<td><code>LVDd</code></td>
+<td>ΔLVDd</td>
+</tr>
+<tr>
+<td><strong>心脏功能</strong></td>
+<td>左室质量指数（LVMI）</td>
+<td><code>LVMI</code></td>
+<td>ΔLVMI</td>
+</tr>
+<tr>
+<td><strong>血管功能</strong></td>
+<td>脉搏波传导速度（PWV）或等效指标</td>
+<td>需确认列名</td>
+<td>需确认</td>
+</tr>
+<tr>
+<td><strong>血压</strong></td>
+<td>收缩压</td>
+<td><code>sbp</code></td>
+<td>ΔSBP</td>
+</tr>
+<tr>
+<td><strong>血压</strong></td>
+<td>舒张压</td>
+<td><code>dbp</code></td>
+<td>ΔDBP</td>
+</tr>
+</tbody>
+</table>
+<p><strong>请确认：</strong></p>
+<ul>
+<li>上述清单是否覆盖了您最关心的临床指标？</li>
+<li>是否有遗漏的重要指标？（如糖化血红蛋白 HbA1c、骨龄、炎症因子等）</li>
+<li>是否有明确不需要纳入的指标？</li>
+</ul>
+<hr/>
+<h3 id="section-4">确认项 2：分组策略——四分位 vs. 三分位</h3>
+<p><strong>背景：</strong> 为使“极端组“划分更清晰，需要确定分组层数。</p>
+<table>
+<thead>
+<tr>
+<th>分组方式</th>
+<th>说明</th>
+<th>高响应组</th>
+<th>低响应组</th>
+<th>中间组</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>四分位（推荐）</strong></td>
+<td>取 Q1 和 Q4</td>
+<td>变化量最小（即改善最明显）的 25% 儿童</td>
+<td>变化量最大（即改善最少/或变差）的 25% 儿童</td>
+<td>中间 50% 排除</td>
+</tr>
+<tr>
+<td><strong>三分位</strong></td>
+<td>取 T1 和 T3</td>
+<td>变化量最小的 33% 儿童</td>
+<td>变化量最大的 33% 儿童</td>
+<td>中间 33% 排除</td>
+</tr>
+</tbody>
+</table>
+<p><strong>请确认：</strong></p>
+<ul>
+<li>倾向于使用<strong>四分位</strong>还是<strong>三分位</strong>？
+<ul>
+<li>四分位：极端划分更明显（各 25%），但样本量较少</li>
+<li>三分位：样本量较充足（各 33%），但极端程度稍弱</li>
+</ul></li>
+<li>若某指标的分布较为集中导致四分位分不出有效样本，是否允许降低为三分位？</li>
+</ul>
+<hr/>
+<h3 id="section-5">确认项 3：“响应“方向的一致性约定</h3>
+<p><strong>背景：</strong> 不同指标的变化方向含义不同，需要统一“高响应/低响应“的定义。</p>
+<table>
+<thead>
+<tr>
+<th>指标类型</th>
+<th>高响应（运动有益）</th>
+<th>低响应（运动效果差）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BMI、PBF、内脏脂肪、TG、LDL-C、ALT、AST</td>
+<td>Δ值减小（下降）</td>
+<td>Δ值增大（上升或不降）</td>
+</tr>
+<tr>
+<td>HDL-C、LVEF、LAP</td>
+<td>Δ值增大（上升）</td>
+<td>Δ值减小（下降或不升）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>请确认：</strong></p>
+<ul>
+<li>以上方向约定是否符合临床预期？</li>
+<li>是否有特殊指标的方向与此表相反（如某个代谢指标升高代表运动有效）？</li>
+</ul>
+<hr/>
+<h3 id="section-6">确认项 4：每个指标独立建模还是联合建模</h3>
+<p><strong>背景：</strong> 存在两种分析路径：</p>
+<table>
+<thead>
+<tr>
+<th>方案</th>
+<th>说明</th>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. 独立建模（推荐）</strong></td>
+<td>每个临床指标独立训练一个分类模型，共 N 个模型</td>
+<td>解释清晰，每个指标有独立 AUC 和预测图</td>
+<td>指标间无关联利用</td>
+</tr>
+<tr>
+<td><strong>B. 联合建模</strong></td>
+<td>将多个指标的变化量联合，预测“综合运动响应“</td>
+<td>可整合多维度信息</td>
+<td>标签定义复杂，临床解读困难</td>
+</tr>
+</tbody>
+</table>
+<p><strong>请确认：</strong> 是否采用<strong>每个指标独立建模</strong>的方案（即网站中每个指标有独立的预测结果）？</p>
+<hr/>
+<h3 id="section-7">确认项 5：脂质组特征的选择</h3>
+<p><strong>背景：</strong> 基线脂质组数据包含约 1608 种脂质分子。若将全部脂质纳入建模，维度极高且存在过拟合风险。</p>
+<p><strong>建议方案：</strong></p>
+<ul>
+<li><strong>方案 1（推荐）：</strong> 先做脂质组学差异分析，筛选出基线时在两极端亚组间<strong>差异最显著的前 20–50 种脂质</strong>作为模型特征；</li>
+<li><strong>方案 2：</strong> 对脂质组做主成分降维（PCA），取前 10–20 个主成分作为特征；</li>
+<li><strong>方案 3：</strong> 全部脂质分子均纳入，使用 L1 正则化自动稀疏。</li>
+</ul>
+<p><strong>请确认：</strong></p>
+<ul>
+<li>倾向使用哪种脂质特征选择方案？</li>
+<li>是否要求最终每个模型有<strong>可列出的具体脂质生物标志物</strong>（方案 1）？若是，方案 1 更合适。</li>
+</ul>
+<hr/>
+<h3 id="section-8">确认项 6：样本量与每组最小样本数约定</h3>
+<p><strong>背景：</strong> 287 个配对样本经四分位分组后，每个极端亚组约 72 人。若进一步按指标分层，某些亚组可能更少。</p>
+<p><strong>请确认：</strong></p>
+<ul>
+<li>是否设定每组最低样本数阈值（如每组不少于 30 人）？</li>
+<li>若某指标分组后样本量不足（如数据缺失较多），该指标是否直接排除，不做模型？</li>
+<li>若当前某些脂质组样本（281 个）与临床数据可配对，是否接受以 281 为最大建模样本量？</li>
+</ul>
+<hr/>
+<h3 id="section-9">确认项 7：网站功能需求</h3>
+<p><strong>背景：</strong> 预测网站面向临床医生，核心功能为“输入基线脂质谱，输出预测结果“。</p>
+<p><strong>建议的网站功能清单（请勾选）：</strong></p>
+<table>
+<thead>
+<tr>
+<th>功能</th>
+<th>说明</th>
+<th>是否需要</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>指标选择面板</td>
+<td>选择想预测的临床指标（如 ΔBMI、ΔTG 等）</td>
+<td>□</td>
+</tr>
+<tr>
+<td>单样本预测</td>
+<td>输入单个儿童的基线脂质数据，输出预测为“高响应“或“低响应“及概率</td>
+<td>□</td>
+</tr>
+<tr>
+<td>批量预测</td>
+<td>上传多个儿童的基线脂质数据，批量输出预测结果（CSV 导出）</td>
+<td>□</td>
+</tr>
+<tr>
+<td>模型性能展示</td>
+<td>每指标模型展示 AUC、准确率、F1-score，附 ROC 曲线</td>
+<td>□</td>
+</tr>
+<tr>
+<td>特征重要性</td>
+<td>展示该指标模型中最关键的 10–20 种脂质分子</td>
+<td>□</td>
+</tr>
+<tr>
+<td>特征说明页</td>
+<td>每种脂质的简要生物学功能说明（从脂质数据库补充）</td>
+<td>□</td>
+</tr>
+<tr>
+<td>操作说明</td>
+<td>简要的使用说明，供首次使用的医生参考</td>
+<td>□</td>
+</tr>
+</tbody>
+</table>
+<p><strong>请确认：</strong> 以上功能是否满足需求？有无其他必须功能（如模型更新、置信区间、多语言切换等）？</p>
+<hr/>
+<h3 id="section-10">确认项 8：当前 responder / non-responder 分组是否保留</h3>
+<p><strong>背景：</strong> 项目已有基于某种分组标准（如 ΔBMI 阈值）的 responder / non-responder 二分类预测模型，且已完成 strict nested CV 验证。</p>
+<p><strong>请确认：</strong></p>
+<ul>
+<li>新构建的“多指标预测网站“是否<strong>独立于</strong>现有 responder 分类框架（即现有 responder 结果单独保留）？</li>
+<li>还是希望新网站的某个默认指标（如 ΔBMI）与现有 responder 分组<strong>保持逻辑一致</strong>？</li>
+</ul>
+<hr/>
+<h2 id="section-11">三、预期交付物</h2>
+<p>经确认后，完整交付：</p>
+<ol type="1">
+<li><strong>多指标脂质组预测模型包</strong>（每个指标独立模型 + 性能评估）</li>
+<li><strong>预测网站</strong>（基于 Python Web 框架，可本地部署）</li>
+<li><strong>分析报告文档</strong>（每指标模型性能 + 脂质生物标志物汇总）</li>
+<li><strong>代码仓库</strong>（完整可复现的建模与网站代码）</li>
+</ol>
+<hr/>
+<h2 id="section-12">四、暂不覆盖的内容</h2>
+<p>以下内容不在本次需求范围内，提前说明避免后续歧义：</p>
+<ul>
+<li>当前 responder / non-responder 主模型的重新修改</li>
+<li>脂质组的 wet-lab 验证或外部队列验证</li>
+<li>网站的云端托管（本次为本地部署版）</li>
+<li>针对中间 50% 儿童的预测（本次只预测极端两组）</li>
+</ul>
+<hr/>
+<p><strong>请审阅以上 8 项确认事项，并将您的意见填写在对应“请确认“栏中。确认后我将立即启动执行。</strong></p>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B">项目目录</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">© 2026 AI 结果展示页 | Styled after aging-analysis tutorial</p>
+<div class="footer-note">生成日期：2026-04-10 | 当前目录：/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/docs</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>

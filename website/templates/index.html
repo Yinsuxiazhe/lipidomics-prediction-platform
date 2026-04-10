@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Lipidomics Prediction Platform ? EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005)</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --primary: #2563eb; --primary-dark: #1d4ed8; --primary-light: #eff6ff;
+  --success: #10b981; --success-light: #ecfdf5;
+  --warning: #f59e0b; --warning-light: #fffbeb;
+  --danger: #ef4444; --danger-light: #fef2f2;
+  --bg: #f8fafc; --card: #ffffff; --text: #1e293b;
+  --text-light: #64748b; --border: #e2e8f0; --shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; font-size: 15px; }
+
+/* ?? Navigation ?? */
+.nav { position: fixed; top: 0; left: 0; right: 0; background: var(--card); border-bottom: 1px solid var(--border); z-index: 100; padding: 0 2rem; }
+.nav-inner { max-width: 1200px; margin: 0 auto; height: 60px; display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-size: 1.05rem; font-weight: 700; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+.nav-links { display: flex; gap: 1.2rem; align-items: center; }
+.nav-link { color: var(--text-light); text-decoration: none; font-size: 0.875rem; font-weight: 500; padding: 0.25rem 0; border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+.nav-link:hover, .nav-link.active { color: var(--primary); border-bottom-color: var(--primary); }
+.lang-toggle { display: flex; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-left: 0.5rem; }
+.lang-btn { padding: 0.3rem 0.75rem; font-size: 0.78rem; font-weight: 600; border: none; background: transparent; cursor: pointer; color: var(--text-light); font-family: inherit; transition: all 0.2s; }
+.lang-btn.active { background: var(--primary); color: white; }
+.lang-label { font-size: 0.72rem; color: var(--text-light); margin-right: 0.4rem; display: flex; align-items: center; }
+
+/* ?? Hero ?? */
+.hero { background: linear-gradient(135deg,#1e3a8a 0%,#3b82f6 100%); color: white; padding: 5.5rem 2rem 3rem; margin-top: 60px; }
+.hero-inner { max-width: 1200px; margin: 0 auto; }
+.hero-trial { display: inline-flex; align-items: center; gap: 0.4rem; background: rgba(255,255,255,0.18); padding: 0.3rem 0.9rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; }
+.hero h1 { font-size: 2.1rem; font-weight: 700; margin-bottom: 0.75rem; line-height: 1.25; }
+.hero-subtitle { font-size: 1rem; opacity: 0.88; max-width: 650px; margin-bottom: 1rem; }
+.hero-meta { display: flex; gap: 1.5rem; flex-wrap: wrap; font-size: 0.82rem; opacity: 0.75; }
+.hero-stats { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 1.25rem; padding-top: 1.25rem; border-top: 1px solid rgba(255,255,255,0.2); }
+.hero-stat { text-align: center; }
+.hero-stat-num { font-size: 1.6rem; font-weight: 700; }
+.hero-stat-label { font-size: 0.78rem; opacity: 0.75; margin-top: 0.1rem; }
+
+/* ?? Main Layout ?? */
+.main { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+
+/* ?? Tabs ?? */
+.tab-bar { display: flex; gap: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.3rem; margin-bottom: 2rem; box-shadow: var(--shadow); }
+.tab-btn { flex: 1; padding: 0.7rem 1rem; border: none; background: transparent; color: var(--text-light); font-size: 0.9rem; font-weight: 600; border-radius: 9px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-family: inherit; }
+.tab-btn:hover { background: var(--primary-light); color: var(--primary); }
+.tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.35); }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ?? Cards ?? */
+.card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+.card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 0.5rem; }
+.card-title { font-size: 1rem; font-weight: 700; color: var(--text); display: flex; align-items: center; gap: 0.5rem; }
+.card-title-icon { font-size: 1.1rem; }
+
+/* ?? Model Selector ?? */
+.model-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 1rem; }
+.model-card { border: 2px solid var(--border); border-radius: 12px; padding: 1rem 1.1rem; cursor: pointer; transition: all 0.2s; position: relative; }
+.model-card:hover { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.model-card.selected { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 3px #bfdbfe; }
+.model-card-indicator { font-size: 0.75rem; font-weight: 700; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.3rem; }
+.model-card-name { font-size: 1.05rem; font-weight: 700; color: var(--text); margin-bottom: 0.4rem; }
+.model-card-model { font-size: 0.78rem; color: var(--text-light); background: var(--bg); padding: 0.15rem 0.5rem; border-radius: 4px; display: inline-block; margin-bottom: 0.3rem; }
+.model-card-fullname { font-size: 0.68rem; color: var(--primary); font-weight: 600; margin-bottom: 0.4rem; opacity: 0.85; }
+.model-card-auc { display: flex; gap: 0.75rem; }
+.model-card-auc-item { text-align: center; }
+.model-card-auc-num { font-size: 1.05rem; font-weight: 700; color: var(--success); }
+.model-card-auc-num.warn { color: var(--warning); }
+.model-card-auc-label { font-size: 0.68rem; color: var(--text-light); }
+.model-card-badge { position: absolute; top: 0.75rem; right: 0.75rem; width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); background: white; display: flex; align-items: center; justify-content: center; font-size: 0.65rem; color: white; font-weight: 700; }
+.model-card.selected .model-card-badge { background: var(--primary); border-color: var(--primary); }
+.model-card-features { font-size: 0.72rem; color: var(--text-light); margin-top: 0.5rem; line-height: 1.5; }
+
+/* ?? AUC Bar ?? */
+.auc-bar-wrap { margin: 0.5rem 0; }
+.auc-bar-bg { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+.auc-bar-fill { height: 100%; border-radius: 4px; transition: width 0.6s ease; }
+.auc-bar-fill.good { background: linear-gradient(90deg,#10b981,#34d399); }
+.auc-bar-fill.warn { background: linear-gradient(90deg,#f59e0b,#fbbf24); }
+
+/* ?? Model Formula Panel ?? */
+.model-formula-panel { background: var(--primary-light); border: 1px solid #bfdbfe; border-radius: 12px; padding: 1.25rem 1.5rem; margin-bottom: 1.25rem; }
+.model-formula-title { font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.4rem; }
+.model-formula-eq { background: white; border-radius: 8px; padding: 0.75rem 1rem; font-family: 'JetBrains Mono','Courier New',monospace; font-size: 0.82rem; color: #1e3a8a; margin-bottom: 0.75rem; overflow-x: auto; white-space: nowrap; }
+.model-formula-eq .eq-label { font-size: 0.72rem; color: var(--text-light); margin-right: 0.5rem; }
+.model-formula-desc { font-size: 0.82rem; color: var(--text); line-height: 1.6; margin-bottom: 0.75rem; }
+.model-formula-props { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.model-formula-prop { background: white; border: 1px solid #bfdbfe; border-radius: 6px; padding: 0.3rem 0.7rem; font-size: 0.75rem; }
+.model-formula-prop-type { color: var(--primary); font-weight: 600; }
+.model-formula-prop-interpret { color: var(--text-light); }
+.model-pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 0.75rem; }
+.model-pros { background: var(--success-light); border: 1px solid #6ee7b7; border-radius: 8px; padding: 0.75rem; }
+.model-pros-title { font-size: 0.75rem; font-weight: 700; color: #065f46; margin-bottom: 0.4rem; }
+.model-pros ul { list-style: none; padding: 0; margin: 0; }
+.model-pros li { font-size: 0.75rem; color: #065f46; padding: 0.1rem 0; display: flex; align-items: center; gap: 0.3rem; }
+.model-pros li::before { content: '\2713'; color: var(--success); font-weight: 700; }
+.model-cons { background: var(--warning-light); border: 1px solid #fcd34d; border-radius: 8px; padding: 0.75rem; }
+.model-cons-title { font-size: 0.75rem; font-weight: 700; color: #92400e; margin-bottom: 0.4rem; }
+.model-cons ul { list-style: none; padding: 0; margin: 0; }
+.model-cons li { font-size: 0.75rem; color: #92400e; padding: 0.1rem 0; display: flex; align-items: center; gap: 0.3rem; }
+.model-cons li::before { content: '!'; color: var(--warning); font-weight: 700; }
+.model-params { margin-top: 0.75rem; font-size: 0.75rem; color: var(--text-light); background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem 0.75rem; }
+
+/* ?? Prediction Input Form ?? */
+.lipid-input-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 0.75rem; }
+.lipid-input-item { display: flex; flex-direction: column; gap: 0.25rem; }
+.lipid-input-item label { font-size: 0.78rem; font-weight: 600; color: var(--text); font-family: 'JetBrains Mono',monospace; }
+.lipid-input-item input { padding: 0.55rem 0.75rem; border: 1px solid var(--border); border-radius: 8px; font-size: 0.85rem; font-family: inherit; transition: border-color 0.2s; outline: none; }
+.lipid-input-item input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+.lipid-input-item input::placeholder { color: #cbd5e1; }
+.lipid-input-item.missing { background: var(--danger-light); border-radius: 6px; padding: 0.5rem; }
+.lipid-input-item.missing input { border-color: var(--danger); }
+
+/* ?? Buttons ?? */
+.btn { display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.65rem 1.3rem; border-radius: 9px; font-size: 0.875rem; font-weight: 600; cursor: pointer; border: none; transition: all 0.2s; font-family: inherit; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); box-shadow: 0 4px 12px rgba(37,99,235,0.3); }
+.btn-primary:active { transform: translateY(1px); }
+.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.btn-outline { background: white; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-outline:hover { background: var(--primary-light); }
+.btn-ghost { background: transparent; color: var(--text-light); border: 1.5px solid var(--border); }
+.btn-ghost:hover { background: var(--bg); color: var(--text); }
+.btn-success { background: var(--success); color: white; }
+.btn-success:hover { background: #059669; }
+.btn-danger { background: var(--danger); color: white; }
+.btn-sm { padding: 0.4rem 0.85rem; font-size: 0.8rem; border-radius: 7px; }
+.btn-sample { background: var(--success); color: white; border: none; }
+
+/* ?? Prediction Result ?? */
+.result-card { border-radius: 16px; padding: 2rem; text-align: center; margin: 1.5rem 0; transition: all 0.3s; }
+.result-card.high { background: linear-gradient(135deg,#ecfdf5,#d1fae5); border: 2px solid #6ee7b7; }
+.result-card.low { background: linear-gradient(135deg,#fef2f2,#fee2e2); border: 2px solid #fca5a5; }
+.result-label { font-size: 2rem; font-weight: 800; margin: 0.5rem 0; }
+.result-card.high .result-label { color: #065f46; }
+.result-card.low .result-label { color: #991b1b; }
+.result-detail { font-size: 0.9rem; color: var(--text-light); margin: 0.5rem 0; }
+.result-proba { display: flex; justify-content: center; gap: 2rem; margin: 1.25rem 0; }
+.result-proba-item { text-align: center; }
+.result-proba-bar-wrap { width: 120px; height: 10px; background: rgba(0,0,0,0.1); border-radius: 5px; overflow: hidden; margin: 0.35rem auto; }
+.result-proba-bar { height: 100%; border-radius: 5px; transition: width 0.8s ease; }
+.result-proba-bar.high { background: var(--success); }
+.result-proba-bar.low { background: var(--danger); }
+.result-proba-num { font-size: 1.1rem; font-weight: 700; }
+.result-confidence { font-size: 0.78rem; color: var(--text-light); margin-top: 0.5rem; }
+.result-features { text-align: left; margin-top: 1.25rem; padding: 1rem; background: rgba(255,255,255,0.6); border-radius: 10px; }
+.result-features-title { font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 0.5rem; }
+.result-features-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.result-feature-tag { background: white; border: 1px solid var(--border); border-radius: 6px; padding: 0.2rem 0.6rem; font-size: 0.75rem; font-family: 'JetBrains Mono',monospace; color: var(--text); }
+.result-warning { background: var(--warning-light); border: 1px solid #fcd34d; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #92400e; margin-top: 0.75rem; text-align: left; }
+
+/* ?? Model Performance Table ?? */
+.perf-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+.perf-table th { background: #f1f5f9; font-weight: 700; text-align: left; padding: 0.75rem 1rem; border-bottom: 2px solid var(--border); color: var(--text); font-size: 0.8rem; }
+.perf-table td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: middle; }
+.perf-table tr:last-child td { border-bottom: none; }
+.perf-table tr:hover td { background: #f8fafc; }
+.perf-table .indicator-cell { font-weight: 700; color: var(--primary); }
+.perf-table .auc-cell { font-weight: 700; }
+.perf-table .auc-cell.good { color: var(--success); }
+.perf-table .auc-cell.warn { color: var(--warning); }
+.perf-table .badge { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem; font-weight: 700; }
+.badge-q4 { background: #eff6ff; color: var(--primary); }
+.badge-q3 { background: #f0fdf4; color: #059669; }
+
+/* ?? Feature Importance ?? */
+.feat-importance { display: flex; flex-direction: column; gap: 0.5rem; }
+.feat-row { display: flex; align-items: center; gap: 0.75rem; }
+.feat-rank { width: 24px; height: 24px; border-radius: 50%; background: var(--primary-light); color: var(--primary); font-size: 0.72rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.feat-name { font-family: 'JetBrains Mono',monospace; font-size: 0.82rem; color: var(--text); flex: 1; }
+.feat-bar-wrap { flex: 2; }
+.feat-bar-bg { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.feat-bar { height: 100%; background: var(--primary); border-radius: 3px; }
+.feat-class { font-size: 0.7rem; color: var(--text-light); background: var(--bg); padding: 0.1rem 0.4rem; border-radius: 3px; }
+
+/* ?? Batch Upload ?? */
+.upload-zone { border: 2px dashed var(--border); border-radius: 12px; padding: 3rem 2rem; text-align: center; cursor: pointer; transition: all 0.2s; }
+.upload-zone:hover, .upload-zone.dragover { border-color: var(--primary); background: var(--primary-light); }
+.upload-zone-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+.upload-zone-text { font-size: 0.95rem; color: var(--text-light); }
+.upload-zone-text strong { color: var(--primary); }
+
+/* ?? Glossary ?? */
+.glossary-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 1rem; }
+.glossary-item { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 1rem; }
+.glossary-abbrev { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 0.2rem; }
+.glossary-full-en { font-size: 0.85rem; color: var(--text); font-weight: 600; margin-bottom: 0.2rem; }
+.glossary-full-cn { font-size: 0.8rem; color: var(--text-light); margin-bottom: 0.4rem; }
+.glossary-desc { font-size: 0.78rem; color: var(--text-light); line-height: 1.5; }
+.glossary-section-title { font-size: 0.95rem; font-weight: 700; color: var(--text); margin: 1.5rem 0 0.75rem 0; padding-bottom: 0.4rem; border-bottom: 2px solid var(--border); }
+
+/* ?? Footer ?? */
+.footer { background: #1e293b; color: #94a3b8; padding: 2.5rem 2rem; margin-top: 3rem; text-align: center; font-size: 0.82rem; }
+.footer a { color: #94a3b8; text-decoration: none; }
+.footer a:hover { color: white; }
+
+/* ?? Utility ?? */
+.text-success { color: var(--success); }
+.text-warning { color: var(--warning); }
+.text-danger { color: var(--danger); }
+.text-primary { color: var(--primary); }
+.text-muted { color: var(--text-light); }
+.mt-1 { margin-top: 0.5rem; }
+.mt-2 { margin-top: 1rem; }
+.mt-3 { margin-top: 1.5rem; }
+.mb-1 { margin-bottom: 0.5rem; }
+.mb-2 { margin-bottom: 1rem; }
+.flex { display: flex; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.gap-1 { gap: 0.5rem; }
+.gap-2 { gap: 1rem; }
+.justify-between { justify-content: space-between; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+.loading { display: inline-flex; align-items: center; gap: 0.4rem; }
+.spinner { width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; }
+.spinner.dark { border-color: rgba(37,99,235,0.2); border-top-color: var(--primary); }
+@keyframes spin { to { transform: rotate(360deg); } }
+.hidden { display: none !important; }
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #1e293b; color: white; padding: 0.75rem 1.25rem; border-radius: 10px; font-size: 0.85rem; font-weight: 500; box-shadow: 0 8px 24px rgba(0,0,0,0.2); z-index: 9999; opacity: 0; transform: translateY(10px); transition: all 0.3s; }
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.error { background: var(--danger); }
+.toast.success { background: var(--success); }
+
+/* ?? Instructions ?? */
+.instruction-step { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
+.instruction-step:last-child { border-bottom: none; }
+.step-num { width: 28px; height: 28px; background: var(--primary); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; flex-shrink: 0; }
+.step-content h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.25rem; }
+.step-content p { font-size: 0.82rem; color: var(--text-light); line-height: 1.5; }
+
+/* ?? Batch Results ?? */
+.batch-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.batch-stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; }
+.batch-stat-num { font-size: 1.8rem; font-weight: 800; }
+.batch-stat-label { font-size: 0.78rem; color: var(--text-light); margin-top: 0.2rem; }
+
+@media (max-width: 768px) {
+  .hero h1 { font-size: 1.6rem; }
+  .hero-stats { gap: 1rem; }
+  .model-grid { grid-template-columns: 1fr 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
+  .batch-summary { grid-template-columns: 1fr 1fr; }
+  .nav-links { display: none; }
+  .glossary-grid { grid-template-columns: 1fr; }
+  .model-pros-cons { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ?? Navigation ?? -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo">&#x1F9EC; <span id="nav-logo-text">Lipidomics Prediction Platform</span></a>
+      <div class="nav-links">
+      <a href="#" class="nav-link active" onclick="switchTab('predict')" data-i18n="nav_single">Single Sample</a>
+      <a href="#" class="nav-link" onclick="switchTab('batch')" data-i18n="nav_batch">Batch Prediction</a>
+      <a href="#" class="nav-link" onclick="switchTab('models')" data-i18n="nav_perf">Model Performance</a>
+      <a href="#" class="nav-link" onclick="switchTab('help')" data-i18n="nav_help">Help &amp; Glossary</a>
+      <div style="display:flex;align-items:center;gap:0.4rem;margin-left:0.5rem;">
+        <span class="lang-label" id="lang-label-text">Lang</span>
+        <div class="lang-toggle">
+          <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+          <button class="lang-btn" id="btn-cn" onclick="setLang('cn')">&#x4E2D;&#x6587;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ?? Hero ?? -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-trial">
+      <span>&#x1F3E5;</span>
+      <span id="hero-trial">EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005)</span>
+    </div>
+    <h1 id="hero-title">Lipidomics-Based Exercise Response Prediction</h1>
+    <p class="hero-subtitle" id="hero-subtitle">Predict children's multi-indicator exercise response from baseline lipidomics data, assisting clinicians in personalized exercise prescription</p>
+    <div class="hero-meta">
+      <span id="hero-date">&#x1F4C5; 2026-04-10</span>
+      <span id="hero-cohort">&#x1F4CA; 281 Children Cohort</span>
+      <span id="hero-lipids">&#x1F9EC; 1,608 Lipid Molecules</span>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="hero-n-models">14</div>
+        <div class="hero-stat-label" id="hero-label-models">Models</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num" id="hero-n-indicators">8</div>
+        <div class="hero-stat-label" id="hero-label-indicators">Indicators</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">AUC &ge; 0.65</div>
+        <div class="hero-stat-label" id="hero-label-criteria">Selection Criteria</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num">5-fold</div>
+        <div class="hero-stat-label" id="hero-label-cv">Nested CV</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ?? Main ?? -->
+<main class="main">
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('predict')"><span>&#x1F3AF;</span> <span data-i18n="tab_single">Single Sample</span></button>
+    <button class="tab-btn" onclick="switchTab('batch')"><span>&#x1F4C1;</span> <span data-i18n="tab_batch">Batch Prediction</span></button>
+    <button class="tab-btn" onclick="switchTab('models')"><span>&#x1F4C8;</span> <span data-i18n="tab_perf">Model Performance</span></button>
+    <button class="tab-btn" onclick="switchTab('help')"><span>&#x2753;</span> <span data-i18n="tab_help">Help &amp; Glossary</span></button>
+  </div>
+
+  <!-- ?? Tab 1: Single Sample Prediction ?? -->
+  <div id="tab-predict" class="tab-panel active">
+    <div class="grid-2">
+      <!-- Left: Model Selection -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon">&#x1F9EC;</span> <span data-i18n="card_model_select">Select Indicator &amp; Model</span></div>
+          </div>
+          <div id="model-grid" class="model-grid">
+            <div style="color:var(--text-light);padding:1rem;" data-i18n="loading">Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Input Form -->
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><span class="card-title-icon">&#x1F4CB;</span> <span data-i18n="card_lipid_input">Input Lipidomics Data</span></div>
+            <div class="flex gap-1">
+              <button class="btn btn-ghost btn-sm" onclick="clearInputs()" data-i18n="btn_clear">Clear</button>
+              <button class="btn btn-success btn-sm" id="sample-btn" onclick="loadSampleData()">
+                <span>&#x1F4A1;</span> <span data-i18n="btn_sample">Use Example</span>
+              </button>
+              <button class="btn btn-primary btn-sm" id="predict-btn" onclick="runPrediction()" disabled>
+                <span>&#x1F680;</span> <span data-i18n="btn_predict">Predict</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Model Formula Panel (shown when model selected) -->
+          <div id="model-formula-panel" class="model-formula-panel hidden">
+            <div class="model-formula-title">
+              <span>&#x1F4D0;</span>
+              <span id="formula-model-name">&#x2014;</span>
+            </div>
+            <div class="model-formula-eq">
+              <span class="eq-label" data-i18n="eq_label">Formula:</span>
+              <span id="formula-eq">&#x2014;</span>
+            </div>
+            <div class="model-formula-desc" id="formula-desc">&#x2014;</div>
+            <div class="model-formula-props">
+              <div class="model-formula-prop">
+                <span class="model-formula-prop-type" data-i18n="prop_type">Type:</span>
+                <span class="model-formula-prop-interpret" id="formula-type">&#x2014;</span>
+              </div>
+              <div class="model-formula-prop">
+                <span class="model-formula-prop-type" data-i18n="prop_interpret">Interpretability:</span>
+                <span class="model-formula-prop-interpret" id="formula-interpret">&#x2014;</span>
+              </div>
+              <div class="model-formula-prop">
+                <span class="model-formula-prop-type" data-i18n="prop_params">Hyperparameters:</span>
+                <span class="model-formula-prop-interpret" id="formula-params">&#x2014;</span>
+              </div>
+            </div>
+            <div class="model-pros-cons">
+              <div class="model-pros">
+                <div class="model-pros-title" data-i18n="pros_title">Strengths</div>
+                <ul id="formula-pros"></ul>
+              </div>
+              <div class="model-cons">
+                <div class="model-cons-title" data-i18n="cons_title">Limitations</div>
+                <ul id="formula-cons"></ul>
+              </div>
+            </div>
+          </div>
+
+          <div id="model-info-bar" class="mb-2" style="display:none;">
+            <div style="background:var(--primary-light);border:1px solid #bfdbfe;border-radius:8px;padding:0.75rem 1rem;font-size:0.82rem;color:#1d4ed8;">
+              <strong id="selected-model-name">&#x2014;</strong> &#x00B7;
+              <span id="selected-model-auc">AUC: &#x2014;</span> &#x00B7;
+              <span id="selected-model-features">&#x2014;</span>
+            </div>
+          </div>
+
+          <div id="lipid-input-area">
+            <div style="color:var(--text-light);font-size:0.85rem;padding:2rem;text-align:center;background:var(--bg);border-radius:10px;" data-i18n="select_model_hint">
+              &#x2190; Please select a model from the left panel first
+            </div>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div id="prediction-result" class="hidden">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ?? Tab 2: Batch Prediction ?? -->
+  <div id="tab-batch" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">&#x1F4C1;</span> <span data-i18n="card_batch_title">Batch Prediction</span></div>
+      </div>
+
+      <div class="mb-2">
+        <label style="font-size:0.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.5rem;" data-i18n="label_select_model">Select Model</label>
+        <select id="batch-model-select" style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;font-family:inherit;outline:none;" onchange="updateBatchModelInfo()">
+          <option value="">&#x2014; <span data-i18n="option_select_model">Select a model</span> &#x2014;</option>
+        </select>
+      </div>
+
+      <div id="batch-model-info" class="mb-2 hidden" style="background:var(--bg);border-radius:8px;padding:0.75rem 1rem;font-size:0.8rem;"></div>
+
+      <div class="upload-zone" id="upload-zone" onclick="document.getElementById('batch-file').click()"
+           ondragover="event.preventDefault();this.classList.add('dragover')"
+           ondragleave="this.classList.remove('dragover')"
+           ondrop="handleFileDrop(event)">
+        <div class="upload-zone-icon">&#x1F4C2;</div>
+        <div class="upload-zone-text">
+          <strong data-i18n="upload_click">Click to upload CSV</strong> <span data-i18n="upload_or">or drag here</span><br/>
+          <span style="font-size:0.78rem;" data-i18n="upload_format">Supports .csv format &#x2014; one row per sample, columns are lipid molecule names</span>
+        </div>
+        <input type="file" id="batch-file" accept=".csv" style="display:none;" onchange="handleFileSelect(event)"/>
+      </div>
+
+      <div id="batch-preview" class="hidden mt-2">
+        <div style="font-size:0.82rem;color:var(--text-light);margin-bottom:0.5rem;">
+          <span data-i18n="batch_selected">Selected:</span> <strong id="batch-file-name">&#x2014;</strong> &#x00B7; <span id="batch-row-count">0</span> <span data-i18n="batch_rows">rows</span>
+        </div>
+        <button class="btn btn-primary" id="batch-run-btn" onclick="runBatchPrediction()" disabled>
+          <span class="spinner dark hidden" id="batch-spinner"></span>
+          <span id="batch-run-text">&#x1F680; <span data-i18n="btn_batch_run">Run Batch Prediction</span></span>
+        </button>
+      </div>
+    </div>
+
+    <div id="batch-result" class="hidden">
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><span class="card-title-icon">&#x2705;</span> <span data-i18n="batch_result_title">Prediction Results</span></div>
+          <button class="btn btn-primary btn-sm" onclick="downloadBatchResult()">&#x2B07; <span data-i18n="btn_download">Download CSV</span></button>
+        </div>
+        <div id="batch-summary" class="batch-summary"></div>
+        <div style="overflow-x:auto;">
+          <table class="perf-table" id="batch-table">
+            <thead><tr>
+              <th>#</th><th data-i18n="th_prediction">Prediction</th><th data-i18n="th_prob_high">High Response Prob.</th><th data-i18n="th_prob_low">Low Response Prob.</th><th data-i18n="th_confidence">Confidence</th><th data-i18n="th_note">Note</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ?? Tab 3: Model Performance ?? -->
+  <div id="tab-models" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">&#x1F4CA;</span> <span data-i18n="card_perf_title">Model Performance Summary</span></div>
+        <span style="font-size:0.78rem;color:var(--text-light);" data-i18n="perf_note">14 selected models &#x00B7; Full-cohort AUC &gt; 0.65 &#x00B7; Cross-validation AUC &gt; 0.55</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="perf-table" id="model-perf-table">
+          <thead><tr>
+            <th data-i18n="th_indicator">Indicator</th><th data-i18n="th_group">Grouping</th><th data-i18n="th_best_model">Best Model</th>
+            <th data-i18n="th_full_auc">Full-Cohort AUC</th><th data-i18n="th_m2f">M&#x2192;F AUC</th><th data-i18n="th_f2m">F&#x2192;M AUC</th>
+            <th data-i18n="th_sens">Sensitivity</th><th data-i18n="th_spec">Specificity</th><th data-i18n="th_n_feat">Lipids</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Feature Importance -->
+    <div class="card" id="feat-importance-card" style="display:none;">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">&#x1F9EC;</span> <span data-i18n="feat_importance_title">Key Lipid Features</span> &#x2014; <span id="feat-importance-title">&#x2014;</span></div>
+      </div>
+      <div id="feat-importance-list" class="feat-importance"></div>
+    </div>
+  </div>
+
+  <!-- ?? Tab 4: Help & Glossary ?? -->
+  <div id="tab-help" class="tab-panel">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">&#x2753;</span> <span data-i18n="card_help_title">User Guide</span></div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4 data-i18n="step1_title">Select Prediction Indicator</h4>
+          <p data-i18n="step1_desc">On the "Single Sample" page, select the clinical indicator of interest (e.g., BMI, body fat percentage) from the model cards on the left. Each indicator has quartile and tertile grouping models.</p>
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4 data-i18n="step2_title">Input Lipidomics Data</h4>
+          <p data-i18n="step2_desc">Fill in the baseline lipidomics detection values in the right panel. You may use the "Use Example" button to auto-fill with mean values from the training cohort, or manually enter your data. Only the lipids used by the selected model need to be filled; others may be left blank.</p>
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4 data-i18n="step3_title">Get Prediction Result</h4>
+          <p data-i18n="step3_desc">Click "Predict" to receive either "High Response" (significant exercise effect) or "Low Response" (weaker exercise effect) classification, along with probability values and confidence scores. Model formula and characteristics are displayed above the input form.</p>
+        </div>
+      </div>
+      <div class="instruction-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4 data-i18n="step4_title">Batch Prediction</h4>
+          <p data-i18n="step4_desc">To predict multiple samples at once, upload a CSV file (each column corresponds to a lipid molecule, each row to a different sample). The system returns all predictions and supports CSV download.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Glossary -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="card-title-icon">&#x1F4D6;</span> <span data-i18n="card_glossary_title">Abbreviation Glossary</span></div>
+      </div>
+
+      <div class="glossary-section-title" data-i18n="glossary_models">ML Model Full Names</div>
+      <div class="glossary-grid" id="glossary-models"></div>
+
+      <div class="glossary-section-title" data-i18n="glossary_metrics">Evaluation Metrics</div>
+      <div class="glossary-grid" id="glossary-metrics"></div>
+
+      <div class="glossary-section-title" data-i18n="glossary_indicators">Clinical Indicators</div>
+      <div class="glossary-grid" id="glossary-indicators"></div>
+
+      <div class="glossary-section-title" data-i18n="glossary_lipids">Lipid Class Abbreviations</div>
+      <div class="glossary-grid" id="glossary-lipids"></div>
+    </div>
+  </div>
+
+</main>
+
+<!-- ?? Toast ?? -->
+<div class="toast" id="toast"></div>
+
+<!-- ?? Footer ?? -->
+<footer class="footer">
+  <p id="footer-line1">EXCITING Study (NCT04984005) &#x00B7; Lipidomics Exercise Response Prediction Platform &#x00B7; 2026-04-10</p>
+  <p id="footer-line2" style="margin-top:0.4rem;">Based on 281 children lipidomics data &#x00B7; 14 ML models &#x00B7; Nested CV validated</p>
+  <p style="margin-top:0.4rem; color:#64748b;">Requestor: Shuxian Zhang | Analysis Provider: Chenyu Fan</p>
+</footer>
+
+<script>
+// ?? Model Full Name Mapping ?????????????????????????????????????????????????
+const MODEL_FULL_NAMES = {
+  EN_LR: { abbrev: "EN_LR", fullEn: "Elastic Net Logistic Regression", fullCn: "\u7F29\u6027\u7F51\u7EDC\u903B\u8F91\u56DE\u5F52" },
+  XGBoost: { abbrev: "XGBoost", fullEn: "eXtreme Gradient Boosting", fullCn: "\u6781\u7AEF\u68AF\u5EA6\u63A8\u5347" },
+  RF: { abbrev: "RF", fullEn: "Random Forest", fullCn: "\u968F\u673A\u68EE\u6797" },
+  LR_L2: { abbrev: "LR_L2", fullEn: "Logistic Regression (L2)", fullCn: "\u903B\u8F91\u56DE\u5F52\uFF08L2 \u6B63\u5219\u5316\uFF09" },
+};
+
+// ?? Language System ????????????????????????????????????????????????????????
+const LANG_EN = {
+  nav_logo_text: "Lipidomics Prediction Platform",
+  nav_single: "Single Sample",
+  nav_batch: "Batch Prediction",
+  nav_perf: "Model Performance",
+  nav_help: "Help & Glossary",
+  tab_single: "Single Sample",
+  tab_batch: "Batch Prediction",
+  tab_perf: "Model Performance",
+  tab_help: "Help & Glossary",
+  hero_trial: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005)",
+  hero_title: "Lipidomics-Based Exercise Response Prediction",
+  hero_subtitle: "Predict children's multi-indicator exercise response from baseline lipidomics data, assisting clinicians in personalized exercise prescription",
+  hero_date: "\u{1F4C5} 2026-04-10",
+  hero_cohort: "\u{1F4CA} 281 Children Cohort",
+  hero_lipids: "\u{1F9EC} 1,608 Lipid Molecules",
+  hero_label_models: "Models",
+  hero_label_indicators: "Indicators",
+  hero_label_criteria: "Selection Criteria",
+  hero_label_cv: "Nested CV",
+  card_model_select: "Select Indicator & Model",
+  card_lipid_input: "Input Lipidomics Data",
+  card_batch_title: "Batch Prediction",
+  card_perf_title: "Model Performance Summary",
+  card_help_title: "User Guide",
+  card_glossary_title: "Abbreviation Glossary",
+  btn_clear: "Clear",
+  btn_sample: "Use Example",
+  btn_predict: "Predict",
+  btn_batch_run: "Run Batch Prediction",
+  btn_download: "Download CSV",
+  select_model_hint: "\u2190 Please select a model from the left panel first",
+  eq_label: "Formula:",
+  prop_type: "Type:",
+  prop_interpret: "Interpretability:",
+  prop_params: "Hyperparameters:",
+  pros_title: "Strengths",
+  cons_title: "Limitations",
+  loading: "Loading...",
+  label_select_model: "Select Model",
+  option_select_model: "Select a model",
+  upload_click: "Click to upload CSV",
+  upload_or: "or drag here",
+  upload_format: "Supports .csv format \u2014 one row per sample, columns are lipid molecule names",
+  batch_selected: "Selected:",
+  batch_rows: "rows",
+  batch_result_title: "Prediction Results",
+  th_prediction: "Prediction",
+  th_prob_high: "High Response Prob.",
+  th_prob_low: "Low Response Prob.",
+  th_confidence: "Confidence",
+  th_note: "Note",
+  th_indicator: "Indicator",
+  th_group: "Grouping",
+  th_best_model: "Best Model",
+  th_full_auc: "Full-Cohort AUC",
+  th_m2f: "M\u2192F AUC",
+  th_f2m: "F\u2192M AUC",
+  th_sens: "Sensitivity",
+  th_spec: "Specificity",
+  th_n_feat: "Lipids",
+  feat_importance_title: "Key Lipid Features",
+  perf_note: "14 selected models \u00B7 Full-cohort AUC > 0.65 \u00B7 Cross-validation AUC > 0.55",
+  step1_title: "Select Prediction Indicator",
+  step1_desc: "On the Single Sample page, select the clinical indicator of interest from the model cards on the left. Each indicator has quartile and tertile grouping models.",
+  step2_title: "Input Lipidomics Data",
+  step2_desc: "Fill in the baseline lipidomics detection values in the right panel. You may use the Use Example button to auto-fill with mean values from the training cohort, or manually enter your data.",
+  step3_title: "Get Prediction Result",
+  step3_desc: "Click Predict to receive either High Response or Low Response classification, along with probability values and confidence scores.",
+  step4_title: "Batch Prediction",
+  step4_desc: "To predict multiple samples at once, upload a CSV file. The system returns all predictions and supports CSV download.",
+  glossary_models: "ML Model Full Names",
+  glossary_metrics: "Evaluation Metrics",
+  glossary_indicators: "Clinical Indicators",
+  glossary_lipids: "Lipid Class Abbreviations",
+  footer_line1: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005) \u00B7 Lipidomics Exercise Response Prediction Platform \u00B7 2026-04-10",
+  footer_line2: "Based on 281 children lipidomics data \u00B7 14 ML models \u00B7 Nested CV validated",
+  high_response: "High Response",
+  low_response: "Low Response",
+  high_prob: "High Response Prob.",
+  low_prob: "Low Response Prob.",
+  confidence: "Confidence",
+  missing_warning: "\u26A0\uFE0F Missing {n} lipid values (filled with 0): {list}",
+  lipid_features_top: "Lipid features used by the model (Top 10)",
+  label_high: "High Response",
+  label_high_detail: "Significant improvement expected (exercise effect notable)",
+  label_low: "Low Response",
+  label_low_detail: "Limited improvement expected (exercise effect weak)",
+  sample_note_en: "Example values loaded (training cohort mean). You may modify any value.",
+  toast_load_sample: "Example values loaded! You can modify them before prediction.",
+  toast_predict_ok: "Prediction complete!",
+  toast_predict_err: "Prediction failed",
+  full_auc_label: "Full AUC",
+  m2f_label: "M\u2192F",
+  all_lipids: "{n} lipids",
+  sample_btn_loading: "Loading...",
+  n_models: "14",
+  n_indicators: "8",
+  lang_label_text: "Lang",
+  model_EN_LR: "Elastic Net Logistic Regression",
+  model_XGBoost: "XGBoost",
+  model_RF: "Random Forest",
+  model_LR_L2: "Logistic Regression (L2)",
+  ind_BMI: "BMI",
+  ind_weight: "Body Weight",
+  ind_bmi_z: "BMI z-score",
+  ind_waistline: "Waist Circumference",
+  ind_hipline: "Hip Circumference",
+  ind_WHR: "Waist-to-Hip Ratio",
+  ind_PBF: "Percent Body Fat",
+  ind_PSM: "Percent Skeletal Muscle",
+  group_Q: "Quartile",
+  group_T: "Tertile",
+  best_badge: "Best",
+};
+
+const LANG_CN = {
+  nav_logo_text: "\u591A\u6307\u6807\u8102\u8D28\u7EC4\u9884\u6D4B\u5E73\u53F0",
+  nav_single: "\u5355\u6837\u672C\u9884\u6D4B",
+  nav_batch: "\u6279\u91CF\u9884\u6D4B",
+  nav_perf: "\u6A21\u578B\u6027\u80FD",
+  nav_help: "\u5E2E\u52A9\u4E0E\u540D\u8BCD\u89E3\u91CA",
+  tab_single: "\u5355\u6837\u672C\u9884\u6D4B",
+  tab_batch: "\u6279\u91CF\u9884\u6D4B",
+  tab_perf: "\u6A21\u578B\u6027\u80FD",
+  tab_help: "\u5E2E\u52A9\u4E0E\u540D\u8BCD\u89E3\u91CA",
+  hero_trial: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) \u7814\u7A76 (NCT04984005)",
+  hero_title: "\u57FA\u4E8E\u8102\u8D28\u7EC4\u5B66\u7684\u8FD0\u52A8\u54CD\u5E94\u9884\u6D4B\u5E73\u53F0",
+  hero_subtitle: "\u57FA\u4E8E\u57FA\u7EBF\u8102\u8D28\u7EC4\u6570\u636E\uFF0C\u9884\u6D4B\u513F\u7AE5\u5728\u591A\u4E2A\u4E34\u5E8A\u6307\u6807\u4E0A\u7684\u8FD0\u52A8\u54CD\u5E94\u7A0B\u5EA6\uFF0C\u8F85\u52A9\u4E34\u5E8A\u533B\u751F\u5236\u5B9A\u4E2A\u6027\u5316\u8FD0\u52A8\u5904\u65B9",
+  hero_date: "\u{1F4C5} 2026-04-10",
+  hero_cohort: "\u{1F4CA} 281 \u513F\u7AE5\u961F\u5217",
+  hero_lipids: "\u{1F9EC} 1,608 \u79CD\u8102\u8D28\u5206\u5B50",
+  hero_label_models: "\u9884\u6D4B\u6A21\u578B",
+  hero_label_indicators: "\u4E34\u5E8A\u6307\u6807",
+  hero_label_criteria: "\u5165\u9009\u6807\u51C6",
+  hero_label_cv: "\u5D4C\u5957\u4EA4\u53C9\u9A8C\u8BC1",
+  card_model_select: "\u9009\u62E9\u9884\u6D4B\u6307\u6807\u4E0E\u6A21\u578B",
+  card_lipid_input: "\u8F93\u5165\u8102\u8D28\u7EC4\u6570\u636E",
+  card_batch_title: "\u6279\u91CF\u9884\u6D4B",
+  card_perf_title: "\u6A21\u578B\u6027\u80FD\u6C47\u603B\u8868",
+  card_help_title: "\u4F7F\u7528\u8BF4\u660E",
+  card_glossary_title: "\u7F29\u5199\u540D\u8BCD\u89E3\u91CA",
+  btn_clear: "\u6E05\u7A7A",
+  btn_sample: "\u4F7F\u7528\u793A\u4F8B",
+  btn_predict: "\u5F00\u59CB\u9884\u6D4B",
+  btn_batch_run: "\u5F00\u59CB\u6279\u91CF\u9884\u6D4B",
+  btn_download: "\u4E0B\u8F7D CSV",
+  select_model_hint: "\u2190 \u8BF7\u5148\u4ECE\u5DE6\u4FA7\u9009\u62E9\u4E00\u4E2A\u9884\u6D4B\u6A21\u578B",
+  eq_label: "\u516C\u5F0F\uFF1A",
+  prop_type: "\u6A21\u578B\u7C7B\u578B\uFF1A",
+  prop_interpret: "\u53EF\u89E3\u91CA\u6027\uFF1A",
+  prop_params: "\u8D85\u53C2\u6570\uFF1A",
+  pros_title: "\u4F18\u52BF",
+  cons_title: "\u5C40\u9650\u6027",
+  loading: "\u52A0\u8F7D\u4E2D...",
+  label_select_model: "\u9009\u62E9\u6A21\u578B",
+  option_select_model: "\u2014 \u9009\u62E9\u6A21\u578B \u2014",
+  upload_click: "\u70B9\u51FB\u4E0A\u4F20 CSV \u6587\u4EF6",
+  upload_or: "\u6216\u62D6\u62FD\u5230\u6B64\u5904",
+  upload_format: "\u652F\u6301 .csv \u683C\u5F0F\uFF0C\u6BCF\u884C\u4E00\u4E2A\u6837\u672C\uFF0C\u5217\u540D\u4E3A\u8102\u8D28\u5206\u5B50\u540D\u79F0",
+  batch_selected: "\u5DF2\u9009\u62E9\uFF1A",
+  batch_rows: "\u884C",
+  batch_result_title: "\u9884\u6D4B\u7ED3\u679C",
+  th_prediction: "\u9884\u6D4B\u7ED3\u679C",
+  th_prob_high: "\u9AD8\u54CD\u5E94\u6982\u7387",
+  th_prob_low: "\u4F4E\u54CD\u5E94\u6982\u7387",
+  th_confidence: "\u7F6E\u4FE1\u5EA6",
+  th_note: "\u5907\u6CE8",
+  th_indicator: "\u6307\u6807",
+  th_group: "\u5206\u7EC4",
+  th_best_model: "\u6700\u4F18\u6A21\u578B",
+  th_full_auc: "\u5168\u961F\u5217 AUC",
+  th_m2f: "M\u2192F AUC",
+  th_f2m: "F\u2192M AUC",
+  th_sens: "\u7075\u654F\u5EA6",
+  th_spec: "\u7279\u5F02\u5EA6",
+  th_n_feat: "\u8102\u8D28\u6570",
+  feat_importance_title: "\u5173\u952E\u8102\u8D28\u7279\u5F81",
+  perf_note: "14 \u4E2A\u5165\u9009\u6A21\u578B \u00B7 \u5168\u961F\u5217 AUC > 0.65 \u00B7 \u4EA4\u53C9\u9A8C\u8BC1 AUC > 0.55",
+  step1_title: "\u9009\u62E9\u9884\u6D4B\u6307\u6807",
+  step1_desc: "\u5728\u5355\u6837\u672C\u9884\u6D4B\u9875\u9762\uFF0C\u4ECE\u5DE6\u4FA7\u6A21\u578B\u5361\u7247\u4E2D\u9009\u62E9\u60A8\u5173\u5FC3\u7684\u4E34\u5E8A\u6307\u6807\u3002\u6BCF\u4E2A\u6307\u6807\u6709\u56DB\u5206\u4F4D\u548C\u4E09\u5206\u4F4D\u4E24\u79CD\u5206\u7EC4\u6A21\u578B\u3002",
+  step2_title: "\u8F93\u5165\u8102\u8D28\u7EC4\u6570\u636E",
+  step2_desc: "\u5728\u53F3\u4FA7\u8868\u5355\u4E2D\u586B\u5199\u57FA\u7EBF\u8102\u8D28\u7EC4\u68C0\u6D4B\u6570\u636E\u3002\u70B9\u51FB\u4F7F\u7528\u793A\u4F8B\u6309\u94AE\u53EF\u81EA\u52A8\u586B\u5145\u8BAD\u7EC3\u961F\u5217\u5747\u503C\uFF0C\u4F60\u4E5F\u53EF\u4EE5\u624B\u52A8\u8F93\u5165\u3002",
+  step3_title: "\u83B7\u53D6\u9884\u6D4B\u7ED3\u679C",
+  step3_desc: "\u70B9\u51FB\u5F00\u59CB\u9884\u6D4B\uFF0C\u7CFB\u7EDF\u8FD4\u56DE\u9AD8\u54CD\u5E94\u6216\u4F4E\u54CD\u5E94\u7684\u5206\u7C7B\u7ED3\u679C\uFF0C\u4EE5\u53CA\u5BF9\u5E94\u7684\u6982\u7387\u503C\u548C\u7F6E\u4FE1\u5EA6\u3002",
+  step4_title: "\u6279\u91CF\u9884\u6D4B",
+  step4_desc: "\u5982\u9700\u540C\u65F6\u9884\u6D4B\u591A\u4E2A\u6837\u672C\uFF0C\u53EF\u4E0A\u4F20 CSV \u6587\u4EF6\u3002\u7CFB\u7EDF\u81EA\u52A8\u8FD4\u56DE\u6240\u6709\u6837\u672C\u7684\u9884\u6D4B\u7ED3\u679C\u5E76\u652F\u6301 CSV \u4E0B\u8F7D\u3002",
+  glossary_models: "\u673A\u5668\u5B66\u4E60\u6A21\u578B\u5168\u79F0",
+  glossary_metrics: "\u8BC4\u4F30\u6307\u6807\u8BF4\u660E",
+  glossary_indicators: "\u4E34\u5E8A\u6307\u6807\u8BF4\u660E",
+  glossary_lipids: "\u8102\u8D28\u7C7B\u522B\u7F29\u5199",
+  footer_line1: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) \u7814\u7A76 \u00B7 \u591A\u6307\u6807\u8102\u8D28\u7EC4\u5B66\u8FD0\u52A8\u54CD\u5E94\u9884\u6D4B\u5E73\u53F0 \u00B7 2026-04-10",
+  footer_line2: "\u57FA\u4E8E 281 \u540D\u513F\u7AE5\u8102\u8D28\u7EC4\u5B66\u6570\u636E \u00B7 14 \u4E2A\u673A\u5668\u5B66\u4E60\u6A21\u578B \u00B7 \u5D4C\u5957\u4EA4\u53C9\u9A8C\u8BC1",
+  high_response: "\u9AD8\u54CD\u5E94",
+  low_response: "\u4F4E\u54CD\u5E94",
+  high_prob: "\u9AD8\u54CD\u5E94\u6982\u7387",
+  low_prob: "\u4F4E\u54CD\u5E94\u6982\u7387",
+  confidence: "\u7F6E\u4FE1\u5EA6",
+  missing_warning: "\u26A0\uFE0F \u7F3A\u5C11 {n} \u4E2A\u8102\u8D28\u6570\u636E\uFF08\u5DF2\u7528 0 \u586B\u5145\uFF09\uFF1A{list}",
+  lipid_features_top: "\u6A21\u578B\u4F7F\u7528\u7684\u8102\u8D28\u7279\u5F81\uFF08Top 10\uFF09",
+  label_high: "\u9AD8\u54CD\u5E94",
+  label_high_detail: "\u9884\u8BA1\u663E\u8457\u53D8\u5316\uFF08\u8FD0\u52A8\u6548\u679C\u663E\u8457\uFF09",
+  label_low: "\u4F4E\u54CD\u5E94",
+  label_low_detail: "\u9884\u8BA1\u53D8\u5316\u6709\u9650\uFF08\u8FD0\u52A8\u6548\u679C\u8F83\u5F31\uFF09",
+  sample_note_en: "\u5DF2\u52A0\u8F7D\u793A\u4F8B\u503C\uFF08\u8BAD\u7EC3\u961F\u5217\u5747\u503C\uFF09\uFF0C\u53EF\u81EA\u884C\u4FEE\u6539\u4EFB\u610F\u6570\u503C\u540E\u9884\u6D4B\u3002",
+  toast_load_sample: "\u793A\u4F8B\u6570\u636E\u5DF2\u52A0\u8F7D\uFF01\u53EF\u81EA\u884C\u4FEE\u6539\u540E\u9884\u6D4B\u3002",
+  toast_predict_ok: "\u9884\u6D4B\u5B8C\u6210\uFF01",
+  toast_predict_err: "\u9884\u6D4B\u5931\u8D25",
+  full_auc_label: "\u5168\u961F\u5217 AUC",
+  m2f_label: "M\u2192F",
+  all_lipids: "{n} \u4E2A\u8102\u8D28\u7279\u5F81",
+  sample_btn_loading: "\u52A0\u8F7D\u4E2D...",
+  n_models: "14",
+  n_indicators: "8",
+  lang_label_text: "\u8BED\u8A00",
+  model_EN_LR: "\u7F29\u6027\u7F51\u7EDC\u903B\u8F91\u56DE\u5F52",
+  model_XGBoost: "\u6781\u7AEF\u68AF\u5EA6\u63A8\u5347",
+  model_RF: "\u968F\u673A\u68EE\u6797",
+  model_LR_L2: "\u903B\u8F91\u56DE\u5F52\uFF08L2 \u6B63\u5219\u5316\uFF09",
+  ind_BMI: "BMI",
+  ind_weight: "\u4F53\u91CD",
+  ind_bmi_z: "BMI z-score",
+  ind_waistline: "\u8170\u56F4",
+  ind_hipline: "\u818F\u56F4",
+  ind_WHR: "\u8170\u818F\u6BD4",
+  ind_PBF: "\u4F53\u8102\u7387",
+  ind_PSM: "\u808C\u8089\u7387",
+  group_Q: "\u56DB\u5206\u4F4D",
+  group_T: "\u4E09\u5206\u4F4D",
+  best_badge: "\u6700\u4F18",
+};
+
+let currentLang = "en";
+let modelInfo = {};
+let selectedModelKey = "";
+let batchResults = null;
+let currentBatchModelKey = "";
+let modelDocs = {};
+let glossary = {};
+
+function setLang(lang) {
+  currentLang = lang;
+  document.getElementById("btn-en").classList.toggle("active", lang === "en");
+  document.getElementById("btn-cn").classList.toggle("active", lang === "cn");
+  applyTranslations();
+}
+
+function t(key, replacements) {
+  if (replacements === undefined) replacements = {};
+  const dict = currentLang === "cn" ? LANG_CN : LANG_EN;
+  let text = dict[key] || LANG_EN[key] || key;
+  Object.entries(replacements).forEach(function(e) {
+    text = text.replace("{" + e[0] + "}", e[1]);
+  });
+  return text;
+}
+
+function applyTranslations() {
+  var elements = document.querySelectorAll("[data-i18n]");
+  elements.forEach(function(el) {
+    var key = el.getAttribute("data-i18n");
+    if (el.tagName === "INPUT" && el.type === "text") return;
+    el.textContent = t(key);
+  });
+
+  document.getElementById("hero-trial").textContent = t("hero_trial");
+  document.getElementById("hero-title").textContent = t("hero_title");
+  document.getElementById("hero-subtitle").textContent = t("hero_subtitle");
+  document.getElementById("hero-date").textContent = t("hero_date");
+  document.getElementById("hero-cohort").textContent = t("hero_cohort");
+  document.getElementById("hero-lipids").textContent = t("hero_lipids");
+  document.getElementById("hero-n-models").textContent = t("n_models");
+  document.getElementById("hero-n-indicators").textContent = t("n_indicators");
+  document.getElementById("hero-label-criteria").textContent = t("hero_label_criteria");
+  document.getElementById("hero-label-cv").textContent = t("hero_label_cv");
+  document.getElementById("hero-label-models").textContent = t("hero_label_models");
+  document.getElementById("hero-label-indicators").textContent = t("hero_label_indicators");
+  document.getElementById("nav-logo-text").textContent = t("nav_logo_text");
+
+  var langLabelEl = document.getElementById("lang-label-text");
+  if (langLabelEl) langLabelEl.textContent = t("lang_label_text");
+
+  document.getElementById("footer-line1").textContent = t("footer_line1");
+  document.getElementById("footer-line2").textContent = t("footer_line2");
+
+  renderGlossary();
+
+  if (Object.keys(modelInfo).length > 0) {
+    renderModelGrid();
+    renderBatchSelect();
+    renderModelPerfTable();
+  }
+}
+
+async function init() {
+  try {
+    var resp = await fetch("/api/models");
+    var data = await resp.json();
+    modelInfo = data.models || {};
+
+    try {
+      var gResp = await fetch("/api/glossary");
+      var gData = await gResp.json();
+      modelDocs = gData.model_docs || {};
+      glossary = gData.abbrev_glossary || {};
+    } catch(e) { console.warn("Glossary load failed:", e); }
+
+    renderModelGrid();
+    renderBatchSelect();
+    renderModelPerfTable();
+    renderGlossary();
+    applyTranslations();
+  } catch(e) {
+    showToast("Failed to load model data. Please ensure the server is running.", "error");
+    console.error(e);
+  }
+}
+
+function switchTab(name) {
+  document.querySelectorAll(".tab-btn").forEach(function(b) { b.classList.remove("active"); });
+  document.querySelectorAll(".tab-panel").forEach(function(p) { p.classList.remove("active"); });
+  var btn = document.querySelector(".tab-btn[onclick=\"switchTab('" + name + "')\"]");
+  if (btn) btn.classList.add("active");
+  var panel = document.getElementById("tab-" + name);
+  if (panel) panel.classList.add("active");
+}
+
+function getModelName(modelKey) {
+  var modelMap = { EN_LR: "model_EN_LR", XGBoost: "model_XGBoost", RF: "model_RF", LR_L2: "model_LR_L2" };
+  return t(modelMap[modelKey] || modelKey);
+}
+
+function getModelFullName(modelKey) {
+  var doc = MODEL_FULL_NAMES[modelKey] || { fullEn: modelKey, fullCn: modelKey };
+  return currentLang === "cn" ? doc.fullCn : doc.fullEn;
+}
+
+function getIndicatorName(ind) {
+  var map = { BMI: "ind_BMI", weight: "ind_weight", bmi_z: "ind_bmi_z", waistline: "ind_waistline", hipline: "ind_hipline", WHR: "ind_WHR", PBF: "ind_PBF", PSM: "ind_PSM" };
+  return t(map[ind] || ind);
+}
+
+function getGroupName(group) {
+  return t(group === "Q" || group === "q4" ? "group_Q" : "group_T");
+}
+
+function renderModelGrid() {
+  var grid = document.getElementById("model-grid");
+  var sorted = Object.entries(modelInfo).sort(function(a, b) {
+    var aucA = a[1].full_auc || 0, aucB = b[1].full_auc || 0;
+    return aucB - aucA;
+  });
+
+  grid.innerHTML = sorted.map(function(entry) {
+    var key = entry[0];
+    var info = entry[1];
+    var auc = info.full_auc || 0;
+    var m2f = info.m2f_auc || 0;
+    var aucGood = auc >= 0.75;
+    var nFeat = info.n_feat || 0;
+    var indName = getIndicatorName(info.indicator || key);
+    var modelName = getModelName(info.model_name || "");
+    var abbrev = info.model_name || key;
+    var fullName = getModelFullName(abbrev);
+    var groupName = getGroupName(info.group || "Q");
+    var featList = (info.features || []).slice(0,3).join(" \u00B7 ");
+    var allLipidsText = t("all_lipids", { n: nFeat });
+    var showFull = abbrev !== "XGBoost" && MODEL_FULL_NAMES[abbrev];
+    return '<div class="model-card" data-key="' + key + '" onclick="selectModel(\'' + key + '\')">' +
+      '<div class="model-card-badge">\u2713</div>' +
+      '<div class="model-card-indicator">' + indName + '</div>' +
+      '<div class="model-card-name">' + groupName + '</div>' +
+      '<div class="model-card-model">' + modelName + '</div>' +
+      (showFull ? '<div class="model-card-fullname">' + fullName + '</div>' : '') +
+      '<div class="auc-bar-wrap">' +
+        '<div class="auc-bar-bg">' +
+          '<div class="auc-bar-fill ' + (aucGood ? 'good' : 'warn') + '" style="width:' + (auc*100) + '%"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="model-card-auc">' +
+        '<div class="model-card-auc-item">' +
+          '<div class="model-card-auc-num ' + (aucGood ? '' : 'warn') + '">' + auc.toFixed(3) + '</div>' +
+          '<div class="model-card-auc-label">' + t("full_auc_label") + '</div>' +
+        '</div>' +
+        '<div class="model-card-auc-item">' +
+          '<div class="model-card-auc-num ' + (m2f >= 0.55 ? '' : 'warn') + '">' + m2f.toFixed(3) + '</div>' +
+          '<div class="model-card-auc-label">' + t("m2f_label") + '</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="model-card-features">\u{1F9EC} ' + featList + (nFeat > 3 ? '...' : '') + ' \u00B7 ' + allLipidsText + '</div>' +
+    '</div>';
+  }).join("");
+}
+
+function selectModel(key) {
+  selectedModelKey = key;
+  document.querySelectorAll(".model-card").forEach(function(c) { c.classList.remove("selected"); });
+  var card = document.querySelector('.model-card[data-key="' + key + '"]');
+  if (card) card.classList.add("selected");
+
+  var info = modelInfo[key] || {};
+  var features = info.features || [];
+  var auc = info.full_auc || 0;
+  var m2f = info.m2f_auc || 0;
+  var nFeat = features.length;
+  var indName = getIndicatorName(info.indicator || key);
+  var modelName = getModelName(info.model_name || "");
+  var groupName = getGroupName(info.group || "Q");
+
+  document.getElementById("model-info-bar").style.display = "block";
+  document.getElementById("selected-model-name").textContent = indName + "\uFF08" + groupName + "\uFF09" + modelName;
+  document.getElementById("selected-model-auc").textContent = t("full_auc_label") + "=" + auc.toFixed(4) + " \u00B7 " + t("m2f_label") + "=" + m2f.toFixed(4);
+  document.getElementById("selected-model-features").textContent = t("all_lipids", { n: nFeat });
+
+  renderModelFormulaPanel(info.model_name || "", info);
+
+  var area = document.getElementById("lipid-input-area");
+  area.innerHTML = '<div class="lipid-input-grid">' + features.map(function(f) {
+    var safeId = f.replace(/[^a-zA-Z0-9]/g, '_');
+    return '<div class="lipid-input-item">' +
+      '<label for="lipid-' + safeId + '">' + f + '</label>' +
+      '<input type="number" step="any" id="lipid-' + safeId + '" data-lipid="' + f + '" placeholder="0.0" style="font-family:\'JetBrains Mono\',monospace;"/>' +
+    '</div>';
+  }).join("") + '</div>';
+
+  document.getElementById("predict-btn").disabled = false;
+  document.getElementById("prediction-result").classList.add("hidden");
+}
+
+function renderModelFormulaPanel(modelKey, info) {
+  var panel = document.getElementById("model-formula-panel");
+  var doc = modelDocs[modelKey] || {};
+
+  if (!doc.name_en) {
+    panel.classList.add("hidden");
+    return;
+  }
+  panel.classList.remove("hidden");
+
+  var name = currentLang === "cn" ? (doc.name_cn || doc.name_en) : doc.name_en;
+  var formula = currentLang === "cn" ? (doc.formula_cn || doc.formula_en) : doc.formula_en;
+  var desc = currentLang === "cn" ? (doc.description_cn || doc.description_en) : doc.description_en;
+  var params = currentLang === "cn" ? (doc.params_cn || doc.params_en) : doc.params_en;
+  var pros = currentLang === "cn" ? (doc.pros_cn || doc.pros_en) : (doc.pros_en || []);
+  var cons = currentLang === "cn" ? (doc.cons_cn || doc.cons_en) : (doc.cons_en || []);
+  var interpretMap = { "High": "\u9AD8", "Medium": "\u4E2D", "Low": "\u4F4E" };
+  var interpretRaw = doc.interpretability || "Medium";
+  var interpretText = currentLang === "cn" ? (interpretMap[interpretRaw] || interpretRaw) : interpretRaw;
+
+  document.getElementById("formula-model-name").textContent = name + " (" + modelKey + ")";
+  document.getElementById("formula-eq").textContent = formula;
+  document.getElementById("formula-desc").textContent = desc;
+  document.getElementById("formula-type").textContent = doc.type || "\u2014";
+  document.getElementById("formula-interpret").textContent = interpretText;
+  document.getElementById("formula-params").textContent = params;
+
+  document.getElementById("formula-pros").innerHTML = pros.map(function(p) { return "<li>" + p + "</li>"; }).join("");
+  document.getElementById("formula-cons").innerHTML = cons.map(function(c) { return "<li>" + c + "</li>"; }).join("");
+}
+
+function renderGlossary() {
+  var modelKeys = ["EN_LR", "XGBoost", "RF", "LR_L2"];
+  var modelContainer = document.getElementById("glossary-models");
+  modelContainer.innerHTML = modelKeys.map(function(k) {
+    var doc = modelDocs[k] || {};
+    var nameEn = doc.name_en || k;
+    var nameCn = doc.name_cn || "";
+    var desc = currentLang === "cn" ? (doc.description_cn || doc.description_en || "") : (doc.description_en || "");
+    var shortDesc = desc.length > 120 ? desc.substring(0, 120) + "..." : desc;
+    return '<div class="glossary-item">' +
+      '<div class="glossary-abbrev">' + k + '</div>' +
+      '<div class="glossary-full-en">' + nameEn + '</div>' +
+      (nameCn ? '<div class="glossary-full-cn">' + nameCn + '</div>' : '') +
+      '<div class="glossary-desc">' + shortDesc + '</div>' +
+    '</div>';
+  }).join("");
+
+  var metricKeys = ["AUC", "AUROC", "AUPRC", "ROC", "Sens / Sensitivity", "Spec / Specificity", "M\u2192F", "F\u2192M", "Nested CV", "CV", "k-fold CV", "Q (Quartile)", "T (Tertile)"];
+  var metricsContainer = document.getElementById("glossary-metrics");
+  metricsContainer.innerHTML = metricKeys.map(function(k) {
+    var item = glossary[k] || {};
+    var desc = currentLang === "cn" ? (item.description_cn || item.description_en || "") : (item.description_en || "");
+    var shortDesc = desc.length > 120 ? desc.substring(0, 120) + "..." : desc;
+    return '<div class="glossary-item">' +
+      '<div class="glossary-abbrev">' + k + '</div>' +
+      '<div class="glossary-full-en">' + (item.full_en || k) + '</div>' +
+      (item.full_cn ? '<div class="glossary-full-cn">' + item.full_cn + '</div>' : '') +
+      '<div class="glossary-desc">' + shortDesc + '</div>' +
+    '</div>';
+  }).join("");
+
+  var indicatorKeys = ["BMI", "BMI z-score", "PBF", "WHR", "PSM"];
+  var indicatorContainer = document.getElementById("glossary-indicators");
+  if (indicatorContainer) {
+    indicatorContainer.innerHTML = indicatorKeys.map(function(k) {
+      var item = glossary[k] || {};
+      var desc = currentLang === "cn" ? (item.description_cn || item.description_en || "") : (item.description_en || "");
+      var shortDesc = desc.length > 120 ? desc.substring(0, 120) + "..." : desc;
+      return '<div class="glossary-item">' +
+        '<div class="glossary-abbrev">' + k + '</div>' +
+        '<div class="glossary-full-en">' + (item.full_en || k) + '</div>' +
+        (item.full_cn ? '<div class="glossary-full-cn">' + item.full_cn + '</div>' : '') +
+        '<div class="glossary-desc">' + shortDesc + '</div>' +
+      '</div>';
+    }).join("");
+  }
+
+  var lipidKeys = ["SM", "TG", "PC", "PE", "Cer", "LPC", "LPE", "DG", "Hex", "PI", "PS", "PA", "CL", "PC ae", "Cer (dC)", "HexCer", "SM (OH)", "LPC O"];
+  var lipidsContainer = document.getElementById("glossary-lipids");
+  lipidsContainer.innerHTML = lipidKeys.map(function(k) {
+    var item = glossary[k] || {};
+    var desc = currentLang === "cn" ? (item.description_cn || item.description_en || "") : (item.description_en || "");
+    var shortDesc = desc.length > 120 ? desc.substring(0, 120) + "..." : desc;
+    return '<div class="glossary-item">' +
+      '<div class="glossary-abbrev">' + k + '</div>' +
+      '<div class="glossary-full-en">' + (item.full_en || k) + '</div>' +
+      (item.full_cn ? '<div class="glossary-full-cn">' + item.full_cn + '</div>' : '') +
+      '<div class="glossary-desc">' + shortDesc + '</div>' +
+    '</div>';
+  }).join("");
+}
+
+function clearInputs() {
+  document.querySelectorAll(".lipid-input-item input").forEach(function(el) { el.value = ""; });
+}
+
+async function loadSampleData() {
+  if (!selectedModelKey) return;
+  var btn = document.getElementById("sample-btn");
+  var origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner dark" style="display:inline-block;width:14px;height:14px;border-width:2px;"></span> <span>' + t("sample_btn_loading") + '</span>';
+
+  try {
+    var resp = await fetch("/api/sample_data/" + encodeURIComponent(selectedModelKey));
+    var data = await resp.json();
+    if (data.error) throw new Error(data.error);
+
+    var sampleValues = data.sample_values || {};
+    Object.entries(sampleValues).forEach(function(e) {
+      var lipid = e[0];
+      var val = e[1];
+      var input = document.querySelector('input[data-lipid="' + lipid + '"]');
+      if (input) input.value = val;
+    });
+
+    showToast(t("toast_load_sample"), "success");
+  } catch(e) {
+    showToast("Failed to load example data: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = origText;
+  }
+}
+
+async function runPrediction() {
+  if (!selectedModelKey) return;
+  var btn = document.getElementById("predict-btn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> ' + t("btn_predict") + '...';
+
+  var lipidValues = {};
+  document.querySelectorAll(".lipid-input-item input").forEach(function(el) {
+    var name = el.dataset.lipid;
+    var val = parseFloat(el.value);
+    if (!isNaN(val)) lipidValues[name] = val;
+  });
+
+  try {
+    var resp = await fetch("/api/predict", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ model_key: selectedModelKey, ...lipidValues })
+    });
+    var result = await resp.json();
+    renderPredictionResult(result);
+    showToast(t("toast_predict_ok"), "success");
+  } catch(e) {
+    showToast(t("toast_predict_err") + ": " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<span>\u{1F680}</span> ' + t("btn_predict");
+  }
+}
+
+function renderPredictionResult(result) {
+  var container = document.getElementById("prediction-result");
+  container.classList.remove("hidden");
+
+  var isHigh = result.prediction === 1;
+  var cardClass = isHigh ? "high" : "low";
+  var icon = isHigh ? "\u2705" : "\u26A0\uFE0F";
+  var labelText = isHigh ? t("label_high") : t("label_low");
+  var labelDetail = isHigh ? t("label_high_detail") : t("label_low_detail");
+
+  var missing = result.missing_features || [];
+  var warnList = missing.slice(0, 3).join("\u3001");
+  var warningHTML = missing.length > 0
+    ? '<div class="result-warning">' + t("missing_warning", { n: missing.length, list: warnList + (missing.length > 3 ? "..." : "") }) + '</div>'
+    : "";
+
+  container.innerHTML = '<div class="result-card ' + cardClass + '">' +
+    '<div style="font-size:0.8rem;color:inherit;opacity:0.7;margin-bottom:0.5rem;">' + t("th_prediction") + '</div>' +
+    '<div class="result-label">' + icon + ' ' + labelText + '</div>' +
+    '<div class="result-detail">' + labelDetail + '</div>' +
+    '<div class="result-proba">' +
+      '<div class="result-proba-item">' +
+        '<div class="result-proba-num">' + (result.prob_high_response*100).toFixed(1) + '%</div>' +
+        '<div style="font-size:0.75rem;color:var(--text-light);">' + t("high_prob") + '</div>' +
+        '<div class="result-proba-bar-wrap">' +
+          '<div class="result-proba-bar high" style="width:' + (result.prob_high_response*100) + '%"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="result-proba-item">' +
+        '<div class="result-proba-num">' + (result.prob_low_response*100).toFixed(1) + '%</div>' +
+        '<div style="font-size:0.75rem;color:var(--text-light);">' + t("low_prob") + '</div>' +
+        '<div class="result-proba-bar-wrap">' +
+          '<div class="result-proba-bar low" style="width:' + ((1-result.prob_high_response)*100) + '%"></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="result-confidence">' + t("confidence") + ': ' + (result.confidence*100).toFixed(1) + '%</div>' +
+    warningHTML +
+    '<div class="result-features">' +
+      '<div class="result-features-title">' + t("lipid_features_top") + '</div>' +
+      '<div class="result-features-list">' +
+        (result.model_info && result.model_info.features ? result.model_info.features.slice(0,10).map(function(f) {
+          return '<span class="result-feature-tag">' + f + '</span>';
+        }).join("") : "") +
+      '</div>' +
+    '</div>' +
+  '</div>';
+}
+
+function renderBatchSelect() {
+  var sel = document.getElementById("batch-model-select");
+  var sorted = Object.entries(modelInfo).sort(function(a, b) { return (b[1].full_auc||0) - (a[1].full_auc||0); });
+  var modelLabel = t("option_select_model");
+  sel.innerHTML = '<option value="">\u2014 ' + modelLabel + ' \u2014</option>' +
+    sorted.map(function(entry) {
+      var key = entry[0];
+      var info = entry[1];
+      var indName = getIndicatorName(info.indicator || key);
+      var modelName = getModelName(info.model_name || "");
+      var groupName = getGroupName(info.group || "Q");
+      return '<option value="' + key + '">' + indName + '\uFF08' + groupName + '\uFF09' + modelName + ' \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + '</option>';
+    }).join("");
+}
+
+async function updateBatchModelInfo() {
+  var key = document.getElementById("batch-model-select").value;
+  currentBatchModelKey = key;
+  var info = modelInfo[key] || {};
+  var div = document.getElementById("batch-model-info");
+  if (!key) { div.classList.add("hidden"); return; }
+  div.classList.remove("hidden");
+  var indName = getIndicatorName(info.indicator || key);
+  var modelName = getModelName(info.model_name || "");
+  var groupName = getGroupName(info.group || "Q");
+  div.innerHTML = '<strong>' + indName + '\uFF08' + groupName + '\uFF09' + modelName + '</strong> \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + ' \u00B7 ' + t("all_lipids", { n: info.n_feat||0 });
+  document.getElementById("batch-run-btn").disabled = true;
+}
+
+function handleFileSelect(event) {
+  var file = event.target.files[0];
+  if (file) showBatchFileInfo(file);
+}
+
+function handleFileDrop(event) {
+  event.preventDefault();
+  document.getElementById("upload-zone").classList.remove("dragover");
+  var file = event.dataTransfer.files[0];
+  if (file) showBatchFileInfo(file);
+}
+
+async function showBatchFileInfo(file) {
+  document.getElementById("batch-preview").classList.remove("hidden");
+  document.getElementById("batch-file-name").textContent = file.name;
+  document.getElementById("batch-row-count").textContent = "? " + t("batch_rows");
+  document.getElementById("batch-run-btn").disabled = !currentBatchModelKey;
+
+  var text = await file.text();
+  var lines = text.trim().split("\n");
+  document.getElementById("batch-row-count").textContent = (lines.length - 1) + " " + t("batch_rows");
+}
+
+async function runBatchPrediction() {
+  var file = document.getElementById("batch-file").files[0];
+  if (!file || !currentBatchModelKey) return;
+
+  var btn = document.getElementById("batch-run-btn");
+  var spinner = document.getElementById("batch-spinner");
+  var runText = document.getElementById("batch-run-text");
+  btn.disabled = true;
+  spinner.classList.remove("hidden");
+  runText.innerHTML = t("btn_predict") + "...";
+
+  var formData = new FormData();
+  formData.append("file", file);
+  formData.append("model_key", currentBatchModelKey);
+
+  try {
+    var resp = await fetch("/api/batch_predict", { method: "POST", body: formData });
+    var text = await resp.text();
+    var lines = text.trim().split("\n");
+    var headers = lines[0].split(",");
+    batchResults = lines.slice(1).map(function(line) {
+      var vals = line.split(",");
+      return Object.fromEntries(headers.map(function(h,i) { return [h.trim(), vals[i]?.trim() || ""]; }));
+    });
+
+    renderBatchResults();
+    showToast("Batch prediction complete! " + batchResults.length + " samples", "success");
+  } catch(e) {
+    showToast("Batch prediction failed: " + e.message, "error");
+  } finally {
+    btn.disabled = false;
+    spinner.classList.add("hidden");
+    runText.innerHTML = '\u{1F680} <span>' + t("btn_batch_run") + '</span>';
+  }
+}
+
+function renderBatchResults() {
+  document.getElementById("batch-result").classList.remove("hidden");
+
+  var total = batchResults.length;
+  var highCount = batchResults.filter(function(r) { return r.prediction === "1" || r.prediction === "\u9AD8\u54CD\u5E94" || r.prediction === "High Response"; }).length;
+  var lowCount = total - highCount;
+
+  document.getElementById("batch-summary").innerHTML = "" +
+    '<div class="batch-stat">' +
+      '<div class="batch-stat-num text-primary">' + total + '</div>' +
+      '<div class="batch-stat-label">Total</div>' +
+    '</div>' +
+    '<div class="batch-stat">' +
+      '<div class="batch-stat-num text-success">' + highCount + '</div>' +
+      '<div class="batch-stat-label">' + t("label_high") + '</div>' +
+    '</div>' +
+    '<div class="batch-stat">' +
+      '<div class="batch-stat-num text-warning">' + lowCount + '</div>' +
+      '<div class="batch-stat-label">' + t("label_low") + '</div>' +
+    '</div>';
+
+  var tbody = document.querySelector("#batch-table tbody");
+  tbody.innerHTML = batchResults.map(function(r, i) {
+    var isHigh = r.prediction === "1" || r.prediction === "\u9AD8\u54CD\u5E94" || r.prediction === "High Response";
+    var probHigh = parseFloat(r.prob_high_response || 0);
+    var missing = r.missing_features || "";
+    var predLabel = isHigh ? t("label_high") : t("label_low");
+    return '<tr>' +
+      '<td>' + (i+1) + '</td>' +
+      '<td><span style="font-weight:700;color:' + (isHigh ? 'var(--success)' : 'var(--warning)') + '">' + predLabel + '</span></td>' +
+      '<td><div class="auc-bar-bg" style="width:80px;display:inline-block;vertical-align:middle;margin-right:0.4rem;"><div class="auc-bar-fill good" style="width:' + (probHigh*100) + '%"></div></div>' + (probHigh*100).toFixed(1) + '%</td>' +
+      '<td>' + ((1-probHigh)*100).toFixed(1) + '%</td>' +
+      '<td>' + (parseFloat(r.confidence||0)*100).toFixed(1) + '%</td>' +
+      '<td>' + (missing ? '<span style="color:var(--danger);font-size:0.75rem;">\u26A0\uFE0F ' + t("missing_warning", {n: missing.split(",").length, list: ""}) + '</span>' : '<span style="color:var(--success);font-size:0.75rem;">\u2713 Complete</span>') + '</td>' +
+    '</tr>';
+  }).join("");
+}
+
+function downloadBatchResult() {
+  if (!batchResults || batchResults.length === 0) return;
+  var headers = Object.keys(batchResults[0]);
+  var csv = [headers.join(","), ...batchResults.map(function(r) { return headers.map(function(h) { return '"' + ((r[h]||"").replace(/"/g, '""')) + '"'; }).join(","); })].join("\n");
+  var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement("a"); a.href = url; a.download = "predictions.csv"; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function renderModelPerfTable() {
+  var tbody = document.querySelector("#model-perf-table tbody");
+  var sorted = Object.entries(modelInfo).sort(function(a, b) {
+    if ((a[1].indicator||"").localeCompare(b[1].indicator||"") !== 0) return (a[1].indicator||"").localeCompare(b[1].indicator||"");
+    return (b[1].full_auc||0) - (a[1].full_auc||0);
+  });
+
+  tbody.innerHTML = sorted.map(function(entry) {
+    var key = entry[0];
+    var info = entry[1];
+    var auc = info.full_auc || 0;
+    var m2f = info.m2f_auc || 0;
+    var f2m = info.f2m_auc || 0;
+    var groupClass = info.group === "Q" || info.group === "q4" ? "badge-q4" : "badge-q3";
+    var indName = getIndicatorName(info.indicator || key);
+    var modelName = getModelName(info.model_name || "");
+    var groupName = getGroupName(info.group || "Q");
+    return '<tr onclick="showFeatureImportance(\'' + key + '\')" style="cursor:pointer;">' +
+      '<td class="indicator-cell">' + indName + '</td>' +
+      '<td><span class="badge ' + groupClass + '">' + groupName + '</span></td>' +
+      '<td>' + modelName + '</td>' +
+      '<td class="auc-cell ' + (auc >= 0.75 ? 'good' : 'warn') + '">' + auc.toFixed(4) + '</td>' +
+      '<td class="auc-cell ' + (m2f >= 0.55 ? 'good' : 'warn') + '">' + m2f.toFixed(4) + '</td>' +
+      '<td>' + (f2m ? f2m.toFixed(4) : "\u2014") + '</td>' +
+      '<td>' + (info.sens||0).toFixed(3) + '</td>' +
+      '<td>' + (info.spec||0).toFixed(3) + '</td>' +
+      '<td>' + (info.n_feat || 0) + '</td>' +
+    '</tr>';
+  }).join("");
+}
+
+async function showFeatureImportance(key) {
+  try {
+    var resp = await fetch("/api/model_detail/" + encodeURIComponent(key));
+    var data = await resp.json();
+    var card = document.getElementById("feat-importance-card");
+    var info = modelInfo[key] || {};
+    var indName = getIndicatorName(info.indicator || key);
+    var modelName = getModelName(info.model_name || "");
+    var groupName = getGroupName(info.group || "Q");
+    document.getElementById("feat-importance-title").textContent = indName + "\uFF08" + groupName + "\uFF09" + modelName;
+    card.style.display = "block";
+    card.scrollIntoView({ behavior: "smooth", block: "start" });
+
+    var list = document.getElementById("feat-importance-list");
+    list.innerHTML = (data.features || []).map(function(f) {
+      return '<div class="feat-row">' +
+        '<div class="feat-rank">' + f.rank + '</div>' +
+        '<div class="feat-name">' + f.name + '</div>' +
+        '<div class="feat-bar-wrap">' +
+          '<div class="feat-bar-bg">' +
+            '<div class="feat-bar" style="width:' + Math.max(20, (1/f.rank)*100) + '%"></div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="feat-class">' + (f.class || "?") + '</div>' +
+      '</div>';
+    }).join("");
+  } catch(e) {
+    showToast("Failed to load feature info", "error");
+  }
+}
+
+function showToast(msg, type) {
+  if (type === undefined) type = "";
+  var el = document.getElementById("toast");
+  el.textContent = msg;
+  el.className = "toast " + type;
+  el.classList.add("show");
+  setTimeout(function() { el.classList.remove("show"); }, 3000);
+}
+
+init();
+</script>
+</body>
+</html>

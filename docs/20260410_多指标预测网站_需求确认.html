@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>多临床指标脂质组学预测网站 — 需求确认 v3</title>
+<meta content="Phase 1 聚焦减重指标 | 参考 Met-FIB | 张淑贤 ↔ 范晨宇 | 2026-04-10" name="description"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+SC:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<style>
+
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --secondary: #64748b;
+      --success: #10b981;
+      --warning: #f59e0b;
+      --danger: #ef4444;
+      --bg: #ffffff;
+      --card: #ffffff;
+      --text: #1e293b;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --code-bg: #f8fafc;
+      --code-text: #1e293b;
+      --code-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-size: 16px;
+    }
+
+    /* Navigation */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      z-index: 1000;
+      padding: 0 2rem;
+    }
+
+    .nav-content {
+      max-width: 900px;
+      margin: 0 auto;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-link:hover {
+      color: var(--primary);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 8rem 2rem 4rem;
+      margin-top: 0;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .vip-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.2);
+      padding: 0.5rem 1rem;
+      border-radius: 9999px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+
+    .hero p {
+      font-size: 1.125rem;
+      opacity: 0.9;
+      margin-bottom: 2rem;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 2rem;
+      flex-wrap: wrap;
+      font-size: 0.875rem;
+      opacity: 0.8;
+    }
+
+    /* Main Content */
+    .main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 3rem 2rem;
+    }
+
+    /* Content Layout with Sidebar */
+    .content-wrapper {
+      display: flex;
+      gap: 2rem;
+      align-items: flex-start;
+    }
+
+    /* Sidebar TOC */
+    .sidebar-toc {
+      width: 260px;
+      flex-shrink: 0;
+      position: sticky;
+      top: 80px;
+      max-height: calc(100vh - 100px);
+      overflow-y: auto;
+    }
+
+    .sidebar-toc-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+
+    .sidebar-toc-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 2px solid var(--border);
+    }
+
+    .sidebar-toc-title span {
+      color: var(--primary);
+    }
+
+    .sidebar-toc-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .sidebar-toc-item {
+      padding: 0.5rem 0;
+    }
+
+    .sidebar-toc-link {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      display: block;
+      padding: 0.25rem 0.5rem;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      border-left: 3px solid transparent;
+    }
+
+    .sidebar-toc-link:hover {
+      color: var(--primary);
+      background: #f0f9ff;
+      border-left-color: var(--primary);
+      padding-left: 0.75rem;
+    }
+
+    .sidebar-toc-link.active {
+      color: var(--primary);
+      font-weight: 600;
+      background: #eff6ff;
+      border-left-color: var(--primary);
+    }
+
+    .sidebar-toc-link.sub-item {
+      padding-left: 1.5rem;
+      font-size: 0.8125rem;
+    }
+
+    .sidebar-toc-link.sub-item:hover {
+      padding-left: 1.75rem;
+    }
+
+    /* Main Article Content */
+    .article-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* Mobile TOC (shown at top on mobile) */
+    .mobile-toc {
+      display: none;
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .mobile-toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .mobile-toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .mobile-toc li {
+      padding: 0.25rem 0;
+    }
+
+    .mobile-toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .mobile-toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .sidebar-toc {
+        display: none;
+      }
+      .mobile-toc {
+        display: block;
+      }
+      .content-wrapper {
+        flex-direction: column;
+      }
+      .article-main {
+        max-width: 100%;
+      }
+    }
+
+    /* Legacy TOC (kept for compatibility) */
+    .toc {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .toc h2 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border: none;
+      padding: 0;
+    }
+
+    .toc ul {
+      list-style: none;
+      columns: 2;
+      gap: 1rem;
+      margin: 0;
+      padding: 0;
+    }
+
+    .toc li {
+      padding: 0.25rem 0;
+    }
+
+    .toc a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-size: 0.875rem;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover {
+      color: var(--primary);
+    }
+
+    /* Section Headers */
+    h2 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      margin: 3rem 0 1.5rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    h3 {
+      font-size: 1.375rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--primary-dark);
+    }
+
+    h4 {
+      font-size: 1.125rem;
+      font-weight: 600;
+      margin: 1.5rem 0 0.75rem;
+      color: var(--text);
+    }
+
+    /* Paragraphs */
+    p {
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+
+    /* Blockquotes - 改善对比度 */
+    blockquote {
+      background: #eff6ff;
+      border-left: 4px solid var(--primary);
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0;
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      margin: 0;
+      color: #1e40af;
+      font-weight: 500;
+    }
+
+    blockquote strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1e3a8a;
+    }
+
+    /* Code Blocks - 改善对比度 */
+    pre {
+      background: var(--code-bg);
+      border: 1px solid var(--code-border);
+      color: var(--code-text);
+      padding: 1.25rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 1.25rem 0;
+      font-size: 0.875rem;
+      line-height: 1.6;
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    }
+
+    code:not(pre code) {
+      background: #f1f5f9;
+      color: #be123c;
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+      font-size: 0.875em;
+      font-weight: 500;
+    }
+
+    /* Tables - 改善可读性 */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.875rem 1rem;
+      border-bottom: 2px solid var(--border);
+      color: var(--text);
+    }
+
+    td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Lists */
+    ul, ol {
+      margin: 1rem 0 1rem 1.5rem;
+    }
+
+    li {
+      margin: 0.5rem 0;
+    }
+
+    /* File Structure Table - 新增 */
+    .file-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1.5rem 0;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .file-table th {
+      background: #1e293b;
+      color: white;
+      font-weight: 600;
+      text-align: left;
+      padding: 0.75rem 1rem;
+    }
+
+    .file-table td {
+      padding: 0.625rem 1rem;
+      border-bottom: 1px solid var(--border);
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .file-table td:first-child {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .file-table td:last-child {
+      color: var(--text-light);
+      font-family: inherit;
+    }
+
+    .file-table tr:hover {
+      background: #f8fafc;
+    }
+
+    /* Info Boxes */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #86efac;
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+    }
+
+    .info-box.warning {
+      background: #fffbeb;
+      border-color: #fcd34d;
+    }
+
+    .info-box.danger {
+      background: #fef2f2;
+      border-color: #fca5a5;
+    }
+
+    .info-box h4 {
+      margin-top: 0;
+      color: inherit;
+    }
+
+    /* Step Cards */
+    .step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .step-number {
+      width: 32px;
+      height: 32px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.875rem;
+    }
+
+    .step-title {
+      font-weight: 600;
+      font-size: 1.125rem;
+    }
+
+    /* Flowchart */
+    .diagram {
+      background: #f8fafc;
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+      text-align: center;
+    }
+
+    .flowchart {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .flow-step {
+      background: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 500;
+      min-width: 280px;
+    }
+
+    .flow-arrow {
+      color: var(--secondary);
+      font-size: 1.5rem;
+    }
+
+    /* Highlight */
+    .highlight {
+      background: linear-gradient(120deg, #fef3c7 0%, #fde68a 100%);
+      padding: 0.125rem 0.375rem;
+      border-radius: 4px;
+    }
+
+    /* Tree List - 用于替代ASCII树 */
+    .tree-list {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      margin: 1.5rem 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.8;
+    }
+
+    .tree-item {
+      padding: 0.25rem 0;
+    }
+
+    .tree-item.level-1 { padding-left: 0; }
+    .tree-item.level-2 { padding-left: 1.5rem; }
+    .tree-item.level-3 { padding-left: 3rem; }
+    .tree-item.level-4 { padding-left: 4.5rem; }
+
+    .tree-folder {
+      color: #2563eb;
+      font-weight: 500;
+    }
+
+    .tree-file {
+      color: var(--text);
+    }
+
+    .tree-comment {
+      color: var(--text-light);
+      font-family: inherit;
+      margin-left: 0.5rem;
+    }
+
+    /* Footer */
+    .footer {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 3rem 2rem;
+      margin-top: 4rem;
+    }
+
+    .footer-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .footer-link {
+      color: #9ca3af;
+      text-decoration: none;
+      font-size: 0.875rem;
+    }
+
+    .footer-link:hover {
+      color: white;
+    }
+
+    /* Scroll to top */
+    .scroll-top {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .scroll-top:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+    }
+
+    /* Prompt Box - 修复对比度 */
+    .prompt-box {
+      background: #f0f9ff;
+      border: 2px solid #0ea5e9;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1.5rem 0;
+      position: relative;
+    }
+
+    .prompt-box::before {
+      content: "💬";
+      position: absolute;
+      top: -12px;
+      left: 1rem;
+      background: #ffffff;
+      padding: 0 0.5rem;
+      font-size: 1.2rem;
+    }
+
+    .prompt-box code {
+      color: #0c4a6e;
+      font-size: 0.95rem;
+      line-height: 1.9;
+      white-space: pre-wrap;
+      background: transparent;
+      font-weight: 500;
+    }
+
+    /* VIP Data Download Section */
+    .vip-data-section {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 12px;
+      padding: 2rem;
+      margin: 2rem 0;
+    }
+
+    .vip-data-section h3 {
+      color: #92400e;
+      margin-top: 0;
+    }
+
+    .vip-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      background: #f59e0b;
+      color: white;
+      padding: 0.25rem 0.75rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .download-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: #059669;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      margin-top: 1rem;
+      transition: background 0.2s;
+    }
+
+    .download-btn:hover {
+      background: #047857;
+    }
+
+    .data-specs {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin: 1rem 0;
+    }
+
+    .data-specs h4 {
+      margin-top: 0;
+      color: #92400e;
+    }
+
+    /* Mobile */
+    @media (max-width: 640px) {
+      .hero h1 {
+        font-size: 1.75rem;
+      }
+      h2 {
+        font-size: 1.5rem;
+      }
+      h3 {
+        font-size: 1.25rem;
+      }
+      .toc ul {
+        columns: 1;
+      }
+      .nav-links {
+        display: none;
+      }
+    }
+  
+
+    /* Added for local review documents */
+    .article-main h2:first-of-type {
+      margin-top: 0;
+    }
+
+    .hero-subtitle-compact {
+      max-width: 840px;
+    }
+
+    .hero-meta .meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+    }
+
+    .article-main {
+      width: 100%;
+    }
+
+    .article-main a {
+      color: var(--primary);
+      word-break: break-word;
+    }
+
+    .article-main a:hover {
+      color: var(--primary-dark);
+    }
+
+    .article-main table code,
+    .article-main td code,
+    .article-main th code {
+      font-size: 0.82em;
+    }
+
+    .article-main hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    .article-main strong {
+      font-weight: 700;
+    }
+
+    .article-main em {
+      color: #334155;
+    }
+
+    .doc-toolbar {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1.25rem;
+    }
+
+    .doc-link-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255,255,255,0.16);
+      color: #ffffff;
+      padding: 0.7rem 1rem;
+      border: 1px solid rgba(255,255,255,0.28);
+      border-radius: 10px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 0.92rem;
+      transition: all 0.2s ease;
+    }
+
+    .doc-link-btn:hover {
+      background: rgba(255,255,255,0.24);
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .path-chip {
+      display: inline-block;
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      padding: 0.2rem 0.7rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1rem;
+    }
+
+    .top-note {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--text-light);
+      font-size: 0.95rem;
+    }
+
+    .footer-note {
+      max-width: 900px;
+      margin: 1rem auto 0;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    @media (max-width: 640px) {
+      .doc-toolbar {
+        flex-direction: column;
+      }
+      .doc-link-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+
+
+
+    .copyable-example {
+      margin: 1rem 0 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.06);
+    }
+
+    .copyable-example-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: #eff6ff;
+      border-bottom: 1px solid #dbeafe;
+    }
+
+    .copyable-example-label {
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #1e3a8a;
+      letter-spacing: 0.01em;
+    }
+
+    .copy-example-btn {
+      appearance: none;
+      border: 1px solid #93c5fd;
+      background: #ffffff;
+      color: #1d4ed8;
+      border-radius: 9999px;
+      padding: 0.45rem 0.9rem;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.12);
+    }
+
+    .copy-example-btn:hover {
+      transform: translateY(-1px);
+      border-color: #60a5fa;
+      color: #1e40af;
+      box-shadow: 0 8px 18px rgba(37, 99, 235, 0.18);
+    }
+
+    .copy-example-btn.copied {
+      border-color: #86efac;
+      background: #f0fdf4;
+      color: #166534;
+      box-shadow: 0 8px 18px rgba(34, 197, 94, 0.16);
+    }
+
+    .copy-example-btn.failed {
+      border-color: #fca5a5;
+      background: #fef2f2;
+      color: #b91c1c;
+    }
+
+    .copyable-example blockquote {
+      margin: 0;
+      padding: 1.15rem 1.25rem 1.2rem;
+      border-left: none;
+      background: transparent;
+    }
+
+    .copyable-example blockquote p:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 640px) {
+      .copyable-example-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .copy-example-btn {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+</style>
+</head>
+<body>
+<nav class="nav">
+<div class="nav-content">
+<a class="nav-logo" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs">🧠 AI 结果展示</a>
+<div class="nav-links"><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/20260410_%E5%A4%9A%E6%8C%87%E6%A0%87%E9%A2%84%E6%B5%8B%E7%BD%91%E7%AB%99_%E9%9C%80%E6%B1%82%E7%A1%AE%E8%AE%A4.md">源文件 Markdown</a><a class="nav-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/docs/%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE/mmc2.pdf">参考文献 Met-FIB</a></div>
+</div>
+</nav>
+<header class="hero">
+<div class="hero-content">
+<div class="vip-badge">需求确认 v3</div>
+<h1>多临床指标脂质组学预测网站 — 需求确认 v3</h1>
+<p class="hero-subtitle-compact">Phase 1 聚焦减重指标 | 参考 Met-FIB | 张淑贤 ↔ 范晨宇 | 2026-04-10</p>
+<div class="hero-meta"><span class="meta-pill">减重优先</span><span class="meta-pill">16 指标</span><span class="meta-pill">6 模型对比</span><span class="meta-pill">性别子队列</span></div>
+<div class="doc-toolbar"></div>
+</div>
+</header>
+<main class="main">
+<nav class="mobile-toc">
+<h2>📑 目录导航</h2>
+<ul><li><a href="#section-1">一、需求理解</a></li><li><a href="#section-7">二、Phase 1 聚焦：减重指标</a></li><li><a href="#section-11">三、技术方案</a></li><li><a href="#section-17">四、执行顺序</a></li><li><a href="#section-18">五、仍需确认的问题（精简为 4 个）</a></li></ul>
+</nav>
+<div class="content-wrapper">
+<aside class="sidebar-toc">
+<div class="sidebar-toc-card">
+<div class="sidebar-toc-title"><span>📑</span> 目录导航</div>
+<ul class="sidebar-toc-list"><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-1" href="#section-1">一、需求理解</a><a class="sidebar-toc-link sub-item" data-target="section-2" href="#section-2">1.1 核心思路</a><a class="sidebar-toc-link sub-item" data-target="section-3" href="#section-3">1.2 按疾病领域组织指标</a><a class="sidebar-toc-link sub-item" data-target="section-4" href="#section-4">1.3 渐进策略</a><a class="sidebar-toc-link sub-item" data-target="section-5" href="#section-5">1.4 参考 Met-FIB 的借鉴要点</a><a class="sidebar-toc-link sub-item" data-target="section-6" href="#section-6">1.5 张淑贤的全部原话要点</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-7" href="#section-7">二、Phase 1 聚焦：减重指标</a><a class="sidebar-toc-link sub-item" data-target="section-8" href="#section-8">2.1 减重指标清单（16 个）</a><a class="sidebar-toc-link sub-item" data-target="section-9" href="#section-9">2.2 四分位分组效果预览</a><a class="sidebar-toc-link sub-item" data-target="section-10" href="#section-10">2.3 性别分布</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-11" href="#section-11">三、技术方案</a><a class="sidebar-toc-link sub-item" data-target="section-12" href="#section-12">3.1 特征筛选（参照 Met-FIB）</a><a class="sidebar-toc-link sub-item" data-target="section-13" href="#section-13">3.2 多模型对比</a><a class="sidebar-toc-link sub-item" data-target="section-14" href="#section-14">3.3 验证策略</a><a class="sidebar-toc-link sub-item" data-target="section-15" href="#section-15">3.4 评估指标</a><a class="sidebar-toc-link sub-item" data-target="section-16" href="#section-16">3.5 网站交互功能</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-17" href="#section-17">四、执行顺序</a></li><li class="sidebar-toc-item"><a class="sidebar-toc-link" data-target="section-18" href="#section-18">五、仍需确认的问题（精简为 4 个）</a><a class="sidebar-toc-link sub-item" data-target="section-19" href="#section-19">问题 1：减重指标范围</a><a class="sidebar-toc-link sub-item" data-target="section-20" href="#section-20">问题 2：性别子队列验证</a><a class="sidebar-toc-link sub-item" data-target="section-21" href="#section-21">问题 3：模型选择</a><a class="sidebar-toc-link sub-item" data-target="section-22" href="#section-22">问题 4：网站技术方案</a></li></ul>
+</div>
+</aside>
+<div class="article-main"><div class="path-chip">来源文件：20260410_多指标预测网站_需求确认.md</div><div class="top-note">本页面样式对齐参考：<code>/Users/angus/Nutstore Files/我的坚果云/北大北大/课题组/我的课题/Life_OS/medical-ai-knowledge-base/public/aging-analysis/tutorial.html</code></div><h1 id="多临床指标脂质组学预测网站--需求确认文档v3">多临床指标脂质组学预测网站 — 需求确认文档（v3）</h1>
+<p><strong>日期</strong>：2026-04-10 <strong>分析提供方</strong>：Chenyu Fan（范晨宇） <strong>需求方</strong>：Shuxian Zhang（张淑贤） <strong>参考文献</strong>：Chen et al., “A metabolite-augmented FIB-4 machine learning panel achieves superior liver fibrosis staging in chronic liver disease”, <em>Cell Reports Medicine</em> 7, 102726 (2026). 贾伟教授团队。</p>
+<hr/>
+<h2 id="section-1">一、需求理解</h2>
+<h3 id="section-2">1.1 核心思路</h3>
+<ol type="1">
+<li>对多个临床指标，计算<strong>运动干预前后变化量</strong>（出组 - 基线）；</li>
+<li>取变化量分布的<strong>极端两端</strong>作为两组（“运动收益最大” vs “运动收益最小”），排除中间段；</li>
+<li>用<strong>基线脂质组数据</strong>预测极端组分类；</li>
+<li>整合为<strong>在线预测网站</strong>，提供多模型对比、可调截止位置等交互功能；</li>
+<li>临床意义：帮助医生在运动干预前预判肥胖儿童是否“特别适合运动“或“特别不适合运动“。</li>
+</ol>
+<h3 id="section-3">1.2 按疾病领域组织指标</h3>
+<p>张淑贤明确将指标按疾病领域分组：</p>
+<blockquote>
+<p>“疾病方面的话，可以分肾脏，心血管，肝脏和减重指标”</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>疾病领域</th>
+<th>指标方向</th>
+<th>优先级</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>减重（体重管理）</strong></td>
+<td>BMI, weight, 体脂率, 内脏脂肪等</td>
+<td><strong>第一步 — 优先做</strong></td>
+</tr>
+<tr>
+<td><strong>肝脏</strong></td>
+<td>ALT, AST, gamma.GT, ALP, TBA 等</td>
+<td>第二步</td>
+</tr>
+<tr>
+<td><strong>心血管</strong></td>
+<td>血压, 心超, 血脂等</td>
+<td>第二步</td>
+</tr>
+<tr>
+<td><strong>肾脏</strong></td>
+<td>Urea, Cr, CysC, UA 等</td>
+<td>第二步</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-4">1.3 渐进策略</h3>
+<blockquote>
+<p>“咱们可以先做减重指标的部分，效果好的话，感觉其他部分指标也可以不用考虑，或者添加的话也比较容易”</p>
+</blockquote>
+<ul>
+<li><strong>先做减重指标</strong>，验证方法论可行性；</li>
+<li>如果减重预测效果好 → 其他领域可按需扩展，架构已预留；</li>
+<li>如果效果不理想 → 再尝试其他领域。</li>
+</ul>
+<h3 id="section-5">1.4 参考 Met-FIB 的借鉴要点</h3>
+<table>
+<thead>
+<tr>
+<th>Met-FIB 论文做法</th>
+<th>我们的借鉴</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4 个独立 cohort</td>
+<td>按性别分子队列（male/female）作为内部验证</td>
+</tr>
+<tr>
+<td>265 代谢物 → 双重筛选 → 最终标志物</td>
+<td>1609 脂质 → Mann-Whitney U → EN + XGBoost 交集</td>
+</tr>
+<tr>
+<td>5 个 ML 模型对比</td>
+<td>6 模型对比（TabPFN, EN LR, XGBoost, RF, CatBoost, LR）</td>
+</tr>
+<tr>
+<td>双阈值（rule-out + rule-in）</td>
+<td>网站可调截止位置（四分位 / 三分位）</td>
+</tr>
+<tr>
+<td>SHAP 解释</td>
+<td>同</td>
+</tr>
+<tr>
+<td>5-fold CV + 外部验证</td>
+<td>nested CV + 性别子队列验证</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-6">1.5 张淑贤的全部原话要点</h3>
+<blockquote>
+<p>“网站可以提供多个模型对比” “选择不同的截止位置，比如可以选 4 分位/3 分位这样，感觉可以回应一些对于设置分组截止位置的疑问” “cohort 的话也可以分 female 和 male，因为我们的数据里面好像性别差异不是非常明显” “疾病方面的话，可以分肾脏，心血管，肝脏和减重指标” “咱们可以先做减重指标的部分，效果好的话，感觉其他部分指标也可以不用考虑，或者添加的话也比较容易”</p>
+</blockquote>
+<hr/>
+<h2 id="section-7">二、Phase 1 聚焦：减重指标</h2>
+<h3 id="section-8">2.1 减重指标清单（16 个）</h3>
+<p>以下为已确认可用于建模的减重相关指标，全部有 ≥281 个有效变化量：</p>
+<table>
+<thead>
+<tr>
+<th>编号</th>
+<th>指标</th>
+<th>变量名</th>
+<th>有效样本</th>
+<th>变化均值</th>
+<th>变化标准差</th>
+<th>临床含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>BMI</td>
+<td><code>BMI</code></td>
+<td>287</td>
+<td>+0.33</td>
+<td>1.38</td>
+<td>整体肥胖程度</td>
+</tr>
+<tr>
+<td>2</td>
+<td>体重</td>
+<td><code>weight</code></td>
+<td>287</td>
+<td>+4.20</td>
+<td>3.40</td>
+<td>体重变化</td>
+</tr>
+<tr>
+<td>3</td>
+<td>体重 z-score</td>
+<td><code>weight_zscore</code></td>
+<td>287</td>
+<td>-0.02</td>
+<td>0.18</td>
+<td>年龄校正体重</td>
+</tr>
+<tr>
+<td>4</td>
+<td>BMI z-score</td>
+<td><code>z.score</code></td>
+<td>287</td>
+<td>+0.08</td>
+<td>0.31</td>
+<td>年龄校正 BMI</td>
+</tr>
+<tr>
+<td>5</td>
+<td>腰围</td>
+<td><code>waistline</code></td>
+<td>287</td>
+<td>+3.57</td>
+<td>5.97</td>
+<td>腹型肥胖</td>
+</tr>
+<tr>
+<td>6</td>
+<td>臀围</td>
+<td><code>hipline</code></td>
+<td>287</td>
+<td>+2.41</td>
+<td>3.55</td>
+<td>臀部脂肪</td>
+</tr>
+<tr>
+<td>7</td>
+<td>腰臀比</td>
+<td><code>WHR</code></td>
+<td>287</td>
+<td>+0.01</td>
+<td>0.05</td>
+<td>中心性肥胖</td>
+</tr>
+<tr>
+<td>8</td>
+<td>体脂量</td>
+<td><code>Inbody_24_BFM</code></td>
+<td>281</td>
+<td>+0.58</td>
+<td>3.43</td>
+<td>总体脂肪量</td>
+</tr>
+<tr>
+<td>9</td>
+<td>体脂率</td>
+<td><code>Inbody_39_PBF</code></td>
+<td>281</td>
+<td>-1.15</td>
+<td>4.15</td>
+<td>脂肪占比</td>
+</tr>
+<tr>
+<td>10</td>
+<td>内脏脂肪面积</td>
+<td><code>Inbody_133_VFA</code></td>
+<td>281</td>
+<td>+1.78</td>
+<td>21.16</td>
+<td>内脏脂肪堆积</td>
+</tr>
+<tr>
+<td>11</td>
+<td>内脏脂肪等级</td>
+<td><code>Inbody_132_VFL</code></td>
+<td>281</td>
+<td>+0.16</td>
+<td>2.15</td>
+<td>内脏脂肪水平</td>
+</tr>
+<tr>
+<td>12</td>
+<td>脂肪量指数</td>
+<td><code>Inbody_147_FMI</code></td>
+<td>281</td>
+<td>-0.25</td>
+<td>1.49</td>
+<td>身高校正脂肪</td>
+</tr>
+<tr>
+<td>13</td>
+<td>肥胖度</td>
+<td><code>Inbody_134_Obesity_Degree</code></td>
+<td>281</td>
+<td>-3.55</td>
+<td>9.22</td>
+<td>综合肥胖评估</td>
+</tr>
+<tr>
+<td>14</td>
+<td>Inbody 腰臀比</td>
+<td><code>Inbody_129_WHR</code></td>
+<td>281</td>
+<td>+0.02</td>
+<td>0.03</td>
+<td>Inbody 测腰臀比</td>
+</tr>
+<tr>
+<td>15</td>
+<td>上臂围</td>
+<td><code>upper_arm_circumference</code></td>
+<td>287</td>
+<td>-0.41</td>
+<td>1.92</td>
+<td>四肢围度</td>
+</tr>
+<tr>
+<td>16</td>
+<td>儿童肥胖度</td>
+<td><code>Inbody_208_Obesity_Degree_of_a_Child</code></td>
+<td>281</td>
+<td>-1.97</td>
+<td>11.06</td>
+<td>儿童专用肥胖评估</td>
+</tr>
+</tbody>
+</table>
+<p><strong>注意</strong>：部分指标之间存在高度相关性（如 BMI / weight / z-score），建模时会通过特征筛选和相关性阈值自动处理。</p>
+<h3 id="section-9">2.2 四分位分组效果预览</h3>
+<p>以几个关键指标为例，四分位分组后极端组样本量：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>Q1（最低变化）n</th>
+<th>Q4（最高变化）n</th>
+<th>组间对比含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>BMI</td>
+<td>72</td>
+<td>72</td>
+<td>BMI 下降最多 vs 上升最多</td>
+</tr>
+<tr>
+<td>weight</td>
+<td>73</td>
+<td>66</td>
+<td>减重最多 vs 增重最多</td>
+</tr>
+<tr>
+<td>waistline</td>
+<td>74</td>
+<td>72</td>
+<td>腰围缩小最多 vs 增大最多</td>
+</tr>
+<tr>
+<td>BFM（体脂量）</td>
+<td>73</td>
+<td>70</td>
+<td>体脂减少最多 vs 增加最多</td>
+</tr>
+<tr>
+<td>PBF（体脂率）</td>
+<td>71</td>
+<td>70</td>
+<td>体脂率下降最多 vs 上升最多</td>
+</tr>
+<tr>
+<td>VFA（内脏脂肪面积）</td>
+<td>71</td>
+<td>70</td>
+<td>内脏脂肪减少最多 vs 增加最多</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-10">2.3 性别分布</h3>
+<table>
+<thead>
+<tr>
+<th>性别</th>
+<th>人数</th>
+<th>脂质组匹配后（预估）</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Male (Gender=0)</td>
+<td>189</td>
+<td>~185</td>
+</tr>
+<tr>
+<td>Female (Gender=1)</td>
+<td>98</td>
+<td>~96</td>
+</tr>
+</tbody>
+</table>
+<p>Female 子队列 ~96 人，四分位分组后每组 ~24 人，样本偏少但可用于探索性验证。</p>
+<hr/>
+<h2 id="section-11">三、技术方案</h2>
+<h3 id="section-12">3.1 特征筛选（参照 Met-FIB）</h3>
+<pre><code>1609 个基线脂质
+  → Step 1: Mann-Whitney U 检验（p &lt; 0.05），筛出差异脂质
+  → Step 2: Elastic Net 排序（取系数非零的）
+  → Step 3: XGBoost 排序（取 feature importance top-k）
+  → Step 4: 取 Step 2 和 Step 3 的交集作为最终特征集
+  → 输入分类模型</code></pre>
+<h3 id="section-13">3.2 多模型对比</h3>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>TabPFN</strong></td>
+<td>Transformer-based，适合小样本，免调参（Met-FIB 最终选用）</td>
+</tr>
+<tr>
+<td><strong>Elastic Net LR</strong></td>
+<td>线性基线，可解释性强</td>
+</tr>
+<tr>
+<td><strong>XGBoost</strong></td>
+<td>梯度提升，捕获非线性</td>
+</tr>
+<tr>
+<td><strong>Random Forest</strong></td>
+<td>集成方法</td>
+</tr>
+<tr>
+<td><strong>CatBoost</strong></td>
+<td>类别特征友好</td>
+</tr>
+<tr>
+<td><strong>Logistic Regression (L2)</strong></td>
+<td>纯线性</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-14">3.3 验证策略</h3>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>说明</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>全队列 nested CV</strong></td>
+<td>281 人，5-fold outer × 3-fold inner</td>
+<td>主结果</td>
+</tr>
+<tr>
+<td><strong>Male 子队列</strong></td>
+<td>~185 人独立建模</td>
+<td>内部验证</td>
+</tr>
+<tr>
+<td><strong>Female 子队列</strong></td>
+<td>~96 人独立建模</td>
+<td>探索性验证</td>
+</tr>
+<tr>
+<td><strong>交叉验证</strong></td>
+<td>Male 训练 → Female 测试</td>
+<td>泛化性检验</td>
+</tr>
+</tbody>
+</table>
+<h3 id="section-15">3.4 评估指标</h3>
+<p>AUROC, AUPRC, Sensitivity/Specificity, Rule-out sensitivity, Rule-in specificity, SHAP</p>
+<h3 id="section-16">3.5 网站交互功能</h3>
+<p>指标选择下拉、四分位/三分位切换、6 模型 AUC/AUPRC 柱状图对比、ROC 曲线叠加、SHAP 图、子队列切换、双阈值展示</p>
+<hr/>
+<h2 id="section-17">四、执行顺序</h2>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>内容</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Phase 1</strong></td>
+<td>数据准备 + 减重指标变化量计算 + 性别分布</td>
+<td>可立即开工</td>
+</tr>
+<tr>
+<td><strong>Phase 2</strong></td>
+<td>特征筛选框架 + 多模型批量建模（16 减重指标 × 6 模型 × 2 截止策略）</td>
+<td>Phase 1 后</td>
+</tr>
+<tr>
+<td><strong>Phase 3</strong></td>
+<td>性格子队列建模 + 交叉验证</td>
+<td>Phase 2 后</td>
+</tr>
+<tr>
+<td><strong>Phase 4</strong></td>
+<td>结果汇总筛选（选出 AUC 好、有临床意义的指标-模型组合）</td>
+<td>Phase 2+3 后</td>
+</tr>
+<tr>
+<td><strong>Phase 5</strong></td>
+<td>减重部分网站开发</td>
+<td>Phase 4 后</td>
+</tr>
+<tr>
+<td><strong>Phase 6（可选）</strong></td>
+<td>扩展到肝脏/心血管/肾脏指标</td>
+<td>视 Phase 2-4 结果决定</td>
+</tr>
+</tbody>
+</table>
+<hr/>
+<h2 id="section-18">五、仍需确认的问题（精简为 4 个）</h2>
+<h3 id="section-19">问题 1：减重指标范围</h3>
+<p>上面列了 16 个减重指标，请确认：</p>
+<ul>
+<li>(A) 这 16 个全部纳入？</li>
+<li>(B) 你想增减某些指标？</li>
+</ul>
+<hr/>
+<h3 id="section-20">问题 2：性别子队列验证</h3>
+<ul>
+<li>(A) 做 male / female 子队列独立建模？</li>
+<li>(B) 做 male / female 交叉验证？</li>
+<li>(C) 两者都做？</li>
+</ul>
+<hr/>
+<h3 id="section-21">问题 3：模型选择</h3>
+<p>6 个模型对比（TabPFN, EN LR, XGBoost, RF, CatBoost, LR），OK？</p>
+<hr/>
+<h3 id="section-22">问题 4：网站技术方案</h3>
+<ul>
+<li>(A) 静态 HTML 展示页（较快）</li>
+<li>(B) Streamlit 交互网站</li>
+<li>(C) 先 A 后 B，分步推进</li>
+</ul>
+<hr/>
+<p>请在方便时回复确认，收到后立刻开始 Phase 1。</p>
+</div>
+</div>
+</main>
+<footer class="footer">
+<div class="footer-content">
+<div class="footer-links"><a class="footer-link" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B">项目目录</a></div>
+<p style="color: #6b7280; font-size: 0.875rem;">© 2026 AI 结果展示页 | Styled after aging-analysis tutorial</p>
+<div class="footer-note">生成日期：2026-04-10 | 当前目录：/Users/angus/Downloads/20260310_张淑贤_脂质组学预测的模型/docs</div>
+</div>
+</footer>
+<button class="scroll-top" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" title="回到顶部">↑</button>
+<script>
+    const scrollBtn = document.querySelector('.scroll-top');
+    window.addEventListener('scroll', () => {
+      scrollBtn.style.opacity = window.scrollY > 300 ? '1' : '0';
+      scrollBtn.style.pointerEvents = window.scrollY > 300 ? 'auto' : 'none';
+    });
+    scrollBtn.style.opacity = '0';
+    scrollBtn.style.pointerEvents = 'none';
+    scrollBtn.style.transition = 'opacity 0.3s';
+
+    const tocLinks = document.querySelectorAll('.sidebar-toc-link');
+    const sections = Array.from(document.querySelectorAll('.article-main h2[id], .article-main h3[id]'));
+
+    function setActiveLink() {
+      let currentId = '';
+      const offset = window.scrollY + 120;
+      for (const section of sections) {
+        if (section.offsetTop <= offset) {
+          currentId = section.id;
+        }
+      }
+      tocLinks.forEach(link => {
+        link.classList.toggle('active', link.dataset.target === currentId);
+      });
+    }
+
+    window.addEventListener('scroll', setActiveLink);
+    window.addEventListener('load', setActiveLink);
+  
+
+    async function copyExampleText(text, button) {
+      const original = button.dataset.originalLabel || button.textContent;
+      if (!button.dataset.originalLabel) {
+        button.dataset.originalLabel = original;
+      }
+
+      function mark(stateClass, label) {
+        button.classList.remove('copied', 'failed');
+        if (stateClass) {
+          button.classList.add(stateClass);
+        }
+        button.textContent = label;
+        window.setTimeout(() => {
+          button.classList.remove('copied', 'failed');
+          button.textContent = original;
+        }, 1800);
+      }
+
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          mark('copied', '已复制');
+          return;
+        }
+      } catch (error) {
+        console.warn('navigator.clipboard failed, falling back', error);
+      }
+
+      try {
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.setAttribute('readonly', 'readonly');
+        textarea.style.position = 'fixed';
+        textarea.style.top = '-9999px';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+        const successful = document.execCommand('copy');
+        document.body.removeChild(textarea);
+        mark(successful ? 'copied' : 'failed', successful ? '已复制' : '复制失败');
+      } catch (error) {
+        console.error('copy fallback failed', error);
+        mark('failed', '复制失败');
+      }
+    }
+
+    document.querySelectorAll('.copy-example-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        copyExampleText(button.dataset.copyText || '', button);
+      });
+    });
+</script>
+</body>
+</html>
