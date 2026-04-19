@@ -38,3 +38,4 @@ def test_index_template_includes_current_model_mappings_and_mobile_polish(client
     assert 'fullName && fullName !== modelName' in html
     assert '.tab-bar { overflow-x: auto;' in html
     assert '.model-grid { grid-template-columns: 1fr; }' in html
+    assert "Currently deployed lipid-only models" in html

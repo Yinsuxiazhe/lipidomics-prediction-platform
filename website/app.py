@@ -636,6 +636,32 @@ def get_model_metadata(model_key: str) -> dict:
     return normalized
 
 
+def parse_glm5_model_components(model_key: str, meta: dict | None = None) -> tuple[str, str, str]:
+    meta = meta or {}
+
+    indicator = meta.get("indicator")
+    group = meta.get("cutoff") or meta.get("group")
+    model_name = meta.get("model") or meta.get("model_name")
+
+    if indicator and group and model_name:
+        return indicator, normalize_group_code(group), model_name
+
+    known_model_suffixes = ["EN_LR", "LR_L2", "XGBoost", "RF", "LR", "SVM", "KNN"]
+    for suffix in known_model_suffixes:
+        token = f"_{suffix}"
+        if model_key.endswith(token):
+            prefix = model_key[: -len(token)]
+            if "_" in prefix:
+                indicator_part, group_part = prefix.rsplit("_", 1)
+                return indicator_part, normalize_group_code(group_part), suffix
+
+    parts = model_key.split("_")
+    fallback_model = parts[-1] if len(parts) >= 1 else "?"
+    fallback_group = parts[-2] if len(parts) >= 2 else "Q"
+    fallback_indicator = "_".join(parts[:-2]) if len(parts) > 2 else model_key
+    return fallback_indicator, normalize_group_code(fallback_group), fallback_model
+
+
 def load_all_models():
     """Load all .pkl model files at startup."""
     info_path = DATA_DIR / "model_info.json"
@@ -675,15 +701,13 @@ def load_all_models():
                     meta = _glm5_metadata.get(key, {})
                     features = meta.get("features", [])
                     perf = meta.get("performance", {})
-                    # Normalize indicator name
-                    parts = key.split("_")
-                    model_abbrev = parts[-1] if len(parts) >= 3 else "?"
-                    indicator = "_".join(parts[:-2])
+                    indicator, group_code, model_abbrev = parse_glm5_model_components(key, meta)
+                    group_meta = get_group_display_meta(group_code)
                     _models[key] = {
                         "model": raw_model,
                         "features": features,
                         "indicator": indicator,
-                        "group": parts[-2] if len(parts) >= 2 else "Q",
+                        "group": group_code,
                         "model_name": model_abbrev,
                         "full_auc": perf.get("full_auroc", 0),
                         "m2f_auc": perf.get("m2f_auroc", 0),
@@ -694,10 +718,10 @@ def load_all_models():
                     }
                     _model_info[key] = {
                         "indicator": indicator,
-                        "indicator_cn": _INDICATOR_CN.get(indicator, indicator),
+                        "indicator_cn": meta.get("indicator_cn", _INDICATOR_CN.get(indicator, indicator)),
                         "model_name": model_abbrev,
-                        "group": parts[-2] if len(parts) >= 2 else "Q",
-                        "group_cn": "四分位" if parts[-2] == "Q" else "三分位",
+                        "group": group_code,
+                        "group_cn": group_meta["group_display_cn"],
                         "full_auc": perf.get("full_auroc", 0),
                         "m2f_auc": perf.get("m2f_auroc", 0),
                         "f2m_auc": perf.get("f2m_auroc", 0),

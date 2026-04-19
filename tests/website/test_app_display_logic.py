@@ -5,6 +5,9 @@ warnings.filterwarnings(
     message="Trying to unpickle estimator",
 )
 
+import json
+import pickle
+
 import pytest
 
 import website.app as app_module
@@ -108,6 +111,58 @@ def test_sample_data_falls_back_to_project_root_training_csv(monkeypatch, client
 
     payload = response.get_json()
     assert payload["sample_values"]["LIPID_A"] == 2.0
+
+
+def test_load_all_models_uses_glm5_metadata_for_indicator_group_and_model(monkeypatch, tmp_path):
+    website_dir = tmp_path / "website"
+    models_dir = website_dir / "models"
+    data_dir = website_dir / "data"
+    trained_dir = website_dir / "trained_models"
+
+    models_dir.mkdir(parents=True)
+    data_dir.mkdir()
+    trained_dir.mkdir()
+
+    with open(trained_dir / "BMI_Q_EN_LR.pkl", "wb") as f:
+        pickle.dump(DummyModel(pred=1, proba=(0.2, 0.8)), f)
+
+    with open(trained_dir / "model_metadata.json", "w", encoding="utf-8") as f:
+        json.dump(
+            {
+                "BMI_Q_EN_LR": {
+                    "indicator": "BMI",
+                    "indicator_cn": "BMI",
+                    "cutoff": "Q",
+                    "model": "EN_LR",
+                    "features": ["LIPID_A"],
+                    "performance": {
+                        "full_auroc": 0.8,
+                        "m2f_auroc": 0.6,
+                        "f2m_auroc": 0.58,
+                        "full_sens": 0.72,
+                        "full_spec": 0.68,
+                    },
+                }
+            },
+            f,
+            ensure_ascii=False,
+        )
+
+    monkeypatch.setattr(app_module, "BASE_DIR", website_dir)
+    monkeypatch.setattr(app_module, "APP_DIR", website_dir)
+    monkeypatch.setattr(app_module, "MODELS_DIR", models_dir)
+    monkeypatch.setattr(app_module, "DATA_DIR", data_dir)
+    monkeypatch.setattr(app_module, "_models", {})
+    monkeypatch.setattr(app_module, "_model_info", {})
+
+    app_module.load_all_models()
+    info = app_module.get_model_metadata("BMI_Q_EN_LR")
+
+    assert info["indicator"] == "BMI"
+    assert info["indicator_display"] == "ΔBMI"
+    assert info["group_code"] == "Q"
+    assert info["group_display_en"] == "Q (Q1 vs Q4)"
+    assert info["model_name"] == "EN_LR"
 
 
 @pytest.mark.parametrize(
