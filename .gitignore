@@ -60,10 +60,12 @@ tmp/
 temp/
 *.tmp
 *.bak
+*.bak*
 
 # Local tooling / caches
 .pytest_cache/
 .playwright-cli/
+.playwright-mcp/
 .streamlit/
 parquet_cache/
 

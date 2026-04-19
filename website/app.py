@@ -36,6 +36,74 @@ _INDICATOR_CN = {
     "PBF": "体脂率", "PSM": "肌肉率",
 }
 
+_INDICATOR_META = {
+    "BMI": {
+        "display_en": "ΔBMI",
+        "display_cn": "ΔBMI",
+        "full_en": "BMI change",
+        "full_cn": "BMI 变化量",
+    },
+    "weight": {
+        "display_en": "ΔWeight",
+        "display_cn": "Δ体重",
+        "full_en": "Body weight change",
+        "full_cn": "体重变化量",
+    },
+    "bmi_z": {
+        "display_en": "ΔBMI z-score",
+        "display_cn": "ΔBMI z-score",
+        "full_en": "BMI z-score change",
+        "full_cn": "BMI z-score 变化量",
+    },
+    "waistline": {
+        "display_en": "ΔWaist Circumference",
+        "display_cn": "Δ腰围",
+        "full_en": "Waist circumference change",
+        "full_cn": "腰围变化量",
+    },
+    "hipline": {
+        "display_en": "ΔHip Circumference",
+        "display_cn": "Δ臀围",
+        "full_en": "Hip circumference change",
+        "full_cn": "臀围变化量",
+    },
+    "WHR": {
+        "display_en": "ΔWHR",
+        "display_cn": "ΔWHR",
+        "full_en": "Waist-to-hip ratio change",
+        "full_cn": "腰臀比变化量",
+    },
+    "PBF": {
+        "display_en": "ΔPBF",
+        "display_cn": "ΔPBF",
+        "full_en": "Percent body fat change",
+        "full_cn": "体脂率变化量",
+    },
+    "PSM": {
+        "display_en": "ΔPSM",
+        "display_cn": "ΔPSM",
+        "full_en": "Percent skeletal muscle change",
+        "full_cn": "肌肉率变化量",
+    },
+}
+
+_GROUP_META = {
+    "Q": {
+        "group_code": "Q",
+        "group_display_en": "Q (Q1 vs Q4)",
+        "group_display_cn": "Q（Q1 vs Q4）",
+        "group_strategy_en": "Quartile extreme-grouping",
+        "group_strategy_cn": "四分位极端分组",
+    },
+    "T": {
+        "group_code": "T",
+        "group_display_en": "T (T1 vs T3)",
+        "group_display_cn": "T（T1 vs T3）",
+        "group_strategy_en": "Tertile extreme-grouping",
+        "group_strategy_cn": "三分位极端分组",
+    },
+}
+
 # ── 模型全称与公式说明（供前端展示）──────────────────────────────────
 MODEL_DOCS = {
     "EN_LR": {
@@ -217,6 +285,12 @@ ABBREV_GLOSSARY = {
         "full_cn": "k 折交叉验证",
         "description_en": "Data is divided into k subsets (folds). Each fold serves as the validation set once while the model trains on the remaining k-1 folds.",
         "description_cn": "数据被分成 k 个子集（折）。每次用 k-1 折训练，1 折验证，循环 k 次。",
+    },
+    "Δ": {
+        "full_en": "Change Score (outroll - enroll)",
+        "full_cn": "变化量（干预后 - 干预前）",
+        "description_en": "All current website indicators refer to intervention change scores calculated as outroll minus enroll, rather than a single absolute measurement.",
+        "description_cn": "当前网站中的指标默认都指干预变化量，计算方式为干预后减去干预前，而不是某一次单独测量的绝对值。",
     },
     "Q (Quartile)": {
         "full_en": "Quartile Grouping (Q1 vs Q4)",
@@ -402,6 +476,166 @@ ABBREV_GLOSSARY = {
     },
 }
 
+def normalize_group_code(group: str | None) -> str:
+    raw = (group or "").strip().lower()
+    if raw in {"q", "q4", "quartile"}:
+        return "Q"
+    if raw in {"t", "q3", "t3", "tertile"}:
+        return "T"
+    return "Q"
+
+
+def infer_indicator_direction(indicator: str | None) -> str:
+    return "positive" if indicator == "PSM" else "negative"
+
+
+def get_indicator_display_meta(indicator: str | None) -> dict:
+    indicator = indicator or ""
+    meta = _INDICATOR_META.get(indicator, {})
+    display_en = meta.get("display_en", f"Δ{indicator}" if indicator else "ΔIndicator")
+    display_cn = meta.get("display_cn", f"Δ{_INDICATOR_CN.get(indicator, indicator or '指标')}")
+    return {
+        "indicator": indicator,
+        "indicator_display": display_en,
+        "indicator_display_en": display_en,
+        "indicator_display_cn": display_cn,
+        "indicator_full_en": meta.get("full_en", f"{indicator} change" if indicator else "Indicator change"),
+        "indicator_full_cn": meta.get("full_cn", f"{_INDICATOR_CN.get(indicator, indicator or '指标')}变化量"),
+        "indicator_short_cn": _INDICATOR_CN.get(indicator, indicator),
+    }
+
+
+def get_group_display_meta(group: str | None) -> dict:
+    code = normalize_group_code(group)
+    meta = _GROUP_META[code]
+    return {
+        "group": group,
+        "group_code": meta["group_code"],
+        "group_display": meta["group_display_en"],
+        "group_display_en": meta["group_display_en"],
+        "group_display_cn": meta["group_display_cn"],
+        "group_strategy_en": meta["group_strategy_en"],
+        "group_strategy_cn": meta["group_strategy_cn"],
+        "group_cn": meta["group_display_cn"],
+    }
+
+
+def build_target_description(indicator_display_en: str, indicator_display_cn: str, group_display_en: str, group_display_cn: str, direction: str) -> tuple[str, str]:
+    if direction == "negative":
+        direction_en = "High response means the indicator decreases more after intervention."
+        direction_cn = "高响应表示该指标在干预后下降更多。"
+    else:
+        direction_en = "High response means the indicator increases more after intervention."
+        direction_cn = "高响应表示该指标在干预后上升更多。"
+    description_en = (
+        f"Predicts high vs low exercise response for {indicator_display_en} under {group_display_en}. "
+        f"{direction_en}"
+    )
+    description_cn = (
+        f"在 {group_display_cn} 分组下预测 {indicator_display_cn} 的高/低响应。"
+        f"{direction_cn}"
+    )
+    return description_en, description_cn
+
+
+def build_prediction_copy(info: dict, pred: int) -> dict:
+    indicator_display_en = info.get("indicator_display_en", info.get("indicator_display", "ΔIndicator"))
+    indicator_display_cn = info.get("indicator_display_cn", info.get("indicator_display", "Δ指标"))
+    direction = info.get("direction", "positive")
+
+    if pred == 1:
+        label_en = "High Response"
+        label_cn = "高响应"
+        if direction == "negative":
+            detail_en = (
+                f"{indicator_display_en} is expected to decrease more after intervention, "
+                "consistent with the high-response group."
+            )
+            detail_cn = f"{indicator_display_cn} 预计在干预后下降更多，属于高响应组。"
+        else:
+            detail_en = (
+                f"{indicator_display_en} is expected to increase more after intervention, "
+                "consistent with the high-response group."
+            )
+            detail_cn = f"{indicator_display_cn} 预计在干预后上升更多，属于高响应组。"
+    else:
+        label_en = "Low Response"
+        label_cn = "低响应"
+        if direction == "negative":
+            detail_en = (
+                f"{indicator_display_en} is expected to decrease less after intervention or even increase, "
+                "consistent with the low-response group."
+            )
+            detail_cn = f"{indicator_display_cn} 预计在干预后下降较少，甚至可能升高，属于低响应组。"
+        else:
+            detail_en = (
+                f"{indicator_display_en} is expected to increase less after intervention or even decrease, "
+                "consistent with the low-response group."
+            )
+            detail_cn = f"{indicator_display_cn} 预计在干预后上升较少，甚至可能下降，属于低响应组。"
+
+    return {
+        "label_en": label_en,
+        "label_cn": label_cn,
+        "label_detail_en": detail_en,
+        "label_detail_cn": detail_cn,
+    }
+
+
+def build_model_metadata(model_key: str, info: dict | None = None, data: dict | None = None) -> dict:
+    info = info or {}
+    data = data or {}
+
+    indicator = data.get("indicator") or info.get("indicator") or model_key
+    group_raw = data.get("group") or info.get("group") or "q4"
+    direction = data.get("direction") or info.get("direction") or infer_indicator_direction(indicator)
+    features = data.get("features") or info.get("features") or []
+
+    indicator_meta = get_indicator_display_meta(indicator)
+    group_meta = get_group_display_meta(group_raw)
+    description_en, description_cn = build_target_description(
+        indicator_display_en=indicator_meta["indicator_display_en"],
+        indicator_display_cn=indicator_meta["indicator_display_cn"],
+        group_display_en=group_meta["group_display_en"],
+        group_display_cn=group_meta["group_display_cn"],
+        direction=direction,
+    )
+
+    return {
+        **info,
+        "key": model_key,
+        "indicator": indicator,
+        "indicator_cn": indicator_meta["indicator_short_cn"],
+        "direction": direction,
+        "model_name": data.get("model_name") or info.get("model_name", ""),
+        "full_auc": data.get("full_auc", info.get("full_auc", 0)),
+        "m2f_auc": data.get("m2f_auc", info.get("m2f_auc", 0)),
+        "f2m_auc": data.get("f2m_auc", info.get("f2m_auc", 0)),
+        "sens": data.get("sens", info.get("sens", 0)),
+        "spec": data.get("spec", info.get("spec", 0)),
+        "n_feat": len(features) or info.get("n_feat", 0),
+        "features": features,
+        "description": info.get("description", description_cn),
+        "description_en": description_en,
+        "description_cn": description_cn,
+        "target_definition_en": f"{indicator_meta['indicator_display_en']} = outroll - enroll",
+        "target_definition_cn": f"{indicator_meta['indicator_display_cn']} = 干预后 - 干预前",
+        **indicator_meta,
+        **group_meta,
+    }
+
+
+def get_model_metadata(model_key: str) -> dict:
+    normalized = build_model_metadata(
+        model_key,
+        info=_model_info.get(model_key, {}),
+        data=_models.get(model_key, {}),
+    )
+    if normalized:
+        _model_info[model_key] = normalized
+    return normalized
+
+
 def load_all_models():
     """Load all .pkl model files at startup."""
     info_path = DATA_DIR / "model_info.json"
@@ -477,6 +711,13 @@ def load_all_models():
                     print(f"[App] Failed to load {pkl_file}: {e}")
         print(f"[App] Total models loaded: {len(_models)}")
 
+    for key in list(set(_models) | set(_model_info)):
+        _model_info[key] = build_model_metadata(
+            key,
+            info=_model_info.get(key, {}),
+            data=_models.get(key, {}),
+        )
+
 # ── 脂质名称标准化 ──────────────────────────────────────────────────
 def normalize_lipid_name(name: str) -> str:
     """Strip whitespace and normalize lipid feature name for matching."""
@@ -518,58 +759,39 @@ def predict_single(model_key: str, lipid_values: dict) -> dict:
     pred = model.predict(X)[0]
     proba = model.predict_proba(X)[0]
 
-    info = _model_info.get(model_key, {})
-    direction = data.get("direction", "positive")
-    indicator_cn = info.get("indicator_cn", model_key)
-
-    # Interpret prediction
-    if pred == 1:
-        if direction == "negative":
-            label_en = "High Response"
-            label_cn = "高响应"
-            label_detail_en = f"{indicator_cn} is expected to decrease significantly (notable exercise effect)"
-            label_detail_cn = f"{indicator_cn} 预计显著降低（运动效果显著）"
-        else:
-            label_en = "High Response"
-            label_cn = "高响应"
-            label_detail_en = f"{indicator_cn} is expected to increase significantly (notable exercise effect)"
-            label_detail_cn = f"{indicator_cn} 预计显著提升（运动效果显著）"
-    else:
-        if direction == "negative":
-            label_en = "Low Response"
-            label_cn = "低响应"
-            label_detail_en = f"{indicator_cn} is expected to show limited decrease or increase (weak exercise effect)"
-            label_detail_cn = f"{indicator_cn} 预计降低有限或升高（运动效果较弱）"
-        else:
-            label_en = "Low Response"
-            label_cn = "低响应"
-            label_detail_en = f"{indicator_cn} is expected to show limited increase or decrease (weak exercise effect)"
-            label_detail_cn = f"{indicator_cn} 预计提升有限或降低（运动效果较弱）"
+    info = get_model_metadata(model_key)
+    copy = build_prediction_copy(info, int(pred))
 
     return {
         "model_key": model_key,
         "prediction": int(pred),
-        "label": label_cn,
-        "label_en": label_en,
-        "label_cn": label_cn,
-        "label_detail": label_detail_cn,
-        "label_detail_en": label_detail_en,
-        "label_detail_cn": label_detail_cn,
+        "label": copy["label_cn"],
+        "label_en": copy["label_en"],
+        "label_cn": copy["label_cn"],
+        "label_detail": copy["label_detail_cn"],
+        "label_detail_en": copy["label_detail_en"],
+        "label_detail_cn": copy["label_detail_cn"],
         "confidence": float(max(proba)),
         "prob_high_response": float(proba[1]) if len(proba) > 1 else 0.0,
         "prob_low_response": float(proba[0]) if len(proba) > 0 else 0.0,
         "missing_features": missing,
         "model_info": {
-            "indicator": data.get("indicator", ""),
-            "indicator_cn": indicator_cn,
-            "group": data.get("group", ""),
+            "indicator": info.get("indicator", ""),
+            "indicator_cn": info.get("indicator_cn", ""),
+            "indicator_display": info.get("indicator_display", ""),
+            "indicator_display_en": info.get("indicator_display_en", ""),
+            "indicator_display_cn": info.get("indicator_display_cn", ""),
+            "group": info.get("group", ""),
+            "group_code": info.get("group_code", ""),
             "group_cn": info.get("group_cn", ""),
-            "model_name": data.get("model_name", ""),
-            "full_auc": data.get("full_auc", 0),
-            "m2f_auc": data.get("m2f_auc", 0),
-            "f2m_auc": data.get("f2m_auc", 0),
-            "sens": data.get("sens", 0),
-            "spec": data.get("spec", 0),
+            "group_display_en": info.get("group_display_en", ""),
+            "group_display_cn": info.get("group_display_cn", ""),
+            "model_name": info.get("model_name", ""),
+            "full_auc": info.get("full_auc", 0),
+            "m2f_auc": info.get("m2f_auc", 0),
+            "f2m_auc": info.get("f2m_auc", 0),
+            "sens": info.get("sens", 0),
+            "spec": info.get("spec", 0),
             "n_feat": len(features),
             "features": features,
         }
@@ -584,9 +806,10 @@ def index():
 @app.route("/api/models", methods=["GET"])
 def api_models():
     """Return list of available models with metadata."""
+    models = {key: get_model_metadata(key) for key in sorted(_model_info)}
     return jsonify({
-        "count": len(_model_info),
-        "models": _model_info,
+        "count": len(models),
+        "models": models,
     })
 
 @app.route("/api/predict", methods=["POST"])
@@ -652,7 +875,7 @@ def api_model_detail(model_key: str):
     if model_key not in _model_info:
         return jsonify({"error": "Model not found"}), 404
 
-    info = _model_info[model_key]
+    info = get_model_metadata(model_key)
     data = _models.get(model_key, {})
     features = data.get("features", [])
 
@@ -673,8 +896,16 @@ def api_model_detail(model_key: str):
 
     return jsonify({
         "key": model_key,
+        "indicator": info.get("indicator", ""),
         "indicator_cn": info.get("indicator_cn", ""),
+        "indicator_display": info.get("indicator_display", ""),
+        "indicator_display_en": info.get("indicator_display_en", ""),
+        "indicator_display_cn": info.get("indicator_display_cn", ""),
+        "group": info.get("group", ""),
+        "group_code": info.get("group_code", ""),
         "group_cn": info.get("group_cn", ""),
+        "group_display_en": info.get("group_display_en", ""),
+        "group_display_cn": info.get("group_display_cn", ""),
         "model_name": info.get("model_name", ""),
         "full_auc": info.get("full_auc", 0),
         "m2f_auc": info.get("m2f_auc", 0),
@@ -682,7 +913,12 @@ def api_model_detail(model_key: str):
         "sens": info.get("sens", 0),
         "spec": info.get("spec", 0),
         "n_feat": len(features),
-        "description": info.get("description", ""),
+        "description": info.get("description_cn", info.get("description", "")),
+        "description_en": info.get("description_en", ""),
+        "description_cn": info.get("description_cn", ""),
+        "target_definition_en": info.get("target_definition_en", ""),
+        "target_definition_cn": info.get("target_definition_cn", ""),
+        "direction": info.get("direction", ""),
         "features": lipid_info,
         "model_doc": MODEL_DOCS.get(info.get("model_name", ""), MODEL_DOCS.get(model_key, {})),
     })
@@ -700,8 +936,13 @@ def api_sample_data(model_key: str):
         return jsonify({"error": "No features found for this model"}), 404
 
     # Load training data to compute feature means
-    lipid_csv = APP_DIR / "281_merge_lipids_enroll.csv"
-    if not lipid_csv.exists():
+    candidate_paths = [
+        APP_DIR / "281_merge_lipids_enroll.csv",
+        BASE_DIR.parent / "281_merge_lipids_enroll.csv",
+        Path.cwd() / "281_merge_lipids_enroll.csv",
+    ]
+    lipid_csv = next((path for path in candidate_paths if path.exists()), None)
+    if lipid_csv is None:
         return jsonify({"error": "Training data not found"}), 404
 
     try:

@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Lipidomics Prediction Platform ? EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005)</title>
+<title>Lipidomics Prediction Platform · EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005)</title>
+<link rel="icon" href="data:,"/>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
 :root {
@@ -45,7 +46,7 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
 .main { max-width: 1200px; margin: 0 auto; padding: 2.5rem 1.5rem; }
 
 /* ?? Tabs ?? */
-.tab-bar { display: flex; gap: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.3rem; margin-bottom: 2rem; box-shadow: var(--shadow); }
+.tab-bar { overflow-x: auto; overflow-y: hidden; display: flex; gap: 0; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 0.3rem; margin-bottom: 2rem; box-shadow: var(--shadow); flex-wrap: nowrap; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
 .tab-btn { flex: 1; padding: 0.7rem 1rem; border: none; background: transparent; color: var(--text-light); font-size: 0.9rem; font-weight: 600; border-radius: 9px; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.4rem; font-family: inherit; }
 .tab-btn:hover { background: var(--primary-light); color: var(--primary); }
 .tab-btn.active { background: var(--primary); color: white; box-shadow: 0 2px 8px rgba(37,99,235,0.35); }
@@ -241,14 +242,31 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
 .batch-stat-label { font-size: 0.78rem; color: var(--text-light); margin-top: 0.2rem; }
 
 @media (max-width: 768px) {
+  .nav { padding: 0 0.8rem; }
+  .nav-logo { font-size: 0.92rem; max-width: calc(100% - 124px); }
+  .hero { padding: 4.75rem 1rem 2.25rem; }
   .hero h1 { font-size: 1.6rem; }
   .hero-stats { gap: 1rem; }
-  .model-grid { grid-template-columns: 1fr 1fr; }
+  .main { padding: 1.5rem 1rem; }
+  .card { padding: 1.1rem; }
+  .tab-bar { padding: 0.25rem; gap: 0.25rem; scroll-padding-inline: 0.25rem; }
+  .tab-btn { flex: 0 0 auto; min-width: 140px; padding: 0.65rem 0.9rem; font-size: 0.82rem; }
+  .model-grid { grid-template-columns: 1fr; }
+  .model-card { padding: 0.95rem 1rem; }
+  .model-card-auc { justify-content: flex-start; }
   .grid-2 { grid-template-columns: 1fr; }
   .batch-summary { grid-template-columns: 1fr 1fr; }
   .nav-links { display: none; }
   .glossary-grid { grid-template-columns: 1fr; }
   .model-pros-cons { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+  .hero h1 { font-size: 1.45rem; }
+  .hero-subtitle { font-size: 0.92rem; }
+  .result-proba { flex-direction: column; gap: 1rem; }
+  .result-proba-item { width: 100%; }
+  .result-proba-bar-wrap { width: 100%; max-width: 180px; }
 }
 </style>
 </head>
@@ -530,6 +548,20 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
           <p data-i18n="step4_desc">To predict multiple samples at once, upload a CSV file (each column corresponds to a lipid molecule, each row to a different sample). The system returns all predictions and supports CSV download.</p>
         </div>
       </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:0.9rem;margin-top:1rem;">
+        <div style="background:var(--primary-light);border:1px solid #bfdbfe;border-radius:10px;padding:0.9rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:#1d4ed8;margin-bottom:0.3rem;" data-i18n="delta_note_title">Δ indicators</div>
+          <div style="font-size:0.78rem;color:var(--text-light);line-height:1.6;" data-i18n="delta_note_desc">Δ = outroll - enroll, so the current website predicts change-response targets rather than absolute one-time measurements.</div>
+        </div>
+        <div style="background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:0.9rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:var(--text);margin-bottom:0.3rem;" data-i18n="group_note_title">Q / T grouping</div>
+          <div style="font-size:0.78rem;color:var(--text-light);line-height:1.6;" data-i18n="group_note_desc">Q = Q1 vs Q4 and T = T1 vs T3. The middle quantiles are excluded from the current extreme-group binary models.</div>
+        </div>
+        <div style="background:#fefce8;border:1px solid #fde68a;border-radius:10px;padding:0.9rem 1rem;">
+          <div style="font-size:0.82rem;font-weight:700;color:#92400e;margin-bottom:0.3rem;" data-i18n="direction_note_title">Response direction</div>
+          <div style="font-size:0.78rem;color:var(--text-light);line-height:1.6;" data-i18n="direction_note_desc">For negative-better indicators such as ΔBMI / ΔPBF / ΔWHR, high response means decreasing more. For ΔPSM, high response means increasing more.</div>
+        </div>
+      </div>
     </div>
 
     <!-- Glossary -->
@@ -570,7 +602,61 @@ const MODEL_FULL_NAMES = {
   EN_LR: { abbrev: "EN_LR", fullEn: "Elastic Net Logistic Regression", fullCn: "\u7F29\u6027\u7F51\u7EDC\u903B\u8F91\u56DE\u5F52" },
   XGBoost: { abbrev: "XGBoost", fullEn: "eXtreme Gradient Boosting", fullCn: "\u6781\u7AEF\u68AF\u5EA6\u63A8\u5347" },
   RF: { abbrev: "RF", fullEn: "Random Forest", fullCn: "\u968F\u673A\u68EE\u6797" },
+  LR: { abbrev: "LR", fullEn: "Logistic Regression", fullCn: "\u903B\u8F91\u56DE\u5F52" },
+  SVM: { abbrev: "SVM", fullEn: "Support Vector Machine", fullCn: "\u652F\u6301\u5411\u91CF\u673A" },
+  KNN: { abbrev: "KNN", fullEn: "K-Nearest Neighbors", fullCn: "K \u8FD1\u90BB" },
   LR_L2: { abbrev: "LR_L2", fullEn: "Logistic Regression (L2)", fullCn: "\u903B\u8F91\u56DE\u5F52\uFF08L2 \u6B63\u5219\u5316\uFF09" },
+};
+
+const MODEL_FALLBACK_DOCS = {
+  LR: {
+    name_en: "Logistic Regression",
+    name_cn: "\u903B\u8F91\u56DE\u5F52",
+    formula_en: "logit(P(high response)) = \u03B20 + \u03B21x1 + \u03B22x2 + ...",
+    formula_cn: "logit(P(\u9AD8\u54CD\u5E94)) = \u03B20 + \u03B21x1 + \u03B22x2 + ...",
+    description_en: "A linear probabilistic classifier that estimates the probability of high response from the selected baseline lipid features.",
+    description_cn: "\u7EBF\u6027\u6982\u7387\u5206\u7C7B\u5668\uff0c\u57FA\u4E8E\u5165\u9009\u57FA\u7EBF\u8102\u8D28\u7279\u5F81\u4F30\u8BA1\u9AD8\u54CD\u5E94\u6982\u7387\u3002",
+    type: "Linear classifier",
+    interpretability: "High",
+    params_en: "Typical parameters: penalty, C, class_weight",
+    params_cn: "\u5E38\u89C1\u53C2\u6570\uff1Apenalty\uff0cC\uff0cclass_weight",
+    pros_en: ["Easy to interpret", "Stable on small datasets", "Outputs calibrated class probability"],
+    pros_cn: ["\u53EF\u89E3\u91CA\u6027\u5F3A", "\u5BF9\u5C0F\u6837\u672C\u76F8\u5BF9\u7A33\u5B9A", "\u53EF\u76F4\u63A5\u8F93\u51FA\u6982\u7387"],
+    cons_en: ["Assumes mostly linear decision boundary", "May miss nonlinear lipid interactions"],
+    cons_cn: ["\u66F4\u9002\u5408\u8FD1\u4F3C\u7EBF\u6027\u8FB9\u754C", "\u53EF\u80FD\u65E0\u6CD5\u6355\u6349\u975E\u7EBF\u6027\u8102\u8D28\u4EA4\u4E92"],
+  },
+  SVM: {
+    name_en: "Support Vector Machine",
+    name_cn: "\u652F\u6301\u5411\u91CF\u673A",
+    formula_en: "f(x) = sign(\u2211\u03B1i yi K(xi, x) + b)",
+    formula_cn: "f(x) = sign(\u2211\u03B1i yi K(xi, x) + b)",
+    description_en: "A margin-based classifier that separates response groups by maximizing the gap between the support vectors of the two classes.",
+    description_cn: "\u4E00\u79CD\u57FA\u4E8E\u95F4\u9694\u6700\u5927\u5316\u7684\u5206\u7C7B\u5668\uff0c\u901A\u8FC7\u652F\u6301\u5411\u91CF\u5206\u79BB\u4E24\u7C7B\u54CD\u5E94\u7EC4\u3002",
+    type: "Kernel classifier",
+    interpretability: "Medium",
+    params_en: "Typical parameters: C, kernel, gamma",
+    params_cn: "\u5E38\u89C1\u53C2\u6570\uff1AC\uff0ckernel\uff0cgamma",
+    pros_en: ["Works well with high-dimensional features", "Can model nonlinear boundaries"],
+    pros_cn: ["\u9002\u5408\u9AD8\u7EF4\u7279\u5F81", "\u53EF\u5EFA\u6A21\u975E\u7EBF\u6027\u5206\u754C"],
+    cons_en: ["Probability interpretation is less direct", "Sensitive to kernel and hyperparameter choice"],
+    cons_cn: ["\u6982\u7387\u89E3\u91CA\u4E0D\u5982\u7EBF\u6027\u6A21\u578B\u76F4\u89C2", "\u5BF9\u6838\u51FD\u6570\u4E0E\u53C2\u6570\u8F83\u654F\u611F"],
+  },
+  KNN: {
+    name_en: "K-Nearest Neighbors",
+    name_cn: "K \u8FD1\u90BB",
+    formula_en: "Predict from the majority class among the k nearest training samples.",
+    formula_cn: "\u6839\u636E\u6700\u8FD1\u7684 k \u4E2A\u8BAD\u7EC3\u6837\u672C\u7684\u4E3B\u5BFC\u7C7B\u522B\u8FDB\u884C\u9884\u6D4B\u3002",
+    description_en: "A distance-based classifier that compares a new sample with the most similar training samples in lipid feature space.",
+    description_cn: "\u57FA\u4E8E\u8DDD\u79BB\u7684\u5206\u7C7B\u5668\uff0c\u5728\u8102\u8D28\u7279\u5F81\u7A7A\u95F4\u4E2D\u5C06\u65B0\u6837\u672C\u4E0E\u6700\u76F8\u4F3C\u7684\u8BAD\u7EC3\u6837\u672C\u8FDB\u884C\u6BD4\u8F83\u3002",
+    type: "Instance-based classifier",
+    interpretability: "Medium",
+    params_en: "Typical parameters: n_neighbors, weights, metric",
+    params_cn: "\u5E38\u89C1\u53C2\u6570\uff1An_neighbors\uff0cweights\uff0cmetric",
+    pros_en: ["Simple and intuitive", "Captures local neighborhood structure"],
+    pros_cn: ["\u7B80\u5355\u76F4\u89C2", "\u80FD\u6355\u6349\u5C40\u90E8\u90BB\u57DF\u7ED3\u6784"],
+    cons_en: ["Sensitive to scaling and noisy neighbors", "Inference slows as the training set grows"],
+    cons_cn: ["\u5BF9\u5C3A\u5EA6\u548C\u566A\u58F0\u8F83\u654F\u611F", "\u8BAD\u7EC3\u96C6\u8D8A\u5927\uff0c\u9884\u6D4B\u901F\u5EA6\u8D8A\u6162"],
+  },
 };
 
 // ?? Language System ????????????????????????????????????????????????????????
@@ -586,7 +672,7 @@ const LANG_EN = {
   tab_help: "Help & Glossary",
   hero_trial: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005)",
   hero_title: "Lipidomics-Based Exercise Response Prediction",
-  hero_subtitle: "Predict children's multi-indicator exercise response from baseline lipidomics data, assisting clinicians in personalized exercise prescription",
+  hero_subtitle: "Predict exercise-response change scores (e.g., ΔBMI / ΔPBF / ΔPSM) from baseline lipidomics data.",
   hero_date: "\u{1F4C5} 2026-04-10",
   hero_cohort: "\u{1F4CA} 281 Children Cohort",
   hero_lipids: "\u{1F9EC} 1,608 Lipid Molecules",
@@ -594,7 +680,7 @@ const LANG_EN = {
   hero_label_indicators: "Indicators",
   hero_label_criteria: "Selection Criteria",
   hero_label_cv: "Nested CV",
-  card_model_select: "Select Indicator & Model",
+  card_model_select: "Select Δ Indicator & Model",
   card_lipid_input: "Input Lipidomics Data",
   card_batch_title: "Batch Prediction",
   card_perf_title: "Model Performance Summary",
@@ -626,7 +712,7 @@ const LANG_EN = {
   th_prob_low: "Low Response Prob.",
   th_confidence: "Confidence",
   th_note: "Note",
-  th_indicator: "Indicator",
+  th_indicator: "Δ Indicator",
   th_group: "Grouping",
   th_best_model: "Best Model",
   th_full_auc: "Full-Cohort AUC",
@@ -636,15 +722,21 @@ const LANG_EN = {
   th_spec: "Specificity",
   th_n_feat: "Lipids",
   feat_importance_title: "Key Lipid Features",
-  perf_note: "14 selected models \u00B7 Full-cohort AUC > 0.65 \u00B7 Cross-validation AUC > 0.55",
+  perf_note: "14 lipid-only selected models \u00B7 \u0394 = outroll - enroll \u00B7 Q = Q1 vs Q4 \u00B7 T = T1 vs T3",
   step1_title: "Select Prediction Indicator",
-  step1_desc: "On the Single Sample page, select the clinical indicator of interest from the model cards on the left. Each indicator has quartile and tertile grouping models.",
+  step1_desc: "Select the target change indicator on the left (for example, ΔBMI or ΔPBF). Indicator naming and grouping are shown separately.",
   step2_title: "Input Lipidomics Data",
-  step2_desc: "Fill in the baseline lipidomics detection values in the right panel. You may use the Use Example button to auto-fill with mean values from the training cohort, or manually enter your data.",
+  step2_desc: "Fill in baseline lipidomics values in the right panel. The current public website is still lipid-only, so only the lipids used by the selected model need to be entered.",
   step3_title: "Get Prediction Result",
-  step3_desc: "Click Predict to receive either High Response or Low Response classification, along with probability values and confidence scores.",
+  step3_desc: "Prediction results refer to change-response groups rather than absolute measurements. For negative-better indicators, high response means decreasing more; for positive-better indicators such as ΔPSM, high response means increasing more.",
   step4_title: "Batch Prediction",
-  step4_desc: "To predict multiple samples at once, upload a CSV file. The system returns all predictions and supports CSV download.",
+  step4_desc: "To predict multiple samples at once, upload a CSV file. Batch prediction follows the same lipid-only model logic and exports all predictions as CSV.",
+  delta_note_title: "Δ indicators",
+  delta_note_desc: "Δ = outroll - enroll. The current website predicts change-response targets, not a single absolute measurement taken at one time point.",
+  group_note_title: "Q / T grouping",
+  group_note_desc: "Q means Q1 vs Q4 and T means T1 vs T3. The middle quantiles are excluded from the current extreme-group binary models.",
+  direction_note_title: "Response direction",
+  direction_note_desc: "For negative-better indicators such as ΔBMI / ΔPBF / ΔWHR, high response means decreasing more. For ΔPSM, high response means increasing more.",
   glossary_models: "ML Model Full Names",
   glossary_metrics: "Evaluation Metrics",
   glossary_indicators: "Clinical Indicators",
@@ -676,6 +768,9 @@ const LANG_EN = {
   model_EN_LR: "Elastic Net Logistic Regression",
   model_XGBoost: "XGBoost",
   model_RF: "Random Forest",
+  model_LR: "Logistic Regression",
+  model_SVM: "Support Vector Machine",
+  model_KNN: "K-Nearest Neighbors",
   model_LR_L2: "Logistic Regression (L2)",
   ind_BMI: "BMI",
   ind_weight: "Body Weight",
@@ -685,8 +780,8 @@ const LANG_EN = {
   ind_WHR: "Waist-to-Hip Ratio",
   ind_PBF: "Percent Body Fat",
   ind_PSM: "Percent Skeletal Muscle",
-  group_Q: "Quartile",
-  group_T: "Tertile",
+  group_Q: "Q (Q1 vs Q4)",
+  group_T: "T (T1 vs T3)",
   best_badge: "Best",
 };
 
@@ -702,7 +797,7 @@ const LANG_CN = {
   tab_help: "\u5E2E\u52A9\u4E0E\u540D\u8BCD\u89E3\u91CA",
   hero_trial: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) \u7814\u7A76 (NCT04984005)",
   hero_title: "\u57FA\u4E8E\u8102\u8D28\u7EC4\u5B66\u7684\u8FD0\u52A8\u54CD\u5E94\u9884\u6D4B\u5E73\u53F0",
-  hero_subtitle: "\u57FA\u4E8E\u57FA\u7EBF\u8102\u8D28\u7EC4\u6570\u636E\uFF0C\u9884\u6D4B\u513F\u7AE5\u5728\u591A\u4E2A\u4E34\u5E8A\u6307\u6807\u4E0A\u7684\u8FD0\u52A8\u54CD\u5E94\u7A0B\u5EA6\uFF0C\u8F85\u52A9\u4E34\u5E8A\u533B\u751F\u5236\u5B9A\u4E2A\u6027\u5316\u8FD0\u52A8\u5904\u65B9",
+  hero_subtitle: "\u57FA\u4E8E\u57FA\u7EBF\u8102\u8D28\u7EC4\u6570\u636E\uFF0C\u9884\u6D4B \u0394BMI / \u0394PBF / \u0394PSM \u7B49\u8FD0\u52A8\u54CD\u5E94\u53D8\u5316\u91CF\u3002",
   hero_date: "\u{1F4C5} 2026-04-10",
   hero_cohort: "\u{1F4CA} 281 \u513F\u7AE5\u961F\u5217",
   hero_lipids: "\u{1F9EC} 1,608 \u79CD\u8102\u8D28\u5206\u5B50",
@@ -710,7 +805,7 @@ const LANG_CN = {
   hero_label_indicators: "\u4E34\u5E8A\u6307\u6807",
   hero_label_criteria: "\u5165\u9009\u6807\u51C6",
   hero_label_cv: "\u5D4C\u5957\u4EA4\u53C9\u9A8C\u8BC1",
-  card_model_select: "\u9009\u62E9\u9884\u6D4B\u6307\u6807\u4E0E\u6A21\u578B",
+  card_model_select: "\u9009\u62E9 \u0394 \u6307\u6807\u4E0E\u6A21\u578B",
   card_lipid_input: "\u8F93\u5165\u8102\u8D28\u7EC4\u6570\u636E",
   card_batch_title: "\u6279\u91CF\u9884\u6D4B",
   card_perf_title: "\u6A21\u578B\u6027\u80FD\u6C47\u603B\u8868",
@@ -742,7 +837,7 @@ const LANG_CN = {
   th_prob_low: "\u4F4E\u54CD\u5E94\u6982\u7387",
   th_confidence: "\u7F6E\u4FE1\u5EA6",
   th_note: "\u5907\u6CE8",
-  th_indicator: "\u6307\u6807",
+  th_indicator: "\u6307\u6807\uFF08\u0394\uFF09",
   th_group: "\u5206\u7EC4",
   th_best_model: "\u6700\u4F18\u6A21\u578B",
   th_full_auc: "\u5168\u961F\u5217 AUC",
@@ -752,15 +847,21 @@ const LANG_CN = {
   th_spec: "\u7279\u5F02\u5EA6",
   th_n_feat: "\u8102\u8D28\u6570",
   feat_importance_title: "\u5173\u952E\u8102\u8D28\u7279\u5F81",
-  perf_note: "14 \u4E2A\u5165\u9009\u6A21\u578B \u00B7 \u5168\u961F\u5217 AUC > 0.65 \u00B7 \u4EA4\u53C9\u9A8C\u8BC1 AUC > 0.55",
+  perf_note: "14 \u4E2A\u5F53\u524D\u4E0A\u7EBF\u7684\u8102\u8D28\u7EC4\u6A21\u578B \u00B7 \u0394 = \u5E72\u9884\u540E - \u5E72\u9884\u524D \u00B7 Q = Q1 vs Q4 \u00B7 T = T1 vs T3",
   step1_title: "\u9009\u62E9\u9884\u6D4B\u6307\u6807",
-  step1_desc: "\u5728\u5355\u6837\u672C\u9884\u6D4B\u9875\u9762\uFF0C\u4ECE\u5DE6\u4FA7\u6A21\u578B\u5361\u7247\u4E2D\u9009\u62E9\u60A8\u5173\u5FC3\u7684\u4E34\u5E8A\u6307\u6807\u3002\u6BCF\u4E2A\u6307\u6807\u6709\u56DB\u5206\u4F4D\u548C\u4E09\u5206\u4F4D\u4E24\u79CD\u5206\u7EC4\u6A21\u578B\u3002",
+  step1_desc: "\u5148\u9009\u62E9\u76EE\u6807\u53D8\u5316\u6307\u6807\uFF08\u4F8B\u5982 \u0394BMI \u6216 \u0394PBF\uFF09\u3002\u524D\u53F0\u5C06 indicator \u4E0E grouping \u5206\u5F00\u5C55\u793A\u3002",
   step2_title: "\u8F93\u5165\u8102\u8D28\u7EC4\u6570\u636E",
-  step2_desc: "\u5728\u53F3\u4FA7\u8868\u5355\u4E2D\u586B\u5199\u57FA\u7EBF\u8102\u8D28\u7EC4\u68C0\u6D4B\u6570\u636E\u3002\u70B9\u51FB\u4F7F\u7528\u793A\u4F8B\u6309\u94AE\u53EF\u81EA\u52A8\u586B\u5145\u8BAD\u7EC3\u961F\u5217\u5747\u503C\uFF0C\u4F60\u4E5F\u53EF\u4EE5\u624B\u52A8\u8F93\u5165\u3002",
+  step2_desc: "\u5728\u53F3\u4FA7\u586B\u5199\u57FA\u7EBF\u8102\u8D28\u7EC4\u6570\u503C\u3002\u5F53\u524D\u516C\u5F00\u7F51\u7AD9\u4ECD\u4E3A lipid-only \u6A21\u578B\uFF0C\u56E0\u6B64\u53EA\u9700\u586B\u9009\u4E2D\u6A21\u578B\u5B9E\u9645\u4F7F\u7528\u7684\u8102\u8D28\u7279\u5F81\u3002",
   step3_title: "\u83B7\u53D6\u9884\u6D4B\u7ED3\u679C",
-  step3_desc: "\u70B9\u51FB\u5F00\u59CB\u9884\u6D4B\uFF0C\u7CFB\u7EDF\u8FD4\u56DE\u9AD8\u54CD\u5E94\u6216\u4F4E\u54CD\u5E94\u7684\u5206\u7C7B\u7ED3\u679C\uFF0C\u4EE5\u53CA\u5BF9\u5E94\u7684\u6982\u7387\u503C\u548C\u7F6E\u4FE1\u5EA6\u3002",
+  step3_desc: "\u9884\u6D4B\u7ED3\u679C\u5BF9\u5E94\u7684\u662F\u201C\u53D8\u5316\u54CD\u5E94\u7EC4\u201D\uFF0C\u4E0D\u662F\u7EDD\u5BF9\u503C\u9AD8\u4F4E\u3002\u5BF9 \u0394BMI / \u0394PBF / \u0394WHR \u8FD9\u7C7B\u8D1F\u5411\u66F4\u4F18\u6307\u6807\uFF0C\u9AD8\u54CD\u5E94 = \u4E0B\u964D\u66F4\u591A\uFF1B\u5BF9 \u0394PSM\uFF0C\u9AD8\u54CD\u5E94 = \u4E0A\u5347\u66F4\u591A\u3002",
   step4_title: "\u6279\u91CF\u9884\u6D4B",
-  step4_desc: "\u5982\u9700\u540C\u65F6\u9884\u6D4B\u591A\u4E2A\u6837\u672C\uFF0C\u53EF\u4E0A\u4F20 CSV \u6587\u4EF6\u3002\u7CFB\u7EDF\u81EA\u52A8\u8FD4\u56DE\u6240\u6709\u6837\u672C\u7684\u9884\u6D4B\u7ED3\u679C\u5E76\u652F\u6301 CSV \u4E0B\u8F7D\u3002",
+  step4_desc: "\u5982\u9700\u540C\u65F6\u9884\u6D4B\u591A\u4E2A\u6837\u672C\uFF0C\u53EF\u4E0A\u4F20 CSV \u6587\u4EF6\u3002\u6279\u91CF\u9884\u6D4B\u4F9D\u7136\u9075\u5FAA\u76F8\u540C\u7684 lipid-only \u6A21\u578B\u903B\u8F91\uFF0C\u5E76\u652F\u6301\u5BFC\u51FA CSV \u7ED3\u679C\u3002",
+  delta_note_title: "\u0394 \u6307\u6807\u542B\u4E49",
+  delta_note_desc: "\u5F53\u524D\u7F51\u7AD9\u4E2D\u7684 indicator \u9ED8\u8BA4\u90FD\u662F\u53D8\u5316\u91CF\uFF1A\u0394 = outroll - enroll = \u5E72\u9884\u540E - \u5E72\u9884\u524D\u3002",
+  group_note_title: "Q / T \u5206\u7EC4\u542B\u4E49",
+  group_note_desc: "Q \u8868\u793A Q1 vs Q4\uFF0CT \u8868\u793A T1 vs T3\u3002\u4E2D\u95F4\u5206\u4F4D\u4E0D\u8FDB\u5165\u5F53\u524D\u6781\u7AEF\u5206\u7EC4\u4E8C\u5206\u7C7B\u6A21\u578B\u3002",
+  direction_note_title: "\u9AD8/\u4F4E\u54CD\u5E94\u5224\u8BFB",
+  direction_note_desc: "\u5BF9 \u0394BMI / \u0394PBF / \u0394WHR \u7B49\u8D1F\u5411\u66F4\u4F18\u6307\u6807\uFF0C\u9AD8\u54CD\u5E94 = \u4E0B\u964D\u66F4\u591A\uFF1B\u5BF9 \u0394PSM\uFF0C\u9AD8\u54CD\u5E94 = \u4E0A\u5347\u66F4\u591A\u3002",
   glossary_models: "\u673A\u5668\u5B66\u4E60\u6A21\u578B\u5168\u79F0",
   glossary_metrics: "\u8BC4\u4F30\u6307\u6807\u8BF4\u660E",
   glossary_indicators: "\u4E34\u5E8A\u6307\u6807\u8BF4\u660E",
@@ -792,6 +893,9 @@ const LANG_CN = {
   model_EN_LR: "\u7F29\u6027\u7F51\u7EDC\u903B\u8F91\u56DE\u5F52",
   model_XGBoost: "\u6781\u7AEF\u68AF\u5EA6\u63A8\u5347",
   model_RF: "\u968F\u673A\u68EE\u6797",
+  model_LR: "\u903B\u8F91\u56DE\u5F52",
+  model_SVM: "\u652F\u6301\u5411\u91CF\u673A",
+  model_KNN: "K \u8FD1\u90BB",
   model_LR_L2: "\u903B\u8F91\u56DE\u5F52\uFF08L2 \u6B63\u5219\u5316\uFF09",
   ind_BMI: "BMI",
   ind_weight: "\u4F53\u91CD",
@@ -801,8 +905,8 @@ const LANG_CN = {
   ind_WHR: "\u8170\u818F\u6BD4",
   ind_PBF: "\u4F53\u8102\u7387",
   ind_PSM: "\u808C\u8089\u7387",
-  group_Q: "\u56DB\u5206\u4F4D",
-  group_T: "\u4E09\u5206\u4F4D",
+  group_Q: "Q\uFF08Q1 vs Q4\uFF09",
+  group_T: "T\uFF08T1 vs T3\uFF09",
   best_badge: "\u6700\u4F18",
 };
 
@@ -902,13 +1006,34 @@ function switchTab(name) {
 }
 
 function getModelName(modelKey) {
-  var modelMap = { EN_LR: "model_EN_LR", XGBoost: "model_XGBoost", RF: "model_RF", LR_L2: "model_LR_L2" };
+  var modelMap = { EN_LR: "model_EN_LR", XGBoost: "model_XGBoost", RF: "model_RF", LR: "model_LR", SVM: "model_SVM", KNN: "model_KNN", LR_L2: "model_LR_L2" };
   return t(modelMap[modelKey] || modelKey);
+}
+
+function getModelAbbrev(modelKey) {
+  var doc = MODEL_FULL_NAMES[modelKey] || {};
+  return doc.abbrev || modelKey;
 }
 
 function getModelFullName(modelKey) {
   var doc = MODEL_FULL_NAMES[modelKey] || { fullEn: modelKey, fullCn: modelKey };
   return currentLang === "cn" ? doc.fullCn : doc.fullEn;
+}
+
+function shouldShowModelFullName(modelKey) {
+  var modelName = getModelAbbrev(modelKey);
+  var fullName = getModelFullName(modelKey);
+  return fullName && fullName !== modelName;
+}
+
+function getMergedModelDoc(modelKey) {
+  return Object.assign({}, MODEL_FALLBACK_DOCS[modelKey] || {}, modelDocs[modelKey] || {});
+}
+
+function getGlossaryModelKeys() {
+  var modelKeys = Object.values(modelInfo).map(function(info) { return info.model_name; }).filter(Boolean);
+  if (modelKeys.length === 0) return ["RF", "LR", "KNN", "SVM"];
+  return Array.from(new Set(modelKeys));
 }
 
 function getIndicatorName(ind) {
@@ -918,6 +1043,18 @@ function getIndicatorName(ind) {
 
 function getGroupName(group) {
   return t(group === "Q" || group === "q4" ? "group_Q" : "group_T");
+}
+
+function getIndicatorDisplay(info) {
+  if (!info) return "";
+  if (currentLang === "cn") return info.indicator_display_cn || info.indicator_display || getIndicatorName(info.indicator || "");
+  return info.indicator_display_en || info.indicator_display || getIndicatorName(info.indicator || "");
+}
+
+function getGroupDisplay(info) {
+  if (!info) return "";
+  if (currentLang === "cn") return info.group_display_cn || getGroupName(info.group_code || info.group || "Q");
+  return info.group_display_en || getGroupName(info.group_code || info.group || "Q");
 }
 
 function renderModelGrid() {
@@ -934,19 +1071,20 @@ function renderModelGrid() {
     var m2f = info.m2f_auc || 0;
     var aucGood = auc >= 0.75;
     var nFeat = info.n_feat || 0;
-    var indName = getIndicatorName(info.indicator || key);
+    var indName = getIndicatorDisplay(info);
     var modelName = getModelName(info.model_name || "");
+    var modelAbbrev = getModelAbbrev(info.model_name || "");
     var abbrev = info.model_name || key;
     var fullName = getModelFullName(abbrev);
-    var groupName = getGroupName(info.group || "Q");
+    var groupName = getGroupDisplay(info);
     var featList = (info.features || []).slice(0,3).join(" \u00B7 ");
     var allLipidsText = t("all_lipids", { n: nFeat });
-    var showFull = abbrev !== "XGBoost" && MODEL_FULL_NAMES[abbrev];
+    var showFull = shouldShowModelFullName(abbrev);
     return '<div class="model-card" data-key="' + key + '" onclick="selectModel(\'' + key + '\')">' +
       '<div class="model-card-badge">\u2713</div>' +
       '<div class="model-card-indicator">' + indName + '</div>' +
       '<div class="model-card-name">' + groupName + '</div>' +
-      '<div class="model-card-model">' + modelName + '</div>' +
+      '<div class="model-card-model">' + modelAbbrev + '</div>' +
       (showFull ? '<div class="model-card-fullname">' + fullName + '</div>' : '') +
       '<div class="auc-bar-wrap">' +
         '<div class="auc-bar-bg">' +
@@ -979,14 +1117,15 @@ function selectModel(key) {
   var auc = info.full_auc || 0;
   var m2f = info.m2f_auc || 0;
   var nFeat = features.length;
-  var indName = getIndicatorName(info.indicator || key);
+  var indName = getIndicatorDisplay(info);
   var modelName = getModelName(info.model_name || "");
-  var groupName = getGroupName(info.group || "Q");
+  var groupName = getGroupDisplay(info);
+  var targetNote = currentLang === "cn" ? (info.target_definition_cn || "\u0394 = \u5E72\u9884\u540E - \u5E72\u9884\u524D") : (info.target_definition_en || "\u0394 = outroll - enroll");
 
   document.getElementById("model-info-bar").style.display = "block";
-  document.getElementById("selected-model-name").textContent = indName + "\uFF08" + groupName + "\uFF09" + modelName;
+  document.getElementById("selected-model-name").textContent = indName + " \u00B7 " + groupName + " \u00B7 " + modelName;
   document.getElementById("selected-model-auc").textContent = t("full_auc_label") + "=" + auc.toFixed(4) + " \u00B7 " + t("m2f_label") + "=" + m2f.toFixed(4);
-  document.getElementById("selected-model-features").textContent = t("all_lipids", { n: nFeat });
+  document.getElementById("selected-model-features").textContent = targetNote + " \u00B7 " + t("all_lipids", { n: nFeat });
 
   renderModelFormulaPanel(info.model_name || "", info);
 
@@ -1005,7 +1144,7 @@ function selectModel(key) {
 
 function renderModelFormulaPanel(modelKey, info) {
   var panel = document.getElementById("model-formula-panel");
-  var doc = modelDocs[modelKey] || {};
+  var doc = getMergedModelDoc(modelKey);
 
   if (!doc.name_en) {
     panel.classList.add("hidden");
@@ -1035,11 +1174,11 @@ function renderModelFormulaPanel(modelKey, info) {
 }
 
 function renderGlossary() {
-  var modelKeys = ["EN_LR", "XGBoost", "RF", "LR_L2"];
+  var modelKeys = getGlossaryModelKeys();
   var modelContainer = document.getElementById("glossary-models");
   modelContainer.innerHTML = modelKeys.map(function(k) {
-    var doc = modelDocs[k] || {};
-    var nameEn = doc.name_en || k;
+    var doc = getMergedModelDoc(k);
+    var nameEn = doc.name_en || getModelFullName(k);
     var nameCn = doc.name_cn || "";
     var desc = currentLang === "cn" ? (doc.description_cn || doc.description_en || "") : (doc.description_en || "");
     var shortDesc = desc.length > 120 ? desc.substring(0, 120) + "..." : desc;
@@ -1051,7 +1190,7 @@ function renderGlossary() {
     '</div>';
   }).join("");
 
-  var metricKeys = ["AUC", "AUROC", "AUPRC", "ROC", "Sens / Sensitivity", "Spec / Specificity", "M\u2192F", "F\u2192M", "Nested CV", "CV", "k-fold CV", "Q (Quartile)", "T (Tertile)"];
+  var metricKeys = ["Δ", "AUC", "AUROC", "AUPRC", "ROC", "Sens / Sensitivity", "Spec / Specificity", "M\u2192F", "F\u2192M", "Nested CV", "CV", "k-fold CV", "Q (Quartile)", "T (Tertile)"];
   var metricsContainer = document.getElementById("glossary-metrics");
   metricsContainer.innerHTML = metricKeys.map(function(k) {
     var item = glossary[k] || {};
@@ -1071,12 +1210,16 @@ function renderGlossary() {
     indicatorContainer.innerHTML = indicatorKeys.map(function(k) {
       var item = glossary[k] || {};
       var desc = currentLang === "cn" ? (item.description_cn || item.description_en || "") : (item.description_en || "");
+      var deltaPrefix = currentLang === "cn"
+        ? "\u5F53\u524D\u7F51\u7AD9\u7684\u9884\u6D4B\u76EE\u6807\u4E3A\u8BE5\u6307\u6807\u7684\u53D8\u5316\u91CF\uFF08\u5E72\u9884\u540E - \u5E72\u9884\u524D\uFF09\u3002"
+        : "On this website, the prediction target is the change score for this indicator (outroll - enroll). ";
+      var displayLabel = k === "BMI z-score" ? "ΔBMI z-score" : ("Δ" + k);
       var shortDesc = desc.length > 120 ? desc.substring(0, 120) + "..." : desc;
       return '<div class="glossary-item">' +
-        '<div class="glossary-abbrev">' + k + '</div>' +
+        '<div class="glossary-abbrev">' + displayLabel + '</div>' +
         '<div class="glossary-full-en">' + (item.full_en || k) + '</div>' +
         (item.full_cn ? '<div class="glossary-full-cn">' + item.full_cn + '</div>' : '') +
-        '<div class="glossary-desc">' + shortDesc + '</div>' +
+        '<div class="glossary-desc">' + deltaPrefix + shortDesc + '</div>' +
       '</div>';
     }).join("");
   }
@@ -1166,8 +1309,8 @@ function renderPredictionResult(result) {
   var isHigh = result.prediction === 1;
   var cardClass = isHigh ? "high" : "low";
   var icon = isHigh ? "\u2705" : "\u26A0\uFE0F";
-  var labelText = isHigh ? t("label_high") : t("label_low");
-  var labelDetail = isHigh ? t("label_high_detail") : t("label_low_detail");
+  var labelText = currentLang === "cn" ? (result.label_cn || (isHigh ? t("label_high") : t("label_low"))) : (result.label_en || (isHigh ? t("label_high") : t("label_low")));
+  var labelDetail = currentLang === "cn" ? (result.label_detail_cn || result.label_detail || "") : (result.label_detail_en || result.label_detail || "");
 
   var missing = result.missing_features || [];
   var warnList = missing.slice(0, 3).join("\u3001");
@@ -1216,10 +1359,10 @@ function renderBatchSelect() {
     sorted.map(function(entry) {
       var key = entry[0];
       var info = entry[1];
-      var indName = getIndicatorName(info.indicator || key);
+      var indName = getIndicatorDisplay(info);
       var modelName = getModelName(info.model_name || "");
-      var groupName = getGroupName(info.group || "Q");
-      return '<option value="' + key + '">' + indName + '\uFF08' + groupName + '\uFF09' + modelName + ' \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + '</option>';
+      var groupName = getGroupDisplay(info);
+      return '<option value="' + key + '">' + indName + ' \u00B7 ' + groupName + ' \u00B7 ' + modelName + ' \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + '</option>';
     }).join("");
 }
 
@@ -1230,10 +1373,11 @@ async function updateBatchModelInfo() {
   var div = document.getElementById("batch-model-info");
   if (!key) { div.classList.add("hidden"); return; }
   div.classList.remove("hidden");
-  var indName = getIndicatorName(info.indicator || key);
+  var indName = getIndicatorDisplay(info);
   var modelName = getModelName(info.model_name || "");
-  var groupName = getGroupName(info.group || "Q");
-  div.innerHTML = '<strong>' + indName + '\uFF08' + groupName + '\uFF09' + modelName + '</strong> \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + ' \u00B7 ' + t("all_lipids", { n: info.n_feat||0 });
+  var groupName = getGroupDisplay(info);
+  var targetNote = currentLang === "cn" ? (info.target_definition_cn || "\u0394 = \u5E72\u9884\u540E - \u5E72\u9884\u524D") : (info.target_definition_en || "\u0394 = outroll - enroll");
+  div.innerHTML = '<strong>' + indName + ' \u00B7 ' + groupName + ' \u00B7 ' + modelName + '</strong> \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + ' \u00B7 ' + targetNote + ' \u00B7 ' + t("all_lipids", { n: info.n_feat||0 });
   document.getElementById("batch-run-btn").disabled = true;
 }
 
@@ -1357,10 +1501,10 @@ function renderModelPerfTable() {
     var auc = info.full_auc || 0;
     var m2f = info.m2f_auc || 0;
     var f2m = info.f2m_auc || 0;
-    var groupClass = info.group === "Q" || info.group === "q4" ? "badge-q4" : "badge-q3";
-    var indName = getIndicatorName(info.indicator || key);
+    var groupClass = (info.group_code || info.group) === "Q" || info.group === "q4" ? "badge-q4" : "badge-q3";
+    var indName = getIndicatorDisplay(info);
     var modelName = getModelName(info.model_name || "");
-    var groupName = getGroupName(info.group || "Q");
+    var groupName = getGroupDisplay(info);
     return '<tr onclick="showFeatureImportance(\'' + key + '\')" style="cursor:pointer;">' +
       '<td class="indicator-cell">' + indName + '</td>' +
       '<td><span class="badge ' + groupClass + '">' + groupName + '</span></td>' +
@@ -1381,10 +1525,10 @@ async function showFeatureImportance(key) {
     var data = await resp.json();
     var card = document.getElementById("feat-importance-card");
     var info = modelInfo[key] || {};
-    var indName = getIndicatorName(info.indicator || key);
+    var indName = getIndicatorDisplay(info);
     var modelName = getModelName(info.model_name || "");
-    var groupName = getGroupName(info.group || "Q");
-    document.getElementById("feat-importance-title").textContent = indName + "\uFF08" + groupName + "\uFF09" + modelName;
+    var groupName = getGroupDisplay(info);
+    document.getElementById("feat-importance-title").textContent = indName + " \u00B7 " + groupName + " \u00B7 " + modelName;
     card.style.display = "block";
     card.scrollIntoView({ behavior: "smooth", block: "start" });
 
