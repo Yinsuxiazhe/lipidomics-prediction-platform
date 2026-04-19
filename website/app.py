@@ -590,6 +590,13 @@ def build_model_metadata(model_key: str, info: dict | None = None, data: dict | 
     group_raw = data.get("group") or info.get("group") or "q4"
     direction = data.get("direction") or info.get("direction") or infer_indicator_direction(indicator)
     features = data.get("features") or info.get("features") or []
+    clinical_features = data.get("clinical_features") or info.get("clinical_features") or []
+    lipid_features = data.get("lipid_features") or info.get("lipid_features") or features
+    model_type = data.get("model_type") or info.get("model_type") or "lipid"
+    input_schema = data.get("input_schema") or info.get("input_schema") or [
+        {"name": feature, "section": "lipid", "required": True}
+        for feature in features
+    ]
 
     indicator_meta = get_indicator_display_meta(indicator)
     group_meta = get_group_display_meta(group_raw)
@@ -615,6 +622,18 @@ def build_model_metadata(model_key: str, info: dict | None = None, data: dict | 
         "spec": data.get("spec", info.get("spec", 0)),
         "n_feat": len(features) or info.get("n_feat", 0),
         "features": features,
+        "clinical_features": clinical_features,
+        "lipid_features": lipid_features,
+        "model_type": model_type,
+        "input_schema": input_schema,
+        "is_best_within_type": bool(
+            data.get("is_best_within_type", info.get("is_best_within_type", False))
+        ),
+        "is_best_overall": bool(
+            data.get("is_best_overall", info.get("is_best_overall", False))
+        ),
+        "calibration": data.get("calibration", info.get("calibration")),
+        "dca": data.get("dca", info.get("dca")),
         "description": info.get("description", description_cn),
         "description_en": description_en,
         "description_cn": description_cn,
@@ -664,34 +683,44 @@ def parse_glm5_model_components(model_key: str, meta: dict | None = None) -> tup
 
 def load_all_models():
     """Load all .pkl model files at startup."""
+    _models.clear()
+    _model_info.clear()
+
+    glm5_model_dir = BASE_DIR / "trained_models"
+    glm5_meta_path = glm5_model_dir / "model_metadata.json"
+    glm5_pkl_files = sorted(glm5_model_dir.glob("*.pkl")) if glm5_model_dir.exists() else []
+    prefer_glm5_assets = glm5_meta_path.exists() and bool(glm5_pkl_files)
+
+    if prefer_glm5_assets:
+        print("[App] Detected GLM5 trained_models bundle; skipping legacy website/models assets.")
+
     info_path = DATA_DIR / "model_info.json"
-    if info_path.exists():
+    if (not prefer_glm5_assets) and info_path.exists():
         with open(info_path, encoding="utf-8") as f:
             _model_info.update(json.load(f))
 
-    for pkl_file in MODELS_DIR.glob("*.pkl"):
-        key = pkl_file.stem
-        with open(pkl_file, "rb") as f:
-            data = pickle.load(f)
-        _models[key] = data
-        if key not in _model_info:
-            _model_info[key] = {
-                "indicator": data.get("indicator", key),
-                "model_name": data.get("model_name", "?"),
-                "path": str(pkl_file.relative_to(BASE_DIR)),
-            }
-    print(f"[App] Loaded {len(_models)} models: {sorted(_models.keys())}")
+    if not prefer_glm5_assets:
+        for pkl_file in MODELS_DIR.glob("*.pkl"):
+            key = pkl_file.stem
+            with open(pkl_file, "rb") as f:
+                data = pickle.load(f)
+            _models[key] = data
+            if key not in _model_info:
+                _model_info[key] = {
+                    "indicator": data.get("indicator", key),
+                    "model_name": data.get("model_name", "?"),
+                    "path": str(pkl_file.relative_to(BASE_DIR)),
+                }
+        print(f"[App] Loaded {len(_models)} legacy models: {sorted(_models.keys())}")
 
     # Also try loading from GLM5 trained_models directory
-    glm5_model_dir = BASE_DIR / "trained_models"
-    glm5_meta_path = glm5_model_dir / "model_metadata.json"
     _glm5_metadata = {}
     if glm5_meta_path.exists():
         with open(glm5_meta_path, encoding="utf-8") as f:
             _glm5_metadata = json.load(f)
 
     if glm5_model_dir.exists():
-        for pkl_file in glm5_model_dir.glob("*.pkl"):
+        for pkl_file in glm5_pkl_files:
             key = pkl_file.stem
             if key not in _models:
                 try:
@@ -700,35 +729,57 @@ def load_all_models():
                     # GLM5 models are raw sklearn objects; wrap with metadata
                     meta = _glm5_metadata.get(key, {})
                     features = meta.get("features", [])
+                    clinical_features = meta.get("clinical_features", [])
+                    lipid_features = meta.get("lipid_features", features)
                     perf = meta.get("performance", {})
                     indicator, group_code, model_abbrev = parse_glm5_model_components(key, meta)
                     group_meta = get_group_display_meta(group_code)
                     _models[key] = {
                         "model": raw_model,
                         "features": features,
+                        "clinical_features": clinical_features,
+                        "lipid_features": lipid_features,
                         "indicator": indicator,
                         "group": group_code,
                         "model_name": model_abbrev,
+                        "model_type": meta.get("model_type", "lipid"),
                         "full_auc": perf.get("full_auroc", 0),
+                        "full_auprc": perf.get("full_auprc", meta.get("full_auprc", 0)),
                         "m2f_auc": perf.get("m2f_auroc", 0),
                         "f2m_auc": perf.get("f2m_auroc", 0),
                         "sens": perf.get("full_sens", 0),
                         "spec": perf.get("full_spec", 0),
+                        "input_schema": meta.get("input_schema", []),
+                        "sample_values": meta.get("sample_values", {}),
+                        "calibration": meta.get("calibration"),
+                        "dca": meta.get("dca"),
+                        "is_best_within_type": meta.get("is_best_within_type", False),
+                        "is_best_overall": meta.get("is_best_overall", False),
                         "is_glm5": True,
                     }
                     _model_info[key] = {
                         "indicator": indicator,
                         "indicator_cn": meta.get("indicator_cn", _INDICATOR_CN.get(indicator, indicator)),
                         "model_name": model_abbrev,
+                        "model_type": meta.get("model_type", "lipid"),
                         "group": group_code,
                         "group_cn": group_meta["group_display_cn"],
                         "full_auc": perf.get("full_auroc", 0),
+                        "full_auprc": perf.get("full_auprc", meta.get("full_auprc", 0)),
                         "m2f_auc": perf.get("m2f_auroc", 0),
                         "f2m_auc": perf.get("f2m_auroc", 0),
                         "sens": perf.get("full_sens", 0),
                         "spec": perf.get("full_spec", 0),
                         "n_feat": len(features),
                         "features": features,
+                        "clinical_features": clinical_features,
+                        "lipid_features": lipid_features,
+                        "input_schema": meta.get("input_schema", []),
+                        "sample_values": meta.get("sample_values", {}),
+                        "calibration": meta.get("calibration"),
+                        "dca": meta.get("dca"),
+                        "is_best_within_type": meta.get("is_best_within_type", False),
+                        "is_best_overall": meta.get("is_best_overall", False),
                         "path": str(pkl_file.relative_to(APP_DIR)),
                     }
                 except Exception as e:
@@ -758,6 +809,23 @@ def find_lipid_value(lipid_name: str, request_data: dict) -> float | None:
                 return None
     return None
 
+
+def ensure_model_runtime_compatibility(model):
+    """Patch deserialized estimators that miss newer sklearn runtime attrs."""
+
+    def patch_estimator(estimator):
+        if estimator is None:
+            return
+        if hasattr(estimator, "steps"):
+            for _, step_estimator in getattr(estimator, "steps", []):
+                patch_estimator(step_estimator)
+            return
+        if estimator.__class__.__name__ == "LogisticRegression" and not hasattr(estimator, "multi_class"):
+            estimator.multi_class = "auto"
+
+    patch_estimator(model)
+    return model
+
 # ── 预测核心 ─────────────────────────────────────────────────────────
 def predict_single(model_key: str, lipid_values: dict) -> dict:
     """Run single-sample prediction using a specific model."""
@@ -765,7 +833,8 @@ def predict_single(model_key: str, lipid_values: dict) -> dict:
         return {"error": f"Model '{model_key}' not found"}
 
     data = _models[model_key]
-    model = data["model"]
+    model = ensure_model_runtime_compatibility(data["model"])
+    data["model"] = model
     features = data["features"]
 
     # Build feature vector
@@ -811,6 +880,7 @@ def predict_single(model_key: str, lipid_values: dict) -> dict:
             "group_display_en": info.get("group_display_en", ""),
             "group_display_cn": info.get("group_display_cn", ""),
             "model_name": info.get("model_name", ""),
+            "model_type": info.get("model_type", "lipid"),
             "full_auc": info.get("full_auc", 0),
             "m2f_auc": info.get("m2f_auc", 0),
             "f2m_auc": info.get("f2m_auc", 0),
@@ -818,6 +888,9 @@ def predict_single(model_key: str, lipid_values: dict) -> dict:
             "spec": info.get("spec", 0),
             "n_feat": len(features),
             "features": features,
+            "clinical_features": info.get("clinical_features", []),
+            "lipid_features": info.get("lipid_features", features),
+            "input_schema": info.get("input_schema", []),
         }
     }
 
@@ -836,6 +909,90 @@ def api_models():
         "models": models,
     })
 
+
+def _match_model_slice(info: dict, indicator: str, group: str, model_type: str | None = None) -> bool:
+    if not info:
+        return False
+    if info.get("indicator") != indicator:
+        return False
+    if info.get("group_code") != normalize_group_code(group):
+        return False
+    if model_type and info.get("model_type", "lipid") != model_type:
+        return False
+    return True
+
+
+def _sort_model_metadata_rows(rows: list[dict]) -> list[dict]:
+    complexity_order = {"LR_L2": 0, "EN_LR": 1, "RF": 2, "XGBoost": 3}
+
+    def key(row: dict):
+        return (
+            -float(row.get("full_auc", 0) or 0),
+            -float(row.get("auprc", row.get("full_auprc", 0) or 0) or 0),
+            -(float(row.get("sens", 0) or 0) + float(row.get("spec", 0) or 0)),
+            complexity_order.get(row.get("model_name", ""), 99),
+            row.get("model_name", ""),
+        )
+
+    return sorted(rows, key=key)
+
+
+@app.route("/api/comparison", methods=["GET"])
+def api_comparison():
+    indicator = request.args.get("indicator", "").strip()
+    group = request.args.get("group", "").strip()
+    if not indicator or not group:
+        return jsonify({"error": "indicator and group are required"}), 400
+
+    matched = [
+        get_model_metadata(key)
+        for key in sorted(_model_info)
+        if _match_model_slice(get_model_metadata(key), indicator=indicator, group=group)
+    ]
+    if not matched:
+        return jsonify({"error": "No matching models found"}), 404
+
+    model_types = ("clinical", "lipid", "fusion")
+    models = {}
+    for model_type in model_types:
+        rows = [row for row in matched if row.get("model_type", "lipid") == model_type]
+        if not rows:
+            continue
+        best_rows = [row for row in rows if row.get("is_best_within_type")]
+        chosen = best_rows[0] if best_rows else _sort_model_metadata_rows(rows)[0]
+        models[model_type] = chosen
+
+    return jsonify({
+        "indicator": indicator,
+        "group_code": normalize_group_code(group),
+        "models": models,
+    })
+
+
+@app.route("/api/model_family_summary", methods=["GET"])
+def api_model_family_summary():
+    indicator = request.args.get("indicator", "").strip()
+    group = request.args.get("group", "").strip()
+    model_type = request.args.get("model_type", "").strip()
+    if not indicator or not group or not model_type:
+        return jsonify({"error": "indicator, group, and model_type are required"}), 400
+
+    rows = [
+        get_model_metadata(key)
+        for key in sorted(_model_info)
+        if _match_model_slice(
+            get_model_metadata(key),
+            indicator=indicator,
+            group=group,
+            model_type=model_type,
+        )
+    ]
+    rows = _sort_model_metadata_rows(rows)
+    return jsonify({
+        "count": len(rows),
+        "models": rows,
+    })
+
 @app.route("/api/predict", methods=["POST"])
 def api_predict():
     """Single sample prediction."""
@@ -844,7 +1001,11 @@ def api_predict():
         return jsonify({"error": "No JSON data provided"}), 400
 
     model_key = data.get("model_key", "")
-    lipid_values = {k: v for k, v in data.items() if k != "model_key"}
+    nested_inputs = data.get("inputs")
+    if isinstance(nested_inputs, dict):
+        lipid_values = nested_inputs
+    else:
+        lipid_values = {k: v for k, v in data.items() if k != "model_key"}
     result = predict_single(model_key, lipid_values)
     if "error" in result:
         return jsonify(result), 404
@@ -931,7 +1092,9 @@ def api_model_detail(model_key: str):
         "group_display_en": info.get("group_display_en", ""),
         "group_display_cn": info.get("group_display_cn", ""),
         "model_name": info.get("model_name", ""),
+        "model_type": info.get("model_type", "lipid"),
         "full_auc": info.get("full_auc", 0),
+        "full_auprc": info.get("full_auprc", 0),
         "m2f_auc": info.get("m2f_auc", 0),
         "f2m_auc": info.get("f2m_auc"),
         "sens": info.get("sens", 0),
@@ -943,6 +1106,11 @@ def api_model_detail(model_key: str):
         "target_definition_en": info.get("target_definition_en", ""),
         "target_definition_cn": info.get("target_definition_cn", ""),
         "direction": info.get("direction", ""),
+        "clinical_features": info.get("clinical_features", []),
+        "lipid_features": info.get("lipid_features", features),
+        "input_schema": info.get("input_schema", []),
+        "calibration": info.get("calibration"),
+        "dca": info.get("dca"),
         "features": lipid_info,
         "model_doc": MODEL_DOCS.get(info.get("model_name", ""), MODEL_DOCS.get(model_key, {})),
     })
@@ -958,6 +1126,14 @@ def api_sample_data(model_key: str):
     features = data.get("features", [])
     if not features:
         return jsonify({"error": "No features found for this model"}), 404
+
+    if data.get("sample_values"):
+        return jsonify({
+            "model_key": model_key,
+            "sample_values": data.get("sample_values", {}),
+            "note_en": "These are mean baseline feature values from the aligned training cohort and can be edited before prediction.",
+            "note_cn": "以下为对齐训练队列中的基线平均特征值，可在预测前自行修改。",
+        })
 
     # Load training data to compute feature means
     candidate_paths = [

@@ -1,0 +1,35 @@
+2026-04-19 完成状态回填（真实全量完成版）
+
+原始要求：
+1. 对于不同 indicator 的 delta 值的分组方案，采用不同后缀解释，或不加后缀均可以，但最好不要出现 indicator 列命名存在全称、缩写、不同后缀，且后缀对应分组方案不匹配的情况。
+2. 添加 fusion 后，尽量选择 fusion 预测准确度较高的模型。
+
+当前状态：
+
+1. 关于 indicator / delta / grouping 的命名一致性
+- 状态：**已完成并已落地到当前本地网站版本**
+- 已落实内容：
+  - indicator 主名称统一改为变化量写法，如 `ΔBMI`、`ΔPBF`、`ΔPSM`、`ΔWHR`；
+  - grouping 从 indicator 主列中拆出，单独展示为 `Q（Q1 vs Q4）` 或 `T（T1 vs T3）`；
+  - 不再在同一列混排全称、缩写、旧内部命名与不匹配后缀；
+  - 前台不再直接暴露 `q3 / q4` 这类旧内部命名；
+  - help / glossary / performance summary 已统一说明 `Δ = outroll - enroll`。
+
+2. 关于“添加 fusion 后，优先展示预测准确度较高的 fusion 模型”
+- 状态：**已完成并已按真实结果落地**
+- 已落实内容：
+  - 网站已真实接入 clinical / lipid / fusion 三类模型；
+  - 默认比较规则已锁定为：在同一 `indicator × grouping × validation frame` 下，优先看 AUROC，接近时再看 AUPRC、Sensitivity、Specificity、稳健性与模型简洁度；
+  - 如果 fusion 更优，就优先展示 fusion；如果 lipid 更优，则保留 lipid 为最佳；
+  - 当前真实结果中，16 个 `indicator × grouping` 条件里：
+    - **fusion 胜出 9 个**
+    - **lipid 胜出 7 个**
+    - **clinical 胜出 0 个**
+
+3. 对这两个要求的最终判断
+- 这轮已经不是“规则写进方案但功能没做”的状态；
+- 命名规范和 fusion 选择规则都已经进入当前本地网站代码与训练资产；
+- 剩余未做的是外部发布动作（GitHub push / 服务器部署），不是功能本身。
+
+一句话总结：
+> 张淑贤这次提出的两个新增要求，现在都已经完成：一是 indicator / delta / grouping 的命名逻辑已经统一并避免混乱；二是 fusion 已经真实接入，而且网站会按同条件下的真实准确度优先展示更优的 fusion 模型，但不会为了叙事强行把 fusion 写成所有条件下都最优。
