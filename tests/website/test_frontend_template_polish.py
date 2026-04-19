@@ -79,3 +79,13 @@ def test_index_template_avoids_stale_lipid_only_and_hardcoded_14_model_copy(clie
     assert "Features used by the model (Top 10)" in html
     assert 'function updateSummaryStats' in html
     assert 'function getFeatureCountLabel' in html
+
+
+def test_index_template_includes_null_safe_auc_formatters_for_cross_gender_metrics(client):
+    response = client.get("/")
+    assert response.status_code == 200
+
+    html = response.get_data(as_text=True)
+    assert 'function hasFiniteMetric(value)' in html
+    assert 'function formatMetric(value, digits)' in html
+    assert 'return hasFiniteMetric(value) ? Number(value).toFixed(digits || 3) : "—";' in html

@@ -582,6 +582,17 @@ def build_prediction_copy(info: dict, pred: int) -> dict:
     }
 
 
+def _optional_metric(value, default=None):
+    if value is None:
+        return default
+    try:
+        if pd.isna(value):
+            return default
+    except TypeError:
+        pass
+    return float(value)
+
+
 def build_model_metadata(model_key: str, info: dict | None = None, data: dict | None = None) -> dict:
     info = info or {}
     data = data or {}
@@ -616,8 +627,8 @@ def build_model_metadata(model_key: str, info: dict | None = None, data: dict | 
         "direction": direction,
         "model_name": data.get("model_name") or info.get("model_name", ""),
         "full_auc": data.get("full_auc", info.get("full_auc", 0)),
-        "m2f_auc": data.get("m2f_auc", info.get("m2f_auc", 0)),
-        "f2m_auc": data.get("f2m_auc", info.get("f2m_auc", 0)),
+        "m2f_auc": _optional_metric(data.get("m2f_auc", info.get("m2f_auc"))),
+        "f2m_auc": _optional_metric(data.get("f2m_auc", info.get("f2m_auc"))),
         "sens": data.get("sens", info.get("sens", 0)),
         "spec": data.get("spec", info.get("spec", 0)),
         "n_feat": len(features) or info.get("n_feat", 0),
@@ -745,8 +756,8 @@ def load_all_models():
                         "model_type": meta.get("model_type", "lipid"),
                         "full_auc": perf.get("full_auroc", 0),
                         "full_auprc": perf.get("full_auprc", meta.get("full_auprc", 0)),
-                        "m2f_auc": perf.get("m2f_auroc", 0),
-                        "f2m_auc": perf.get("f2m_auroc", 0),
+                        "m2f_auc": _optional_metric(perf.get("m2f_auroc")),
+                        "f2m_auc": _optional_metric(perf.get("f2m_auroc")),
                         "sens": perf.get("full_sens", 0),
                         "spec": perf.get("full_spec", 0),
                         "input_schema": meta.get("input_schema", []),
@@ -766,8 +777,8 @@ def load_all_models():
                         "group_cn": group_meta["group_display_cn"],
                         "full_auc": perf.get("full_auroc", 0),
                         "full_auprc": perf.get("full_auprc", meta.get("full_auprc", 0)),
-                        "m2f_auc": perf.get("m2f_auroc", 0),
-                        "f2m_auc": perf.get("f2m_auroc", 0),
+                        "m2f_auc": _optional_metric(perf.get("m2f_auroc")),
+                        "f2m_auc": _optional_metric(perf.get("f2m_auroc")),
                         "sens": perf.get("full_sens", 0),
                         "spec": perf.get("full_spec", 0),
                         "n_feat": len(features),
@@ -820,6 +831,10 @@ def ensure_model_runtime_compatibility(model):
             for _, step_estimator in getattr(estimator, "steps", []):
                 patch_estimator(step_estimator)
             return
+        if estimator.__class__.__name__ == "SimpleImputer" and not hasattr(estimator, "_fill_dtype"):
+            fit_dtype = getattr(estimator, "_fit_dtype", None)
+            if fit_dtype is not None:
+                estimator._fill_dtype = fit_dtype
         if estimator.__class__.__name__ == "LogisticRegression" and not hasattr(estimator, "multi_class"):
             estimator.multi_class = "auto"
 
@@ -882,8 +897,8 @@ def predict_single(model_key: str, lipid_values: dict) -> dict:
             "model_name": info.get("model_name", ""),
             "model_type": info.get("model_type", "lipid"),
             "full_auc": info.get("full_auc", 0),
-            "m2f_auc": info.get("m2f_auc", 0),
-            "f2m_auc": info.get("f2m_auc", 0),
+            "m2f_auc": info.get("m2f_auc"),
+            "f2m_auc": info.get("f2m_auc"),
             "sens": info.get("sens", 0),
             "spec": info.get("spec", 0),
             "n_feat": len(features),
@@ -1095,7 +1110,7 @@ def api_model_detail(model_key: str):
         "model_type": info.get("model_type", "lipid"),
         "full_auc": info.get("full_auc", 0),
         "full_auprc": info.get("full_auprc", 0),
-        "m2f_auc": info.get("m2f_auc", 0),
+        "m2f_auc": info.get("m2f_auc"),
         "f2m_auc": info.get("f2m_auc"),
         "sens": info.get("sens", 0),
         "spec": info.get("spec", 0),

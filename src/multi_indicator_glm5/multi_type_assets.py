@@ -171,6 +171,118 @@ def _sort_rows(rows: pd.DataFrame) -> pd.DataFrame:
     )
 
 
+def _optional_float(value) -> float | None:
+    if value is None:
+        return None
+    try:
+        if pd.isna(value):
+            return None
+    except TypeError:
+        pass
+    return float(value)
+
+
+def _empty_cross_gender_metrics(prefix: str, n_train: int, n_test: int) -> dict:
+    return {
+        f"{prefix}_auroc": np.nan,
+        f"{prefix}_auprc": np.nan,
+        f"{prefix}_sens": np.nan,
+        f"{prefix}_spec": np.nan,
+        f"{prefix}_accuracy": np.nan,
+        f"{prefix}_f1": np.nan,
+        f"{prefix}_n_train": int(n_train),
+        f"{prefix}_n_test": int(n_test),
+    }
+
+
+def _evaluate_transfer_split(
+    X_train: np.ndarray,
+    y_train: np.ndarray,
+    X_test: np.ndarray,
+    y_test: np.ndarray,
+    model_template,
+) -> dict:
+    model = clone(model_template)
+    model.fit(X_train, y_train)
+    y_prob = model.predict_proba(X_test)[:, 1]
+
+    fpr, tpr, thresholds = roc_curve(y_test, y_prob)
+    youden_idx = int(np.argmax(tpr - fpr))
+    youden_threshold = float(thresholds[youden_idx])
+    y_pred = (y_prob >= youden_threshold).astype(int)
+    tn, fp, fn, tp = confusion_matrix(y_test, y_pred, labels=[0, 1]).ravel()
+
+    sens = float(tp / (tp + fn)) if (tp + fn) > 0 else np.nan
+    spec = float(tn / (tn + fp)) if (tn + fp) > 0 else np.nan
+
+    return {
+        "auroc": float(roc_auc_score(y_test, y_prob)),
+        "auprc": float(average_precision_score(y_test, y_prob)),
+        "sens": sens,
+        "spec": spec,
+        "accuracy": float(accuracy_score(y_test, y_pred)),
+        "f1": float(f1_score(y_test, y_pred, zero_division=0)),
+    }
+
+
+def evaluate_cross_gender_transfer(
+    X: pd.DataFrame,
+    y: Iterable[int],
+    gender: Iterable[int],
+    model_template,
+    min_group_size: int = 10,
+) -> dict:
+    X_values = X.apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float)
+    y_values = np.asarray(list(y), dtype=int)
+    gender_values = pd.to_numeric(pd.Series(list(gender)), errors="coerce").to_numpy()
+
+    results: dict[str, float | int] = {}
+    directions = (("m2f", 0, 1), ("f2m", 1, 0))
+
+    for prefix, train_gender, test_gender in directions:
+        train_mask = gender_values == train_gender
+        test_mask = gender_values == test_gender
+        n_train = int(train_mask.sum())
+        n_test = int(test_mask.sum())
+
+        if (
+            n_train < min_group_size
+            or n_test < min_group_size
+            or len(np.unique(y_values[train_mask])) < 2
+            or len(np.unique(y_values[test_mask])) < 2
+        ):
+            results.update(_empty_cross_gender_metrics(prefix, n_train=n_train, n_test=n_test))
+            continue
+
+        metrics = _evaluate_transfer_split(
+            X_train=X_values[train_mask],
+            y_train=y_values[train_mask],
+            X_test=X_values[test_mask],
+            y_test=y_values[test_mask],
+            model_template=model_template,
+        )
+        results.update(
+            {
+                f"{prefix}_auroc": metrics["auroc"],
+                f"{prefix}_auprc": metrics["auprc"],
+                f"{prefix}_sens": metrics["sens"],
+                f"{prefix}_spec": metrics["spec"],
+                f"{prefix}_accuracy": metrics["accuracy"],
+                f"{prefix}_f1": metrics["f1"],
+                f"{prefix}_n_train": n_train,
+                f"{prefix}_n_test": n_test,
+            }
+        )
+
+    valid_aurocs = [
+        value
+        for value in [results.get("m2f_auroc"), results.get("f2m_auroc")]
+        if value is not None and not pd.isna(value)
+    ]
+    results["cross_avg_auroc"] = float(np.mean(valid_aurocs)) if valid_aurocs else np.nan
+    return results
+
+
 def select_best_models(results_df: pd.DataFrame) -> pd.DataFrame:
     if results_df.empty:
         empty = results_df.copy()
@@ -277,6 +389,23 @@ def build_metadata_entry(
         "full_f1": float(result_row.get("mean_f1", 0) or 0),
         "full_brier": float(result_row.get("mean_brier", 0) or 0),
         "std_auroc": float(result_row.get("std_auroc", 0) or 0),
+        "m2f_auroc": _optional_float(result_row.get("m2f_auroc")),
+        "f2m_auroc": _optional_float(result_row.get("f2m_auroc")),
+        "cross_avg_auroc": _optional_float(result_row.get("cross_avg_auroc")),
+        "m2f_auprc": _optional_float(result_row.get("m2f_auprc")),
+        "f2m_auprc": _optional_float(result_row.get("f2m_auprc")),
+        "m2f_sens": _optional_float(result_row.get("m2f_sens")),
+        "f2m_sens": _optional_float(result_row.get("f2m_sens")),
+        "m2f_spec": _optional_float(result_row.get("m2f_spec")),
+        "f2m_spec": _optional_float(result_row.get("f2m_spec")),
+        "m2f_accuracy": _optional_float(result_row.get("m2f_accuracy")),
+        "f2m_accuracy": _optional_float(result_row.get("f2m_accuracy")),
+        "m2f_f1": _optional_float(result_row.get("m2f_f1")),
+        "f2m_f1": _optional_float(result_row.get("f2m_f1")),
+        "m2f_n_train": int(result_row.get("m2f_n_train", 0) or 0),
+        "m2f_n_test": int(result_row.get("m2f_n_test", 0) or 0),
+        "f2m_n_train": int(result_row.get("f2m_n_train", 0) or 0),
+        "f2m_n_test": int(result_row.get("f2m_n_test", 0) or 0),
     }
     return {
         "key": model_key,
@@ -293,6 +422,9 @@ def build_metadata_entry(
         "sample_values": sample_values,
         "performance": performance,
         "full_auc": performance["full_auroc"],
+        "m2f_auc": performance["m2f_auroc"],
+        "f2m_auc": performance["f2m_auroc"],
+        "cross_avg_auc": performance["cross_avg_auroc"],
         "full_auprc": performance["full_auprc"],
         "sens": performance["full_sens"],
         "spec": performance["full_spec"],
@@ -537,6 +669,12 @@ def run_export_pipeline(
                 for model_name, model_template in models.items():
                     model_key = f"{indicator}_{cutoff}_{model_type}_{model_name}"
                     evaluation = evaluate_model_cv(X, y, model_template)
+                    cross_gender = evaluate_cross_gender_transfer(
+                        X=X,
+                        y=y,
+                        gender=subset["Gender"] if "Gender" in subset.columns else pd.Series([np.nan] * len(subset)),
+                        model_template=model_template,
+                    )
 
                     fitted_model = clone(model_template)
                     fitted_model.fit(X.apply(pd.to_numeric, errors="coerce").to_numpy(dtype=float), y)
@@ -563,6 +701,7 @@ def run_export_pipeline(
                         "n_class0": int((y == 0).sum()),
                         "n_class1": int((y == 1).sum()),
                         **evaluation.summary,
+                        **cross_gender,
                     }
                     result_rows.append(row)
                     fold_df = evaluation.fold_metrics.copy()

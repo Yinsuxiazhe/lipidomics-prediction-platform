@@ -116,6 +116,44 @@ def test_compute_calibration_curve_payload_reports_brier_and_points():
     assert set(payload["points"][0]) == {"bin", "mean_pred", "obs_rate", "count"}
 
 
+def test_evaluate_cross_gender_transfer_returns_directional_metrics_for_both_splits():
+    X = pd.DataFrame(
+        {
+            "feature_a": [
+                -3.0, -2.5, -2.0, -1.5, -1.0, -0.5,
+                 0.5,  1.0,  1.5,  2.0,  2.5,  3.0,
+                -3.2, -2.7, -2.2, -1.7, -1.2, -0.7,
+                 0.7,  1.2,  1.7,  2.2,  2.7,  3.2,
+            ],
+            "feature_b": [
+                -2.4, -2.0, -1.6, -1.2, -0.8, -0.4,
+                 0.4,  0.8,  1.2,  1.6,  2.0,  2.4,
+                -2.6, -2.1, -1.7, -1.3, -0.9, -0.5,
+                 0.5,  0.9,  1.3,  1.7,  2.1,  2.6,
+            ],
+        }
+    )
+    y = pd.Series(
+        [0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1] * 2,
+        dtype=int,
+    )
+    gender = pd.Series([0] * 12 + [1] * 12, dtype=int)
+
+    metrics = mta.evaluate_cross_gender_transfer(
+        X=X,
+        y=y,
+        gender=gender,
+        model_template=mta.get_models()["LR_L2"],
+        min_group_size=10,
+    )
+
+    assert metrics["m2f_auroc"] > 0.95
+    assert metrics["f2m_auroc"] > 0.95
+    assert metrics["cross_avg_auroc"] > 0.95
+    assert metrics["m2f_n_train"] == 12
+    assert metrics["f2m_n_test"] == 12
+
+
 def test_build_metadata_entry_includes_schema_sample_values_and_curves():
     row = {
         "indicator": "BMI",
@@ -126,6 +164,9 @@ def test_build_metadata_entry_includes_schema_sample_values_and_curves():
         "mean_auprc": 0.75,
         "mean_sensitivity": 0.70,
         "mean_specificity": 0.72,
+        "m2f_auroc": 0.66,
+        "f2m_auroc": 0.64,
+        "cross_avg_auroc": 0.65,
         "is_best_within_type": True,
         "is_best_overall": True,
     }
@@ -147,3 +188,6 @@ def test_build_metadata_entry_includes_schema_sample_values_and_curves():
     assert entry["sample_values"]["LIPID_A"] == 0.56
     assert entry["calibration"]["brier"] == 0.12
     assert entry["dca"]["model"][0]["threshold"] == 0.2
+    assert entry["performance"]["m2f_auroc"] == 0.66
+    assert entry["performance"]["f2m_auroc"] == 0.64
+    assert entry["performance"]["cross_avg_auroc"] == 0.65

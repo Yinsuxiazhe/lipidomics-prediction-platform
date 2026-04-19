@@ -1253,6 +1253,14 @@ function renderCalibrationAndDca(info) {
   renderCurveSummary("dca-curve", info.dca, "threshold", "net_benefit");
 }
 
+function hasFiniteMetric(value) {
+  return value !== null && value !== undefined && value !== "" && !Number.isNaN(Number(value));
+}
+
+function formatMetric(value, digits) {
+  return hasFiniteMetric(value) ? Number(value).toFixed(digits || 3) : "—";
+}
+
 async function loadModelFamilySummary(info) {
   var card = document.getElementById("algorithm-comparison-card");
   var tbody = document.querySelector("#algorithm-comparison-table tbody");
@@ -1295,7 +1303,7 @@ function renderModelGrid() {
     var key = entry[0];
     var info = entry[1];
     var auc = info.full_auc || 0;
-    var m2f = info.m2f_auc || 0;
+    var m2f = info.m2f_auc;
     var aucGood = auc >= 0.75;
     var nFeat = info.n_feat || 0;
     var indName = getIndicatorDisplay(info);
@@ -1324,7 +1332,7 @@ function renderModelGrid() {
           '<div class="model-card-auc-label">' + t("full_auc_label") + '</div>' +
         '</div>' +
         '<div class="model-card-auc-item">' +
-          '<div class="model-card-auc-num ' + (m2f >= 0.55 ? '' : 'warn') + '">' + m2f.toFixed(3) + '</div>' +
+          '<div class="model-card-auc-num ' + (hasFiniteMetric(m2f) && Number(m2f) < 0.55 ? 'warn' : '') + '">' + formatMetric(m2f, 3) + '</div>' +
           '<div class="model-card-auc-label">' + t("m2f_label") + '</div>' +
         '</div>' +
       '</div>' +
@@ -1342,7 +1350,7 @@ function selectModel(key) {
   var info = modelInfo[key] || {};
   var features = info.features || [];
   var auc = info.full_auc || 0;
-  var m2f = info.m2f_auc || 0;
+  var m2f = info.m2f_auc;
   var nFeat = features.length;
   var indName = getIndicatorDisplay(info);
   var modelName = getModelName(info.model_name || "");
@@ -1351,7 +1359,7 @@ function selectModel(key) {
 
   document.getElementById("model-info-bar").style.display = "block";
   document.getElementById("selected-model-name").textContent = indName + " \u00B7 " + groupName + " \u00B7 " + modelName;
-  document.getElementById("selected-model-auc").textContent = t("full_auc_label") + "=" + auc.toFixed(4) + " \u00B7 " + t("m2f_label") + "=" + m2f.toFixed(4);
+  document.getElementById("selected-model-auc").textContent = t("full_auc_label") + "=" + formatMetric(auc, 4) + " \u00B7 " + t("m2f_label") + "=" + formatMetric(m2f, 4);
   document.getElementById("selected-model-features").textContent = targetNote + " \u00B7 " + getFeatureCountLabel(info);
 
   renderModelFormulaPanel(info.model_name || "", info);
@@ -1722,8 +1730,8 @@ function renderModelPerfTable() {
     var key = entry[0];
     var info = entry[1];
     var auc = info.full_auc || 0;
-    var m2f = info.m2f_auc || 0;
-    var f2m = info.f2m_auc || 0;
+    var m2f = info.m2f_auc;
+    var f2m = info.f2m_auc;
     var groupClass = (info.group_code || info.group) === "Q" || info.group === "q4" ? "badge-q4" : "badge-q3";
     var indName = getIndicatorDisplay(info);
     var modelName = getModelName(info.model_name || "");
@@ -1733,8 +1741,8 @@ function renderModelPerfTable() {
       '<td><span class="badge ' + groupClass + '">' + groupName + '</span></td>' +
       '<td>' + modelName + '</td>' +
       '<td class="auc-cell ' + (auc >= 0.75 ? 'good' : 'warn') + '">' + auc.toFixed(4) + '</td>' +
-      '<td class="auc-cell ' + (m2f >= 0.55 ? 'good' : 'warn') + '">' + m2f.toFixed(4) + '</td>' +
-      '<td>' + (f2m ? f2m.toFixed(4) : "\u2014") + '</td>' +
+      '<td class="auc-cell ' + (hasFiniteMetric(m2f) ? (Number(m2f) >= 0.55 ? 'good' : 'warn') : '') + '">' + formatMetric(m2f, 4) + '</td>' +
+      '<td>' + formatMetric(f2m, 4) + '</td>' +
       '<td>' + (info.sens||0).toFixed(3) + '</td>' +
       '<td>' + (info.spec||0).toFixed(3) + '</td>' +
       '<td>' + (info.n_feat || 0) + '</td>' +

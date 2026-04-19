@@ -200,6 +200,9 @@ def test_load_all_models_prefers_glm5_assets_over_legacy_models(monkeypatch, tmp
 
     assert sorted(app_module._models) == ["BMI_Q_lipid_RF"]
     assert sorted(app_module._model_info) == ["BMI_Q_lipid_RF"]
+    info = app_module.get_model_metadata("BMI_Q_lipid_RF")
+    assert info["m2f_auc"] is None
+    assert info["f2m_auc"] is None
 
 
 def test_load_all_models_uses_glm5_metadata_for_indicator_group_and_model(monkeypatch, tmp_path):
@@ -252,6 +255,28 @@ def test_load_all_models_uses_glm5_metadata_for_indicator_group_and_model(monkey
     assert info["group_code"] == "Q"
     assert info["group_display_en"] == "Q (Q1 vs Q4)"
     assert info["model_name"] == "EN_LR"
+
+
+def test_model_detail_returns_null_cross_gender_metrics_when_missing(monkeypatch, client):
+    install_dummy_model(
+        monkeypatch,
+        "BMI_Q_lipid_RF_missing_cross",
+        indicator="BMI",
+        direction="negative",
+        pred=1,
+        group="Q",
+        model_name="RF",
+        model_type="lipid",
+        clinical_features=[],
+        lipid_features=["LIPID_A"],
+    )
+
+    response = client.get("/api/model_detail/BMI_Q_lipid_RF_missing_cross")
+    assert response.status_code == 200
+
+    payload = response.get_json()
+    assert payload["m2f_auc"] is None
+    assert payload["f2m_auc"] is None
 
 
 @pytest.mark.parametrize(
@@ -446,6 +471,8 @@ def test_api_model_family_summary_filters_indicator_group_and_model_type(monkeyp
 def test_predict_single_recovers_logistic_regression_missing_multi_class(client):
     key = "BMI_Q_clinical_LR_L2"
     clf = app_module._models[key]["model"].named_steps["clf"]
+    if "multi_class" in getattr(clf, "__dict__", {}):
+        del clf.__dict__["multi_class"]
     assert not hasattr(clf, "multi_class")
 
     sample_payload = client.get(f"/api/sample_data/{key}").get_json()
