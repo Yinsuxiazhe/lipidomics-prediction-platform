@@ -1025,7 +1025,7 @@
 <div class="vip-badge">文章结果展示</div>
 <h1>网站建议整理与实施方案</h1>
 <p class="hero-subtitle-compact">2026-04-19 完成状态版：训练资产 + 网站展示逻辑已在本地真实补齐</p>
-<div class="hero-meta"><span class="meta-pill">192 个模型</span><span class="meta-pill">clinical / lipid / fusion</span><span class="meta-pill">本地验收已完成</span></div>
+<div class="hero-meta"><span class="meta-pill">192 个模型</span><span class="meta-pill">clinical / lipid / fusion</span><span class="meta-pill">GitHub 已推送</span></div>
 <div class="doc-toolbar"><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/20260417_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E5%85%B3%E4%BA%8E%E7%BD%91%E7%AB%99%E5%BB%BA%E8%AE%AE/20260417_%E7%BD%91%E7%AB%99%E5%BB%BA%E8%AE%AE%E6%95%B4%E7%90%86%E4%B8%8E%E5%AE%9E%E6%96%BD%E6%96%B9%E6%A1%88.md">打开 Markdown</a><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/20260417_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E5%85%B3%E4%BA%8E%E7%BD%91%E7%AB%99%E5%BB%BA%E8%AE%AE/20260418_%E7%BD%91%E7%AB%99%E5%B1%95%E7%A4%BA%E9%80%BB%E8%BE%91%E6%B8%85%E5%8D%95.md">打开展示逻辑清单</a><a class="doc-link-btn" href="file:///Users/angus/Downloads/20260310_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E8%84%82%E8%B4%A8%E7%BB%84%E5%AD%A6%E9%A2%84%E6%B5%8B%E7%9A%84%E6%A8%A1%E5%9E%8B/20260417_%E5%BC%A0%E6%B7%91%E8%B4%A4_%E5%85%B3%E4%BA%8E%E7%BD%91%E7%AB%99%E5%BB%BA%E8%AE%AE/20260418_%E5%BC%A0%E6%B7%91%E8%B4%A4%E5%BB%BA%E8%AE%AE.txt">打开张淑贤建议</a></div>
 </div>
 </header>
@@ -1046,7 +1046,7 @@
 <blockquote>
 <p><strong>说明边界</strong>：以下状态指的是 <strong>截至 2026-04-19 的本地代码 / 本地训练资产 / 本地验收结果</strong>。<br/>
 <strong>已真实完成</strong>的是：训练资产、网站代码、展示逻辑、本地验证。<br/>
-<strong>尚未在本文档里宣称完成</strong>的是：GitHub push 与线上部署回归（如果要对外访问，还需要单独发布）。</p>
+<strong>当前仍未在本文档里宣称完成</strong>的是：服务器部署与线上回归（如果要对外访问，还需要单独发布）。</p>
 </blockquote>
 <h3 id="section-2">本轮已完成</h3>
 <ul>
@@ -1073,7 +1073,7 @@
 </ol>
 <h3 id="section-4">尚未在本文档中宣称完成</h3>
 <ul>
-<li>GitHub clean commit / push；</li>
+<li>GitHub clean commit / push：<strong>已完成</strong>（<code>origin/main</code>，commit <code>4e0e13e</code>）；</li>
 <li>服务器部署与线上回归；</li>
 <li>对外访问链接的最终发布确认。</li>
 </ul>
@@ -1390,7 +1390,7 @@
 </ul>
 <h3 id="section-27">Phase E：外部发布（待单独执行）</h3>
 <ul>
-<li>GitHub clean commit / push；</li>
+<li>GitHub clean commit / push：<strong>已完成</strong>（<code>4e0e13e</code> 已推送到 <code>origin/main</code>）；</li>
 <li>服务器部署；</li>
 <li>线上回归与访问链接确认。</li>
 </ul>
@@ -1442,8 +1442,8 @@
 <li>当前网站展示的是内部验证 / 模型比较结果，不应过度写成外部验证结论。</li>
 </ul>
 <h2 id="section-34">📨 可直接发送汇总</h2>
-<div class="copyable-example"><div class="copyable-example-header"><span class="copyable-example-label">可直接发送</span><button aria-label="复制可复用内容" class="copy-example-btn" data-copy-text="我把这轮网站和训练一起补齐了，并且已经按真实状态回填成“完成状态版”。现在可以明确：第一，网站里 BMI / PBF / PSM / WHR 这些 indicator 对应的是干预前后变化量定义的响应，公式是 Δ = outroll - enroll ，不是绝对值；第二，前台命名已经统一成 Δ指标名 ，Q / T 分组单独展示为 Q（Q1 vs Q4） 、 T（T1 vs T3） ，不再混排全称、缩写、旧后缀；第三，网站已经真实接入 clinical-only、lipid-only、fusion 三类模型，并按所选模型动态显示 clinical / lipid 输入区；第四，comparison、algorithm comparison、calibration、DCA 等展示模块已经接上；第五，加入 fusion 后也不是硬写成 fusion 最优，而是在同一 indicator × grouping × 验证框架下客观择优，目前 16 个条件里 fusion 胜出 9 个、lipid 胜出 7 个；第六，本地训练资产、网站代码和本地验收都已经完成，剩下如果要对外访问，只差 GitHub push 和服务器部署这一步。" type="button">快捷复制</button></div><blockquote>
-<p>我把这轮网站和训练一起补齐了，并且已经按真实状态回填成“完成状态版”。现在可以明确：第一，网站里 BMI / PBF / PSM / WHR 这些 indicator 对应的是干预前后变化量定义的响应，公式是 <code>Δ = outroll - enroll</code>，不是绝对值；第二，前台命名已经统一成 <code>Δ指标名</code>，Q / T 分组单独展示为 <code>Q（Q1 vs Q4）</code>、<code>T（T1 vs T3）</code>，不再混排全称、缩写、旧后缀；第三，网站已经真实接入 clinical-only、lipid-only、fusion 三类模型，并按所选模型动态显示 clinical / lipid 输入区；第四，comparison、algorithm comparison、calibration、DCA 等展示模块已经接上；第五，加入 fusion 后也不是硬写成 fusion 最优，而是在同一 indicator × grouping × 验证框架下客观择优，目前 16 个条件里 fusion 胜出 9 个、lipid 胜出 7 个；第六，本地训练资产、网站代码和本地验收都已经完成，剩下如果要对外访问，只差 GitHub push 和服务器部署这一步。</p>
+<div class="copyable-example"><div class="copyable-example-header"><span class="copyable-example-label">可直接发送</span><button aria-label="复制可复用内容" class="copy-example-btn" data-copy-text="我把这轮网站和训练一起补齐了，并且已经按真实状态回填成“完成状态版”。现在可以明确：第一，网站里 BMI / PBF / PSM / WHR 这些 indicator 对应的是干预前后变化量定义的响应，公式是 Δ = outroll - enroll ，不是绝对值；第二，前台命名已经统一成 Δ指标名 ，Q / T 分组单独展示为 Q（Q1 vs Q4） 、 T（T1 vs T3） ，不再混排全称、缩写、旧后缀；第三，网站已经真实接入 clinical-only、lipid-only、fusion 三类模型，并按所选模型动态显示 clinical / lipid 输入区；第四，comparison、algorithm comparison、calibration、DCA 等展示模块已经接上；第五，加入 fusion 后也不是硬写成 fusion 最优，而是在同一 indicator × grouping × 验证框架下客观择优，目前 16 个条件里 fusion 胜出 9 个、lipid 胜出 7 个；第六，本地训练资产、网站代码和本地验收都已经完成，GitHub 也已经完成推送，剩下如果要对外访问，只差服务器部署这一步。" type="button">快捷复制</button></div><blockquote>
+<p>我把这轮网站和训练一起补齐了，并且已经按真实状态回填成“完成状态版”。现在可以明确：第一，网站里 BMI / PBF / PSM / WHR 这些 indicator 对应的是干预前后变化量定义的响应，公式是 <code>Δ = outroll - enroll</code>，不是绝对值；第二，前台命名已经统一成 <code>Δ指标名</code>，Q / T 分组单独展示为 <code>Q（Q1 vs Q4）</code>、<code>T（T1 vs T3）</code>，不再混排全称、缩写、旧后缀；第三，网站已经真实接入 clinical-only、lipid-only、fusion 三类模型，并按所选模型动态显示 clinical / lipid 输入区；第四，comparison、algorithm comparison、calibration、DCA 等展示模块已经接上；第五，加入 fusion 后也不是硬写成 fusion 最优，而是在同一 indicator × grouping × 验证框架下客观择优，目前 16 个条件里 fusion 胜出 9 个、lipid 胜出 7 个；第六，本地训练资产、网站代码和本地验收都已经完成，GitHub 也已经完成推送，剩下如果要对外访问，只差服务器部署这一步。</p>
 </blockquote></div>
 
 <h2 id="section-35">📎 结论</h2>
@@ -1454,7 +1454,7 @@
 <li><strong>展示逻辑已补齐</strong>：动态输入、三类比较、algorithm comparison、calibration、DCA 均已上线到本地代码版本；</li>
 <li><strong>fusion 规则已真实落地</strong>：优先展示更优 fusion，但不强行一刀切；</li>
 <li><strong>本地验证已完成</strong>：训练资产、API、测试、浏览器 smoke 均有证据；</li>
-<li><strong>尚未在本文档中宣称完成的仅剩外部发布动作</strong>：GitHub push 与线上部署。</li>
+<li><strong>尚未在本文档中宣称完成的仅剩外部发布动作</strong>：服务器部署与线上回归。</li>
 </ol>
 </div>
 </div>
