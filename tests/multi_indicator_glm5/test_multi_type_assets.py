@@ -191,3 +191,17 @@ def test_build_metadata_entry_includes_schema_sample_values_and_curves():
     assert entry["performance"]["m2f_auroc"] == 0.66
     assert entry["performance"]["f2m_auroc"] == 0.64
     assert entry["performance"]["cross_avg_auroc"] == 0.65
+
+
+def test_safe_feature_means_uses_discrete_mode_for_gender():
+    frame = pd.DataFrame(
+        {
+            "Gender": [0, 1, 0, 0, 1],
+            "BMI": [20.0, 21.0, 22.0, 23.0, 24.0],
+        }
+    )
+
+    sample_values = mta._safe_feature_means(frame, ["Gender", "BMI"])
+
+    assert sample_values["Gender"] == 0
+    assert sample_values["BMI"] == 22.0

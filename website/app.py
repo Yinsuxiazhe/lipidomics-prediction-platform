@@ -593,6 +593,28 @@ def _optional_metric(value, default=None):
     return float(value)
 
 
+def _normalize_example_value(feature: str, value):
+    if feature == "Gender":
+        try:
+            numeric = float(value)
+        except (TypeError, ValueError):
+            return 0
+        if pd.isna(numeric):
+            return 0
+        return int(1 if numeric > 0.5 else 0)
+
+    if isinstance(value, np.generic):
+        return value.item()
+    return value
+
+
+def _normalize_sample_values(sample_values: dict | None) -> dict:
+    normalized: dict = {}
+    for feature, value in (sample_values or {}).items():
+        normalized[feature] = _normalize_example_value(feature, value)
+    return normalized
+
+
 def build_model_metadata(model_key: str, info: dict | None = None, data: dict | None = None) -> dict:
     info = info or {}
     data = data or {}
@@ -761,7 +783,7 @@ def load_all_models():
                         "sens": perf.get("full_sens", 0),
                         "spec": perf.get("full_spec", 0),
                         "input_schema": meta.get("input_schema", []),
-                        "sample_values": meta.get("sample_values", {}),
+                        "sample_values": _normalize_sample_values(meta.get("sample_values", {})),
                         "calibration": meta.get("calibration"),
                         "dca": meta.get("dca"),
                         "is_best_within_type": meta.get("is_best_within_type", False),
@@ -786,7 +808,7 @@ def load_all_models():
                         "clinical_features": clinical_features,
                         "lipid_features": lipid_features,
                         "input_schema": meta.get("input_schema", []),
-                        "sample_values": meta.get("sample_values", {}),
+                        "sample_values": _normalize_sample_values(meta.get("sample_values", {})),
                         "calibration": meta.get("calibration"),
                         "dca": meta.get("dca"),
                         "is_best_within_type": meta.get("is_best_within_type", False),
@@ -1145,7 +1167,7 @@ def api_sample_data(model_key: str):
     if data.get("sample_values"):
         return jsonify({
             "model_key": model_key,
-            "sample_values": data.get("sample_values", {}),
+            "sample_values": _normalize_sample_values(data.get("sample_values", {})),
             "note_en": "These are mean baseline feature values from the aligned training cohort and can be edited before prediction.",
             "note_cn": "以下为对齐训练队列中的基线平均特征值，可在预测前自行修改。",
         })
@@ -1176,15 +1198,18 @@ def api_sample_data(model_key: str):
             if col_name is not None:
                 vals = pd.to_numeric(df[col_name], errors="coerce").dropna()
                 if len(vals) > 0:
-                    sample_values[feat] = round(float(vals.mean()), 6)
+                    if feat == "Gender":
+                        sample_values[feat] = int((vals > 0.5).astype(int).mode(dropna=True).iloc[0])
+                    else:
+                        sample_values[feat] = round(float(vals.mean()), 6)
                 else:
-                    sample_values[feat] = 0.0
+                    sample_values[feat] = 0 if feat == "Gender" else 0.0
             else:
-                sample_values[feat] = 0.0
+                sample_values[feat] = 0 if feat == "Gender" else 0.0
 
         return jsonify({
             "model_key": model_key,
-            "sample_values": sample_values,
+            "sample_values": _normalize_sample_values(sample_values),
             "note_en": "These are mean lipid concentrations from the training cohort (n=281) as example inputs. You can modify any value before prediction.",
             "note_cn": "以下为训练队列（n=281）的脂质平均浓度，作为示例输入。预测前可自行修改任意数值。",
         })

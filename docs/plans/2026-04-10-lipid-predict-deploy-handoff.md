@@ -6,6 +6,50 @@
 
 ---
 
+## 0. 2026-04-20 最新上线状态回填
+
+> **状态说明**：本文原始主体写于 2026-04-10，下面这一节用于回填 **截至 2026-04-20 的真实上线结果**。2026-04-19 已完成 192-model multi-type / cross-gender 指标上线；2026-04-20 又补了一轮 **Gender 示例值热修复 + metadata 回写**。如果下文仍保留 64-model / 78-file 的旧部署口径，请以本节为准；旧内容保留为历史部署参考。
+
+### 0.1 当前线上状态
+- **公网地址（主）**：`https://lipid-predict.medaibox.com`
+- **公网地址（备用）**：`https://xulab.medaibox.com`
+- **GitHub 仓库**：`https://github.com/Yinsuxiazhe/lipidomics-prediction-platform`
+- **当前线上 release**：`/var/www/lipid-predict/releases/20260420-141552`
+- **当前 symlink**：`/var/www/lipid-predict/current -> /var/www/lipid-predict/releases/20260420-141552`
+- **上一轮完整功能 release**：`/var/www/lipid-predict/releases/20260419-184105`
+- **systemd service**：`lipid-predict.service`
+- **gunicorn 监听**：`127.0.0.1:5010`
+
+### 0.2 当前实际部署资产
+- 当前 authoritative runtime bundle 为 `website/trained_models/`；
+- 当前线上模型数为 **192**（8 indicators × 2 groupings × 3 model types × 4 algorithms）；
+- 网站运行时优先加载 `website/trained_models/model_metadata.json` 与同目录 `.pkl`，并在该 bundle 存在时跳过 legacy `website/models/`；
+- 2026-04-19 的 cross-gender 指标回填修复仍然在线：缺失值不会再被伪装成 `0.000`，真实可计算模型会返回真实 `M→F / F→M AUC`；
+- 2026-04-20 新增热修复已在线：`Use Example` 不会再把 `Gender` 显示为小数。
+
+### 0.3 2026-04-20 本轮新增修复
+1. **生成端修复**：`src/multi_indicator_glm5/multi_type_assets.py` 中 `Gender` sample 不再取均值，改为离散二值众数（mode）；
+2. **网站端兜底**：`website/app.py` 会把 legacy metadata / API fallback 里的 `Gender` 统一规范成 `0/1`，即使旧资产中残留小数，也不会再显示为小数；
+3. **metadata 回写**：已回写以下两个文件中的 `sample_values.Gender`，均已离散化：
+   - `website/trained_models/model_metadata.json`
+   - `outputs/20260419_multi_type_glm5/trained_models/model_metadata.json`
+
+### 0.4 2026-04-20 实际回归结果
+- 本地 targeted tests：
+  - `pytest tests/multi_indicator_glm5/test_multi_type_assets.py tests/website/test_app_display_logic.py -q` → **25 passed**
+- 本地 Flask smoke：
+  - `/api/sample_data/BMI_Q_fusion_RF` → `Gender=0`
+  - `/api/sample_data/PBF_T_fusion_RF` → `Gender=0`
+- 线上服务状态：`systemctl is-active lipid-predict.service` → **active**
+- 服务器本机接口验证：`curl http://127.0.0.1:5010/api/sample_data/BMI_Q_fusion_RF` → `sample_values.Gender = 0`
+- 公网接口验证：`curl https://lipid-predict.medaibox.com/api/sample_data/BMI_Q_fusion_RF` → `sample_values.Gender = 0`
+- 公网页面关键文本命中：主页面已命中 `Use Example`、`Δ = outroll - enroll`、`clinical-only / lipid-only / fusion` 等最新文案。
+
+### 0.5 本次上线解决的问题
+1. **A：** “Use Example” 自动填充值里的 `Gender` 不再出现 `0.319148936...` 这类均值小数；
+2. **B：** 旧 metadata 即使残留小数 `Gender`，网站 API 仍会输出离散 `0/1`；
+3. **C：** 训练导出端、网站运行端、部署 metadata 三层口径已重新对齐，后续重新导出资产时也不会复发。
+
 ## 一、项目概述
 
 这是一个基于 Flask 的多指标脂质组学预测平台，提供：
@@ -16,7 +60,7 @@
 - **名词解释**：脂质类别、临床指标、机器学习术语说明
 - **中英文切换**
 
-当前运行在 `http://127.0.0.1:5001`（Mac 本地），需要部署到公网可访问的服务器。
+本文最初写于本地部署阶段；截至 2026-04-19，项目已经部署到公网并可访问，详细状态见上方 §0。
 
 ---
 

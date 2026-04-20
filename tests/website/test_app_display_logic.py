@@ -151,6 +151,40 @@ def test_sample_data_falls_back_to_project_root_training_csv(monkeypatch, client
     assert payload["sample_values"]["LIPID_A"] == 2.0
 
 
+def test_sample_data_normalizes_gender_from_legacy_decimal_sample_values(monkeypatch, client):
+    models = dict(app_module._models)
+    info = dict(app_module._model_info)
+
+    models["TEST_GENDER_SAMPLE"] = {
+        "features": ["age_enroll", "Gender", "BMI"],
+        "clinical_features": ["age_enroll", "Gender", "BMI"],
+        "lipid_features": [],
+        "indicator": "BMI",
+        "group": "Q",
+        "model_name": "RF",
+        "sample_values": {
+            "age_enroll": 10.6,
+            "Gender": 0.3191489361702128,
+            "BMI": 24.7,
+        },
+    }
+    info["TEST_GENDER_SAMPLE"] = {
+        "indicator": "BMI",
+        "group": "Q",
+        "model_name": "RF",
+    }
+
+    monkeypatch.setattr(app_module, "_models", models)
+    monkeypatch.setattr(app_module, "_model_info", info)
+
+    response = client.get("/api/sample_data/TEST_GENDER_SAMPLE")
+    assert response.status_code == 200
+
+    payload = response.get_json()
+    assert payload["sample_values"]["Gender"] == 0
+    assert payload["sample_values"]["age_enroll"] == 10.6
+
+
 def test_load_all_models_prefers_glm5_assets_over_legacy_models(monkeypatch, tmp_path):
     website_dir = tmp_path / "website"
     models_dir = website_dir / "models"

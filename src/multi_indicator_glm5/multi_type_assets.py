@@ -609,6 +609,14 @@ def _safe_feature_means(frame: pd.DataFrame, features: list[str]) -> dict[str, f
             means[feature] = 0.0
             continue
         values = pd.to_numeric(frame[feature], errors="coerce").dropna()
+        if feature == "Gender":
+            if len(values):
+                binary_values = (values > 0.5).astype(int)
+                modes = binary_values.mode(dropna=True)
+                means[feature] = int(modes.iloc[0]) if len(modes) else 0
+            else:
+                means[feature] = 0
+            continue
         means[feature] = float(values.mean()) if len(values) else 0.0
     return means
 
