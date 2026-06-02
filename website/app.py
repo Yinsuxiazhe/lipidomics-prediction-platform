@@ -918,6 +918,9 @@ def predict_single(model_key: str, lipid_values: dict) -> dict:
             "group_display_cn": info.get("group_display_cn", ""),
             "model_name": info.get("model_name", ""),
             "model_type": info.get("model_type", "lipid"),
+            "direction": info.get("direction", ""),
+            "target_definition_en": info.get("target_definition_en", ""),
+            "target_definition_cn": info.get("target_definition_cn", ""),
             "full_auc": info.get("full_auc", 0),
             "m2f_auc": info.get("m2f_auc"),
             "f2m_auc": info.get("f2m_auc"),
@@ -1065,31 +1068,92 @@ def api_batch_predict():
     except Exception as e:
         return jsonify({"error": f"CSV parse error: {str(e)}"}), 400
 
-    data = _models[model_key]
-    features = data["features"]
     results = []
     for idx, row in df.iterrows():
         lipid_values = row.to_dict()
         result = predict_single(model_key, lipid_values)
         result["row_id"] = idx + 1
+        result["subject_id"] = _extract_subject_id(row, idx)
         results.append(result)
 
-    # Save results to CSV
-    rows = []
-    for r in results:
-        rows.append({
-            "row_id": r.get("row_id"),
-            "prediction": r.get("label", "ERROR"),
-            "prob_high_response": round(r.get("prob_high_response", 0), 4),
-            "prob_low_response": round(r.get("prob_low_response", 0), 4),
-            "confidence": round(r.get("confidence", 0), 4),
-            "missing_features": ",".join(r.get("missing_features", [])) if r.get("missing_features") else "",
-        })
-    result_df = pd.DataFrame(rows)
-    tmp_path = DATA_DIR / "batch_results.csv"
-    result_df.to_csv(tmp_path, index=False)
-    return send_file(tmp_path, mimetype="text/csv",
-                     as_attachment=True, download_name="predictions.csv")
+    return _send_batch_prediction_csv(results, download_name="predictions_selected_model.csv")
+
+
+def _extract_subject_id(row: pd.Series, idx: int) -> str:
+    """Return a stable subject identifier from common CSV columns or row index."""
+    for col in ("subject_id", "SubjectID", "sample_id", "SampleID", "id", "ID"):
+        if col in row and pd.notna(row[col]):
+            return str(row[col])
+    return str(idx + 1)
+
+
+def _prediction_result_row(result: dict) -> dict:
+    info = result.get("model_info") or {}
+    missing = result.get("missing_features", []) or []
+    return {
+        "row_id": result.get("row_id"),
+        "subject_id": result.get("subject_id"),
+        "model_key": result.get("model_key"),
+        "indicator": info.get("indicator"),
+        "indicator_display": info.get("indicator_display_en") or info.get("indicator_display"),
+        "grouping": info.get("group_display_en") or info.get("group_code"),
+        "model_type": info.get("model_type"),
+        "algorithm": info.get("model_name"),
+        "target_definition": info.get("target_definition_en", ""),
+        "prediction": result.get("label_en", result.get("label", "ERROR")),
+        "prediction_cn": result.get("label_cn", ""),
+        "interpretation": result.get("label_detail_en", ""),
+        "prob_high_response": round(result.get("prob_high_response", 0), 4),
+        "prob_low_response": round(result.get("prob_low_response", 0), 4),
+        "confidence": round(result.get("confidence", 0), 4),
+        "required_feature_count": len(info.get("features", []) or []),
+        "missing_features_count": len(missing),
+        "missing_features": ";".join(missing),
+    }
+
+
+def _send_batch_prediction_csv(results: list[dict], download_name: str):
+    rows = [_prediction_result_row(result) for result in results]
+    output = BytesIO()
+    pd.DataFrame(rows).to_csv(output, index=False)
+    output.seek(0)
+    return send_file(
+        output,
+        mimetype="text/csv",
+        as_attachment=True,
+        download_name=download_name,
+    )
+
+
+@app.route("/api/batch_predict_all", methods=["POST"])
+def api_batch_predict_all():
+    """Batch prediction across every loaded model for each uploaded sample."""
+    if "file" not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    try:
+        df = pd.read_csv(request.files["file"])
+    except Exception as e:
+        return jsonify({"error": f"CSV parse error: {str(e)}"}), 400
+
+    results = []
+    model_keys = sorted(_models)
+    if not model_keys:
+        return jsonify({"error": "No models loaded"}), 503
+
+    for idx, row in df.iterrows():
+        row_inputs = row.to_dict()
+        subject_id = _extract_subject_id(row, idx)
+        for model_key in model_keys:
+            result = predict_single(model_key, row_inputs)
+            result["row_id"] = idx + 1
+            result["subject_id"] = subject_id
+            results.append(result)
+
+    return _send_batch_prediction_csv(
+        results,
+        download_name="predictions_all_models.csv",
+    )
 
 @app.route("/api/model_detail/<model_key>", methods=["GET"])
 def api_model_detail(model_key: str):

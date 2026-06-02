@@ -228,6 +228,11 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
 .toast.error { background: var(--danger); }
 .toast.success { background: var(--success); }
 
+/* ?? Research-use notice ?? */
+.site-disclaimer { background: #fff7ed; border: 1px solid #fdba74; border-left: 5px solid #f97316; border-radius: 14px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; color: #7c2d12; box-shadow: var(--shadow); }
+.site-disclaimer-title { font-size: 0.9rem; font-weight: 800; margin-bottom: 0.25rem; display: flex; align-items: center; gap: 0.4rem; }
+.site-disclaimer-body { font-size: 0.82rem; line-height: 1.65; }
+
 /* ?? Instructions ?? */
 .instruction-step { display: flex; gap: 1rem; padding: 1rem 0; border-bottom: 1px solid var(--border); }
 .instruction-step:last-child { border-bottom: none; }
@@ -236,6 +241,8 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
 .step-content p { font-size: 0.82rem; color: var(--text-light); line-height: 1.5; }
 
 /* ?? Batch Results ?? */
+.batch-mode-grid { display: grid; grid-template-columns: minmax(220px, 0.8fr) minmax(260px, 1.2fr); gap: 1rem; align-items: end; }
+.batch-note { background: var(--warning-light); border: 1px solid #fcd34d; border-radius: 8px; padding: 0.75rem 1rem; font-size: 0.8rem; color: #92400e; margin-bottom: 1rem; line-height: 1.55; }
 .batch-summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
 .batch-stat { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem; text-align: center; }
 .batch-stat-num { font-size: 1.8rem; font-weight: 800; }
@@ -255,6 +262,7 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
   .model-card { padding: 0.95rem 1rem; }
   .model-card-auc { justify-content: flex-start; }
   .grid-2 { grid-template-columns: 1fr; }
+  .batch-mode-grid { grid-template-columns: 1fr; }
   .batch-summary { grid-template-columns: 1fr 1fr; }
   .nav-links { display: none; }
   .glossary-grid { grid-template-columns: 1fr; }
@@ -329,6 +337,16 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
 
 <!-- ?? Main ?? -->
 <main class="main">
+
+  <div class="site-disclaimer" id="site-disclaimer">
+    <div class="site-disclaimer-title">
+      <span>⚠️</span>
+      <span data-i18n="site_disclaimer_title">Research-use notice</span>
+    </div>
+    <div class="site-disclaimer-body" data-i18n="site_disclaimer_body">
+      This platform provides a research and decision-support reference for exploring exercise-response prediction models. It is not a standalone diagnostic or treatment decision tool. Predictions should be interpreted together with clinical assessment, cohort context, and independent validation evidence.
+    </div>
+  </div>
 
   <!-- Tab Bar -->
   <div class="tab-bar">
@@ -449,11 +467,24 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
         <div class="card-title"><span class="card-title-icon">&#x1F4C1;</span> <span data-i18n="card_batch_title">Batch Prediction</span></div>
       </div>
 
-      <div class="mb-2">
-        <label style="font-size:0.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.5rem;" data-i18n="label_select_model">Select Model</label>
-        <select id="batch-model-select" style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;font-family:inherit;outline:none;" onchange="updateBatchModelInfo()">
-          <option value="">&#x2014; <span data-i18n="option_select_model">Select a model</span> &#x2014;</option>
-        </select>
+      <div class="batch-mode-grid mb-2">
+        <div>
+          <label style="font-size:0.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.5rem;" data-i18n="label_batch_mode">Batch Mode</label>
+          <select id="batch-mode-select" style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;font-family:inherit;outline:none;" onchange="updateBatchMode()">
+            <option value="all" data-i18n="batch_mode_all">All loaded models</option>
+            <option value="single" data-i18n="batch_mode_single">Selected single model</option>
+          </select>
+        </div>
+        <div id="batch-model-select-wrap">
+          <label style="font-size:0.85rem;font-weight:600;color:var(--text);display:block;margin-bottom:0.5rem;" data-i18n="label_select_model">Select Model</label>
+          <select id="batch-model-select" style="width:100%;padding:0.6rem 0.8rem;border:1px solid var(--border);border-radius:8px;font-size:0.85rem;font-family:inherit;outline:none;" onchange="updateBatchModelInfo()">
+            <option value="">&#x2014; <span data-i18n="option_select_model">Select a model</span> &#x2014;</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="batch-note" id="batch-mode-note" data-i18n="batch_note_all">
+        All-model mode runs every loaded clinical-only, lipid-only, and fusion model for each uploaded sample, then exports one row per sample-model combination.
       </div>
 
       <div id="batch-model-info" class="mb-2 hidden" style="background:var(--bg);border-radius:8px;padding:0.75rem 1rem;font-size:0.8rem;"></div>
@@ -465,7 +496,7 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
         <div class="upload-zone-icon">&#x1F4C2;</div>
         <div class="upload-zone-text">
           <strong data-i18n="upload_click">Click to upload CSV</strong> <span data-i18n="upload_or">or drag here</span><br/>
-          <span style="font-size:0.78rem;" data-i18n="upload_format">Supports .csv format &#x2014; one row per sample, columns must match the selected model's required feature names</span>
+          <span id="upload-format-text" style="font-size:0.78rem;" data-i18n="upload_format_all">Supports .csv format &#x2014; one row per sample. All-model mode exports one row per sample-model combination and flags missing model features.</span>
         </div>
         <input type="file" id="batch-file" accept=".csv" style="display:none;" onchange="handleFileSelect(event)"/>
       </div>
@@ -491,7 +522,7 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
         <div style="overflow-x:auto;">
           <table class="perf-table" id="batch-table">
             <thead><tr>
-              <th>#</th><th data-i18n="th_prediction">Prediction</th><th data-i18n="th_prob_high">High Response Prob.</th><th data-i18n="th_prob_low">Low Response Prob.</th><th data-i18n="th_confidence">Confidence</th><th data-i18n="th_note">Note</th>
+              <th>#</th><th data-i18n="th_subject">Subject</th><th data-i18n="th_indicator">Δ Indicator</th><th data-i18n="th_group">Grouping</th><th data-i18n="th_model_key">Model</th><th data-i18n="th_model_type">Type</th><th data-i18n="th_algorithm">Algorithm</th><th data-i18n="th_prediction">Prediction</th><th data-i18n="th_prob_high">High Response Prob.</th><th data-i18n="th_prob_low">Low Response Prob.</th><th data-i18n="th_confidence">Confidence</th><th data-i18n="th_note">Note</th>
             </tr></thead>
             <tbody></tbody>
           </table>
@@ -645,7 +676,7 @@ body { font-family: 'Inter','Noto Sans SC',-apple-system,sans-serif; background:
 <footer class="footer">
   <p id="footer-line1">EXCITING Study (NCT04984005) &#x00B7; Lipidomics Exercise Response Prediction Platform &#x00B7; 2026-04-10</p>
   <p id="footer-line2" style="margin-top:0.4rem;">Based on aligned baseline clinical + lipidomics features from 281 children &#x00B7; Nested CV evaluated</p>
-  <p style="margin-top:0.4rem; color:#64748b;">Requestor: Shuxian Zhang | Analysis Provider: Chenyu Fan</p>
+  <p id="footer-notice" style="margin-top:0.4rem; color:#64748b;" data-i18n="footer_notice">Research-use interface · Not for standalone diagnostic or treatment decisions</p>
 </footer>
 
 <script>
@@ -756,6 +787,15 @@ const LANG_EN = {
   upload_click: "Click to upload CSV",
   upload_or: "or drag here",
   upload_format: "Supports .csv format \u2014 one row per sample, columns must match the selected model's required feature names",
+  site_disclaimer_title: "Research-use notice",
+  site_disclaimer_body: "This platform provides a research and decision-support reference for exploring exercise-response prediction models. It is not a standalone diagnostic or treatment decision tool. Predictions should be interpreted together with clinical assessment, cohort context, and independent validation evidence.",
+  label_batch_mode: "Batch Mode",
+  batch_mode_all: "All loaded models",
+  batch_mode_single: "Selected single model",
+  batch_note_all: "All-model mode runs every loaded clinical-only, lipid-only, and fusion model for each uploaded sample, then exports one row per sample-model combination.",
+  batch_note_single: "Single-model mode runs the selected model for every uploaded sample. CSV columns should match that model's required feature names.",
+  upload_format_all: "Supports .csv format — one row per sample. All-model mode exports one row per sample-model combination and flags missing model features.",
+  upload_format_single: "Supports .csv format — one row per sample. Columns should match the selected model's required feature names.",
   batch_selected: "Selected:",
   batch_rows: "rows",
   batch_result_title: "Prediction Results",
@@ -766,6 +806,10 @@ const LANG_EN = {
   th_note: "Note",
   th_indicator: "Δ Indicator",
   th_group: "Grouping",
+  th_subject: "Subject",
+  th_model_key: "Model",
+  th_model_type: "Type",
+  th_algorithm: "Algorithm",
   th_best_model: "Best Model",
   th_full_auc: "Full-Cohort AUC",
   th_m2f: "M\u2192F AUC",
@@ -795,6 +839,12 @@ const LANG_EN = {
   glossary_lipids: "Lipid Class Abbreviations",
   footer_line1: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) Study (NCT04984005) \u00B7 Lipidomics Exercise Response Prediction Platform \u00B7 2026-04-10",
   footer_line2: "Based on aligned baseline clinical + lipidomics features from 281 children \u00B7 {n_models} ML models \u00B7 Nested CV evaluated",
+  footer_notice: "Research-use interface · Not for standalone diagnostic or treatment decisions",
+  batch_total_results: "Total results",
+  batch_missing_note: "⚠️ Missing {n} feature values",
+  batch_complete_note: "✓ Complete",
+  toast_batch_ok: "Batch prediction complete! {n} result rows exported.",
+  toast_batch_err: "Batch prediction failed",
   high_response: "High Response",
   low_response: "Low Response",
   high_prob: "High Response Prob.",
@@ -885,6 +935,15 @@ const LANG_CN = {
   upload_click: "\u70B9\u51FB\u4E0A\u4F20 CSV \u6587\u4EF6",
   upload_or: "\u6216\u62D6\u62FD\u5230\u6B64\u5904",
   upload_format: "\u652F\u6301 .csv \u683C\u5F0F\uFF0C\u6BCF\u884C\u4E00\u4E2A\u6837\u672C\uFF0C\u5217\u540D\u9700\u4E0E\u6240\u9009\u6A21\u578B\u7684\u5FC5\u586B\u7279\u5F81\u540D\u4E00\u81F4",
+  site_disclaimer_title: "研究用途提示",
+  site_disclaimer_body: "本平台仅用于运动响应预测模型的研究参考和辅助判断，不是独立的诊断或治疗决策工具。预测结果应结合临床评估、队列背景以及独立验证证据共同解读。",
+  label_batch_mode: "批量模式",
+  batch_mode_all: "所有已加载模型",
+  batch_mode_single: "仅选定单一模型",
+  batch_note_all: "所有模型模式会对每个上传样本运行当前已加载的 clinical-only、lipid-only 与 fusion 模型，并按“样本 × 模型”导出结果。",
+  batch_note_single: "单模型模式会用当前选定模型预测每个上传样本；CSV 列名应与该模型所需特征名一致。",
+  upload_format_all: "支持 .csv 格式，每行一个样本；所有模型模式会导出每个“样本 × 模型”组合，并标记缺失特征。",
+  upload_format_single: "支持 .csv 格式，每行一个样本；列名需与所选模型的必填特征名一致。",
   batch_selected: "\u5DF2\u9009\u62E9\uFF1A",
   batch_rows: "\u884C",
   batch_result_title: "\u9884\u6D4B\u7ED3\u679C",
@@ -895,6 +954,10 @@ const LANG_CN = {
   th_note: "\u5907\u6CE8",
   th_indicator: "\u6307\u6807\uFF08\u0394\uFF09",
   th_group: "\u5206\u7EC4",
+  th_subject: "样本",
+  th_model_key: "模型",
+  th_model_type: "类型",
+  th_algorithm: "算法",
   th_best_model: "\u6700\u4F18\u6A21\u578B",
   th_full_auc: "\u5168\u961F\u5217 AUC",
   th_m2f: "M\u2192F AUC",
@@ -924,6 +987,12 @@ const LANG_CN = {
   glossary_lipids: "\u8102\u8D28\u7C7B\u522B\u7F29\u5199",
   footer_line1: "EXerCise on Obesity AdolescENTS in pekING (EXCITING) \u7814\u7A76 \u00B7 \u591A\u6307\u6807\u8102\u8D28\u7EC4\u5B66\u8FD0\u52A8\u54CD\u5E94\u9884\u6D4B\u5E73\u53F0 \u00B7 2026-04-10",
   footer_line2: "\u57FA\u4E8E 281 \u540D\u513F\u7AE5\u7684\u5BF9\u9F50\u57FA\u7EBF\u4E34\u5E8A + \u8102\u8D28\u7EC4\u7279\u5F81 \u00B7 {n_models} \u4E2A\u673A\u5668\u5B66\u4E60\u6A21\u578B \u00B7 \u5D4C\u5957\u4EA4\u53C9\u9A8C\u8BC1",
+  footer_notice: "研究用途界面 · 不能替代独立诊断或治疗决策",
+  batch_total_results: "总结果数",
+  batch_missing_note: "⚠️ 缺少 {n} 个特征值",
+  batch_complete_note: "✓ 完整",
+  toast_batch_ok: "批量预测完成！已导出 {n} 行结果。",
+  toast_batch_err: "批量预测失败",
   high_response: "\u9AD8\u54CD\u5E94",
   low_response: "\u4F4E\u54CD\u5E94",
   high_prob: "\u9AD8\u54CD\u5E94\u6982\u7387",
@@ -1029,6 +1098,7 @@ function applyTranslations() {
     renderBatchSelect();
     renderModelPerfTable();
   }
+  updateBatchMode();
 }
 
 async function init() {
@@ -1582,19 +1652,126 @@ function renderPredictionResult(result) {
   '</div>';
 }
 
+function escapeHtml(value) {
+  return String(value === undefined || value === null ? "" : value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
+function parseCsvLine(line) {
+  var cells = [];
+  var current = "";
+  var inQuotes = false;
+  for (var i = 0; i < line.length; i++) {
+    var ch = line[i];
+    var next = line[i + 1];
+    if (ch === '"') {
+      if (inQuotes && next === '"') {
+        current += '"';
+        i += 1;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (ch === ',' && !inQuotes) {
+      cells.push(current);
+      current = "";
+    } else {
+      current += ch;
+    }
+  }
+  cells.push(current);
+  return cells;
+}
+
+function parseCsvText(text) {
+  var normalized = (text || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+  if (!normalized) return [];
+  var lines = normalized.split("\n").filter(function(line) { return line.trim() !== ""; });
+  if (lines.length <= 1) return [];
+  var headers = parseCsvLine(lines[0]).map(function(h) { return h.trim(); });
+  return lines.slice(1).map(function(line) {
+    var vals = parseCsvLine(line);
+    var row = {};
+    headers.forEach(function(h, i) { row[h] = (vals[i] === undefined ? "" : vals[i]).trim(); });
+    return row;
+  });
+}
+
 function renderBatchSelect() {
   var sel = document.getElementById("batch-model-select");
   var sorted = Object.entries(modelInfo).sort(function(a, b) { return (b[1].full_auc||0) - (a[1].full_auc||0); });
   var modelLabel = t("option_select_model");
-  sel.innerHTML = '<option value="">\u2014 ' + modelLabel + ' \u2014</option>' +
+  sel.innerHTML = '<option value="">\u2014 ' + escapeHtml(modelLabel) + ' \u2014</option>' +
     sorted.map(function(entry) {
       var key = entry[0];
       var info = entry[1];
       var indName = getIndicatorDisplay(info);
       var modelName = getModelName(info.model_name || "");
       var groupName = getGroupDisplay(info);
-      return '<option value="' + key + '">' + indName + ' \u00B7 ' + groupName + ' \u00B7 ' + modelName + ' \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + '</option>';
+      return '<option value="' + escapeHtml(key) + '">' + escapeHtml(indName + ' · ' + groupName + ' · ' + modelName + ' · AUC=' + (info.full_auc||0).toFixed(3)) + '</option>';
     }).join("");
+  if (currentBatchModelKey && modelInfo[currentBatchModelKey]) {
+    sel.value = currentBatchModelKey;
+  }
+  updateBatchMode();
+}
+
+function getBatchMode() {
+  var el = document.getElementById("batch-mode-select");
+  return el ? el.value : "single";
+}
+
+function getCurrentBatchFile() {
+  var input = document.getElementById("batch-file");
+  return input && input.files ? input.files[0] : null;
+}
+
+function canRunBatchPrediction() {
+  var file = getCurrentBatchFile();
+  if (!file) return false;
+  return getBatchMode() === "all" || !!currentBatchModelKey;
+}
+
+function updateBatchRunButtonState() {
+  var btn = document.getElementById("batch-run-btn");
+  if (btn) btn.disabled = !canRunBatchPrediction();
+}
+
+function updateBatchMode() {
+  var mode = getBatchMode();
+  var modelWrap = document.getElementById("batch-model-select-wrap");
+  var modelInfoDiv = document.getElementById("batch-model-info");
+  var note = document.getElementById("batch-mode-note");
+  var uploadText = document.getElementById("upload-format-text");
+
+  if (mode === "all") {
+    if (modelWrap) modelWrap.classList.add("hidden");
+    if (modelInfoDiv) modelInfoDiv.classList.add("hidden");
+    if (note) {
+      note.setAttribute("data-i18n", "batch_note_all");
+      note.textContent = t("batch_note_all");
+    }
+    if (uploadText) {
+      uploadText.setAttribute("data-i18n", "upload_format_all");
+      uploadText.textContent = t("upload_format_all");
+    }
+  } else {
+    if (modelWrap) modelWrap.classList.remove("hidden");
+    if (note) {
+      note.setAttribute("data-i18n", "batch_note_single");
+      note.textContent = t("batch_note_single");
+    }
+    if (uploadText) {
+      uploadText.setAttribute("data-i18n", "upload_format_single");
+      uploadText.textContent = t("upload_format_single");
+    }
+    updateBatchModelInfo();
+  }
+
+  updateBatchRunButtonState();
 }
 
 async function updateBatchModelInfo() {
@@ -1602,14 +1779,18 @@ async function updateBatchModelInfo() {
   currentBatchModelKey = key;
   var info = modelInfo[key] || {};
   var div = document.getElementById("batch-model-info");
-  if (!key) { div.classList.add("hidden"); return; }
+  if (!key) {
+    if (div) div.classList.add("hidden");
+    updateBatchRunButtonState();
+    return;
+  }
   div.classList.remove("hidden");
   var indName = getIndicatorDisplay(info);
   var modelName = getModelName(info.model_name || "");
   var groupName = getGroupDisplay(info);
   var targetNote = currentLang === "cn" ? (info.target_definition_cn || "\u0394 = \u5E72\u9884\u540E - \u5E72\u9884\u524D") : (info.target_definition_en || "\u0394 = outroll - enroll");
-  div.innerHTML = '<strong>' + indName + ' \u00B7 ' + groupName + ' \u00B7 ' + modelName + '</strong> \u00B7 AUC=' + (info.full_auc||0).toFixed(3) + ' \u00B7 ' + targetNote + ' \u00B7 ' + getFeatureCountLabel(info);
-  document.getElementById("batch-run-btn").disabled = true;
+  div.innerHTML = '<strong>' + escapeHtml(indName + ' · ' + groupName + ' · ' + modelName) + '</strong> · AUC=' + escapeHtml((info.full_auc||0).toFixed(3)) + ' · ' + escapeHtml(targetNote) + ' · ' + escapeHtml(getFeatureCountLabel(info));
+  updateBatchRunButtonState();
 }
 
 function handleFileSelect(event) {
@@ -1621,23 +1802,31 @@ function handleFileDrop(event) {
   event.preventDefault();
   document.getElementById("upload-zone").classList.remove("dragover");
   var file = event.dataTransfer.files[0];
-  if (file) showBatchFileInfo(file);
+  if (file) {
+    try {
+      document.getElementById("batch-file").files = event.dataTransfer.files;
+    } catch(e) {
+      console.warn("Unable to sync dropped file into input element:", e);
+    }
+    showBatchFileInfo(file);
+  }
 }
 
 async function showBatchFileInfo(file) {
   document.getElementById("batch-preview").classList.remove("hidden");
   document.getElementById("batch-file-name").textContent = file.name;
   document.getElementById("batch-row-count").textContent = "? " + t("batch_rows");
-  document.getElementById("batch-run-btn").disabled = !currentBatchModelKey;
+  updateBatchRunButtonState();
 
   var text = await file.text();
-  var lines = text.trim().split("\n");
-  document.getElementById("batch-row-count").textContent = (lines.length - 1) + " " + t("batch_rows");
+  var lines = text.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim().split("\n").filter(function(line) { return line.trim() !== ""; });
+  document.getElementById("batch-row-count").textContent = Math.max(0, lines.length - 1) + " " + t("batch_rows");
 }
 
 async function runBatchPrediction() {
-  var file = document.getElementById("batch-file").files[0];
-  if (!file || !currentBatchModelKey) return;
+  var file = getCurrentBatchFile();
+  var mode = getBatchMode();
+  if (!file || (mode === "single" && !currentBatchModelKey)) return;
 
   var btn = document.getElementById("batch-run-btn");
   var spinner = document.getElementById("batch-spinner");
@@ -1648,26 +1837,26 @@ async function runBatchPrediction() {
 
   var formData = new FormData();
   formData.append("file", file);
-  formData.append("model_key", currentBatchModelKey);
+  var endpoint = mode === "all" ? "/api/batch_predict_all" : "/api/batch_predict";
+  if (mode === "single") formData.append("model_key", currentBatchModelKey);
 
   try {
-    var resp = await fetch("/api/batch_predict", { method: "POST", body: formData });
+    var resp = await fetch(endpoint, { method: "POST", body: formData });
     var text = await resp.text();
-    var lines = text.trim().split("\n");
-    var headers = lines[0].split(",");
-    batchResults = lines.slice(1).map(function(line) {
-      var vals = line.split(",");
-      return Object.fromEntries(headers.map(function(h,i) { return [h.trim(), vals[i]?.trim() || ""]; }));
-    });
-
+    if (!resp.ok) {
+      var errMsg = text;
+      try { errMsg = JSON.parse(text).error || text; } catch(_) {}
+      throw new Error(errMsg || resp.statusText);
+    }
+    batchResults = parseCsvText(text);
     renderBatchResults();
-    showToast("Batch prediction complete! " + batchResults.length + " samples", "success");
+    showToast(t("toast_batch_ok", { n: batchResults.length }), "success");
   } catch(e) {
-    showToast("Batch prediction failed: " + e.message, "error");
+    showToast(t("toast_batch_err") + ": " + e.message, "error");
   } finally {
-    btn.disabled = false;
     spinner.classList.add("hidden");
     runText.innerHTML = '\u{1F680} <span>' + t("btn_batch_run") + '</span>';
+    updateBatchRunButtonState();
   }
 }
 
@@ -1681,42 +1870,44 @@ function renderBatchResults() {
   document.getElementById("batch-summary").innerHTML = "" +
     '<div class="batch-stat">' +
       '<div class="batch-stat-num text-primary">' + total + '</div>' +
-      '<div class="batch-stat-label">Total</div>' +
+      '<div class="batch-stat-label">' + escapeHtml(t("batch_total_results")) + '</div>' +
     '</div>' +
     '<div class="batch-stat">' +
       '<div class="batch-stat-num text-success">' + highCount + '</div>' +
-      '<div class="batch-stat-label">' + t("label_high") + '</div>' +
+      '<div class="batch-stat-label">' + escapeHtml(t("label_high")) + '</div>' +
     '</div>' +
     '<div class="batch-stat">' +
       '<div class="batch-stat-num text-warning">' + lowCount + '</div>' +
-      '<div class="batch-stat-label">' + t("label_low") + '</div>' +
+      '<div class="batch-stat-label">' + escapeHtml(t("label_low")) + '</div>' +
     '</div>';
 
   var tbody = document.querySelector("#batch-table tbody");
   tbody.innerHTML = batchResults.map(function(r, i) {
     var isHigh = r.prediction === "1" || r.prediction === "\u9AD8\u54CD\u5E94" || r.prediction === "High Response";
     var probHigh = parseFloat(r.prob_high_response || 0);
-    var missing = r.missing_features || "";
+    var probLow = parseFloat(r.prob_low_response || (1 - probHigh));
+    var confidence = parseFloat(r.confidence || 0);
+    var missingCount = parseInt(r.missing_features_count || "0", 10);
+    if (!Number.isFinite(missingCount)) missingCount = (r.missing_features || "").split(";").filter(Boolean).length;
+    var note = missingCount > 0
+      ? '<span style="color:var(--danger);font-size:0.75rem;">' + escapeHtml(t("batch_missing_note", { n: missingCount })) + '</span>'
+      : '<span style="color:var(--success);font-size:0.75rem;">' + escapeHtml(t("batch_complete_note")) + '</span>';
     var predLabel = isHigh ? t("label_high") : t("label_low");
     return '<tr>' +
-      '<td>' + (i+1) + '</td>' +
-      '<td><span style="font-weight:700;color:' + (isHigh ? 'var(--success)' : 'var(--warning)') + '">' + predLabel + '</span></td>' +
-      '<td><div class="auc-bar-bg" style="width:80px;display:inline-block;vertical-align:middle;margin-right:0.4rem;"><div class="auc-bar-fill good" style="width:' + (probHigh*100) + '%"></div></div>' + (probHigh*100).toFixed(1) + '%</td>' +
-      '<td>' + ((1-probHigh)*100).toFixed(1) + '%</td>' +
-      '<td>' + (parseFloat(r.confidence||0)*100).toFixed(1) + '%</td>' +
-      '<td>' + (missing ? '<span style="color:var(--danger);font-size:0.75rem;">\u26A0\uFE0F ' + t("missing_warning", {n: missing.split(",").length, list: ""}) + '</span>' : '<span style="color:var(--success);font-size:0.75rem;">\u2713 Complete</span>') + '</td>' +
+      '<td>' + escapeHtml(r.row_id || (i + 1)) + '</td>' +
+      '<td>' + escapeHtml(r.subject_id || r.row_id || (i + 1)) + '</td>' +
+      '<td>' + escapeHtml(r.indicator_display || r.indicator || "\u2014") + '</td>' +
+      '<td>' + escapeHtml(r.grouping || "\u2014") + '</td>' +
+      '<td>' + escapeHtml(r.model_key || "\u2014") + '</td>' +
+      '<td>' + escapeHtml(r.model_type || "\u2014") + '</td>' +
+      '<td>' + escapeHtml(r.algorithm || "\u2014") + '</td>' +
+      '<td><span style="font-weight:700;color:' + (isHigh ? 'var(--success)' : 'var(--warning)') + '">' + escapeHtml(predLabel) + '</span></td>' +
+      '<td><div class="auc-bar-bg" style="width:80px;display:inline-block;vertical-align:middle;margin-right:0.4rem;"><div class="auc-bar-fill good" style="width:' + Math.max(0, Math.min(100, probHigh*100)) + '%"></div></div>' + escapeHtml((probHigh*100).toFixed(1)) + '%</td>' +
+      '<td>' + escapeHtml((probLow*100).toFixed(1)) + '%</td>' +
+      '<td>' + escapeHtml((confidence*100).toFixed(1)) + '%</td>' +
+      '<td>' + note + '</td>' +
     '</tr>';
   }).join("");
-}
-
-function downloadBatchResult() {
-  if (!batchResults || batchResults.length === 0) return;
-  var headers = Object.keys(batchResults[0]);
-  var csv = [headers.join(","), ...batchResults.map(function(r) { return headers.map(function(h) { return '"' + ((r[h]||"").replace(/"/g, '""')) + '"'; }).join(","); })].join("\n");
-  var blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement("a"); a.href = url; a.download = "predictions.csv"; a.click();
-  URL.revokeObjectURL(url);
 }
 
 function renderModelPerfTable() {

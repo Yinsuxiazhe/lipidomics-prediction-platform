@@ -89,3 +89,29 @@ def test_index_template_includes_null_safe_auc_formatters_for_cross_gender_metri
     assert 'function hasFiniteMetric(value)' in html
     assert 'function formatMetric(value, digits)' in html
     assert 'return hasFiniteMetric(value) ? Number(value).toFixed(digits || 3) : "—";' in html
+
+
+def test_index_template_includes_all_model_batch_mode_and_site_disclaimer(client):
+    response = client.get("/")
+    assert response.status_code == 200
+
+    html = response.get_data(as_text=True)
+    assert 'id="site-disclaimer"' in html
+    assert 'research and decision-support reference' in html
+    assert 'not a standalone diagnostic or treatment decision tool' in html
+    assert 'id="batch-mode-select"' in html
+    assert 'value="all"' in html
+    assert 'value="single"' in html
+    assert '/api/batch_predict_all' in html
+    assert 'function updateBatchMode' in html
+
+
+def test_index_template_uses_public_footer_without_internal_requestor_labels(client):
+    response = client.get("/")
+    assert response.status_code == 200
+
+    html = response.get_data(as_text=True)
+    assert "Requestor:" not in html
+    assert "Analysis Provider:" not in html
+    assert "Shuxian Zhang" not in html
+    assert "Chenyu Fan" not in html

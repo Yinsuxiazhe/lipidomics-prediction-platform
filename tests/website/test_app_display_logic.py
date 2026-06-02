@@ -518,3 +518,54 @@ def test_predict_single_recovers_logistic_regression_missing_multi_class(client)
     assert result["prediction"] in {0, 1}
     assert result["confidence"] > 0
     assert app_module._models[key]["model"].named_steps["clf"].multi_class == "auto"
+
+
+def test_api_batch_predict_all_runs_every_loaded_model(monkeypatch, client):
+    import io
+    import pandas as pd
+
+    monkeypatch.setattr(app_module, "_models", {})
+    monkeypatch.setattr(app_module, "_model_info", {})
+
+    install_dummy_model(
+        monkeypatch,
+        "BMI_Q_lipid_RF",
+        indicator="BMI",
+        direction="negative",
+        pred=1,
+        proba=(0.2, 0.8),
+        group="Q",
+        model_name="RF",
+        model_type="lipid",
+        lipid_features=["LIPID_A"],
+    )
+    install_dummy_model(
+        monkeypatch,
+        "PBF_T_fusion_EN_LR",
+        indicator="PBF",
+        direction="negative",
+        pred=0,
+        proba=(0.7, 0.3),
+        group="T",
+        model_name="EN_LR",
+        model_type="fusion",
+        clinical_features=["age_enroll"],
+        lipid_features=["LIPID_A"],
+    )
+
+    csv = b"subject_id,age_enroll,LIPID_A\nS001,11,1.23\n"
+    response = client.post(
+        "/api/batch_predict_all",
+        data={"file": (io.BytesIO(csv), "sample.csv")},
+        content_type="multipart/form-data",
+    )
+
+    assert response.status_code == 200
+    df = pd.read_csv(io.BytesIO(response.data))
+    assert df.shape[0] == 2
+    assert set(df["model_key"]) == {"BMI_Q_lipid_RF", "PBF_T_fusion_EN_LR"}
+    assert list(df["subject_id"]) == ["S001", "S001"]
+    assert set(df["indicator"]) == {"BMI", "PBF"}
+    assert set(df["grouping"]) == {"Q (Q1 vs Q4)", "T (T1 vs T3)"}
+    assert set(df["model_type"]) == {"lipid", "fusion"}
+    assert set(df["missing_features_count"]) == {0}
